@@ -8,5 +8,8 @@ int cvi_board_init(void)
 	/*Network indicator light*/
 	PINMUX_CONFIG(PWR_WAKEUP0, EPHY_LNK_LED);
 	PINMUX_CONFIG(PWR_GPIO2, EPHY_SPD_LED);
+
+	/*HOST_PWR_EN*/
+	PINMUX_CONFIG(IIC2_SDA, PWR_GPIO_13);
 	return 0;
 }
