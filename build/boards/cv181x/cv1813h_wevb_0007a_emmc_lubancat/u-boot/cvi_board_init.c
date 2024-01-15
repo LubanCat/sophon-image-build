@@ -4,5 +4,9 @@ int cvi_board_init(void)
 
 	PINMUX_CONFIG(IIC3_SCL, IIC3_SCL);
 	PINMUX_CONFIG(IIC3_SDA, IIC3_SDA);
+
+	/*Network indicator light*/
+	PINMUX_CONFIG(PWR_WAKEUP0, EPHY_LNK_LED);
+	PINMUX_CONFIG(PWR_GPIO2, EPHY_SPD_LED);
 	return 0;
 }
