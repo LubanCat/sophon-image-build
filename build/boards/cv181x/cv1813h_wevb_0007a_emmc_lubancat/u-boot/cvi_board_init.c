@@ -11,5 +11,9 @@ int cvi_board_init(void)
 
 	/*HOST_PWR_EN*/
 	PINMUX_CONFIG(IIC2_SDA, PWR_GPIO_13);
+
+	/*SYS_LED*/
+	PINMUX_CONFIG(VIVO_D10, XGPIOB_11);
+
 	return 0;
 }

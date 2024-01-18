@@ -3,8 +3,19 @@
 #include "cv181x_asic_bga.dtsi"
 #include "cv181x_asic_emmc.dtsi"
 #include "cv181x_default_memmap.dtsi"
+#include "cv181x_base.dtsi"
 
 / {
+    	leds: leds {
+		status = "okay";
+		compatible = "gpio-leds";
 
+		sys_status_led: sys-status-led {
+			label = "sys_status_led";
+			linux,default-trigger = "heartbeat";
+			default-state = "on";
+			gpios = <&portb 11 GPIO_ACTIVE_LOW>;
+		    };
+        };
 };
 
