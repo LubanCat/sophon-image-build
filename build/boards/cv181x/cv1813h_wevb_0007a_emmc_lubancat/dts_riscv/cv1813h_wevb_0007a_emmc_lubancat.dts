@@ -5,17 +5,18 @@
 #include "cv181x_default_memmap.dtsi"
 #include "cv181x_base.dtsi"
 
+#include "cv1813h_lubancat_keys.dtsi"
+
 / {
     	leds: leds {
-		status = "okay";
-		compatible = "gpio-leds";
+			status = "okay";
+			compatible = "gpio-leds";
 
-		sys_status_led: sys-status-led {
-			label = "sys_status_led";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-			gpios = <&portb 11 GPIO_ACTIVE_LOW>;
-		    };
-        };
+			sys_status_led: sys-status-led {
+				label = "sys_status_led";
+				linux,default-trigger = "heartbeat";
+				default-state = "on";
+				gpios = <&portb 11 GPIO_ACTIVE_LOW>;
+				};
+			};
 };
-

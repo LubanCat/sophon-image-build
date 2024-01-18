@@ -15,5 +15,11 @@ int cvi_board_init(void)
 	/*SYS_LED*/
 	PINMUX_CONFIG(VIVO_D10, XGPIOB_11);
 
+	/*USR_KEY*/
+	PINMUX_CONFIG(USB_ID, XGPIOB_4);
+
+	/*PWR_KEY*/
+	PINMUX_CONFIG(PWR_BUTTON1, PWR_GPIO_8);
+
 	return 0;
 }

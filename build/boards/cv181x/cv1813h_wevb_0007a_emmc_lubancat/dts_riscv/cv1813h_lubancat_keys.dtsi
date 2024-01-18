@@ -1,0 +1,21 @@
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/linux-event-codes.h>
+
+/ {
+		sgpio-keys {
+			status = "okay";
+			compatible = "gpio-keys";
+
+			Key0{
+				label = "usr_key";
+				linux,code=<KEY_0>;
+				gpios = <&portb 4 IRQ_TYPE_LEVEL_LOW>;
+			};
+
+			Key1{
+				label = "pwr_key";
+				linux,code=<KEY_POWER>;
+				gpios = <&porte 8 IRQ_TYPE_LEVEL_LOW>;
+			};
+		};
+};
