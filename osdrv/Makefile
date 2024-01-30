@@ -44,6 +44,9 @@ KO_LIST += wireless
 OTHERS += cp_ext_wireless
 endif
 
+KO_LIST += ebf_wifi
+OTHERS += cp_ext_ebf_wifi
+
 ifeq (, ${CONFIG_NO_TP})
 	KO_LIST += tp
 	OTHERS += cp_ext_tp
@@ -66,11 +69,17 @@ tp:
 wireless:
 	@$(call MAKE_EXT_KO, extdrv/${@})
 
+ebf_wifi:
+	@$(call MAKE_EXT_KO, extdrv/${@})
+
 wiegand-gpio:
 	@$(call MAKE_EXT_KO, extdrv/${@})
 
 cp_ext_wireless:
 	@find extdrv/wireless -name '*.ko' -print -exec cp {} $(INSTALL_DIR)/3rd/ \;
+
+cp_ext_ebf_wifi:
+	@find extdrv/ebf_wifi -name '*.ko' -print -exec cp {} $(INSTALL_DIR)/3rd/ \;
 
 cp_ext_tp:
 	@find extdrv/tp -name '*.ko' -print -exec cp {} $(INSTALL_DIR)/3rd/ \;

@@ -19,4 +19,24 @@
 				gpios = <&portb 11 GPIO_ACTIVE_LOW>;
 				};
 			};
+
+		usb_host_en: usb_host_en {
+			compatible = "regulator-gpio";
+			regulator-name = "usb_host_en";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			gpios = <&porte 13 GPIO_ACTIVE_HIGH>;
+			regulator-always-on;
+			regulator-boot-on;
+			enable-active-high;
+		};
+};
+
+&wifisd {
+		status = "okay";
+};
+
+&wifi_pin {
+	poweron-gpio = <&porta 4 GPIO_ACTIVE_HIGH>;
+	wakeup-gpio = <&porta 0 GPIO_ACTIVE_HIGH>;
 };
