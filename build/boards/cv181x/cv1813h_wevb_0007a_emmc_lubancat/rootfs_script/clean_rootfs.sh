@@ -1,8 +1,6 @@
 #!/bin/bash
 
 SYSTEM_DIR=$1
-rm -f $SYSTEM_DIR/mnt/system/usr/lib/libz*
-rm -f $SYSTEM_DIR/mnt/system/lib/libz*
 
 rm -f $SYSTEM_DIR/mnt/system/usr/lib/3rd/libcvi*
 rm -f $SYSTEM_DIR/mnt/system/usr/lib/3rd/libmad*
@@ -56,7 +54,6 @@ else
     #glibc ramdisk(rootfs/common_arm/usr/lib/) has libcrypto.so and libssl.so
     #del openssl
     rm -f $SYSTEM_DIR/mnt/system/lib/libssl*
-    rm -f $SYSTEM_DIR/mnt/system/lib/libcrypto*
 fi
 
 rm -rf $SYSTEM_DIR/etc/init.d/S23ntp
