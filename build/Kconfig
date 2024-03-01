@@ -246,6 +246,14 @@ config CP_EXT_WIRELESS
       Install the osdrv/extdrv/wireless/*.ko no matter
 	  FLASH_SIZE_SHRINK is set or not.
 
+config CP_EXT_EBF_WIFI
+	bool "Install the osdrv/extdrv/ebf_wifi/*.ko"
+	depends on FLASH_SIZE_SHRINK
+	default n
+	help
+      Install the osdrv/extdrv/ebf_wifi/*.ko no matter
+	  FLASH_SIZE_SHRINK is set or not.
+
 config NO_FB
 	bool "Do not compile frame buffer drivers"
 	depends on FLASH_SIZE_SHRINK
