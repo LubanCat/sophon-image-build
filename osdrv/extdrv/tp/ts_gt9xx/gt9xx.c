@@ -25,6 +25,8 @@
     #include <linux/input/mt.h>
 #endif
 
+#define GTP_CONFIG_OF 1
+
 static const char *goodix_ts_name = "goodix-ts";
 static const char *goodix_input_phys = "input/ts";
 static struct workqueue_struct *goodix_wq;
