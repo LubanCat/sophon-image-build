@@ -25,16 +25,6 @@
 				};
 			};
 
-		mipi_pwr_en: mipi_pwr_en {
-			compatible = "regulator-fixed";
-			regulator-name = "usb_host_en";
-			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <1800000>;
-			gpio = <&porte 12 GPIO_ACTIVE_HIGH>;
-			regulator-always-on;
-			enable-active-high;
-		};
-
 		usb_host_en: usb_host_en {
 			compatible = "regulator-fixed";
 			regulator-name = "usb_host_en";
@@ -82,4 +72,10 @@
 			goodix,irq-gpio = <&portb 22 GPIO_ACTIVE_HIGH>;
 			goodix,rst-gpio = <&portb 12 GPIO_ACTIVE_LOW>;
 		};
+};
+
+&mipi_tx {
+	reset-gpio = <&portb 15 GPIO_ACTIVE_LOW>;
+	pwm-gpio = <&portb 19 GPIO_ACTIVE_HIGH>;
+	power-ct-gpio = <&porte 12 GPIO_ACTIVE_HIGH>;
 };

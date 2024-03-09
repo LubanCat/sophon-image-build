@@ -74,5 +74,10 @@ int cvi_board_init(void)
 	/*MIPI_PWR_EN*/
 	PINMUX_CONFIG(IIC2_SCL, PWR_GPIO_12);
 
+	/*MIPI_RST*/
+	PINMUX_CONFIG(VIVO_D6, XGPIOB_15);
+
+	pinmux_config(PINMUX_DSI);
+
 	return 0;
 }
