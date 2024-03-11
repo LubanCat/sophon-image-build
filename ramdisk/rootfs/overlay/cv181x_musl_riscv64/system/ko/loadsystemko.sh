@@ -28,6 +28,7 @@ insmod /mnt/system/ko/cv181x_ive.ko
 
 insmod /mnt/system/ko/3rd/8821cs.ko
 insmod /mnt/system/ko/3rd/gt9xx.ko
+insmod /mnt/system/ko/cv181x_saradc.ko
 
 echo 3 > /proc/sys/vm/drop_caches
 dmesg -n 4
