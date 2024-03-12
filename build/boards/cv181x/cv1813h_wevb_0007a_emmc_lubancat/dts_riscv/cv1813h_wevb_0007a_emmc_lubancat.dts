@@ -25,6 +25,16 @@
 				};
 			};
 
+		wifi_pwr_en: wifi_pwr_en {
+			compatible = "regulator-fixed";
+			regulator-name = "wifi_pwr_en";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			gpio = <&porte 1 GPIO_ACTIVE_HIGH>;
+			regulator-always-on;
+			enable-active-high;
+		};
+
 		usb_host_en: usb_host_en {
 			compatible = "regulator-fixed";
 			regulator-name = "usb_host_en";
