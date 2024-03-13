@@ -41,6 +41,7 @@ typedef enum
 	DSI_PANEL_GM8775C,
 	DSI_PANEL_HX8394_EVB,
 	DSI_PANEL_HX8399_1080P,
+	DSI_PANEL_EK79007,
 	DSI_PANEL_ICN9707,
 	DSI_PANEL_ILI9881C,
 	DSI_PANEL_ILI9881D,
@@ -103,6 +104,7 @@ static const char* s_panel_model_type_arr[] = {
 	"GM8775C",
 	"HX8394_EVB",
 	"HX8399_1080P",
+	"EK79007",
 	"ICN9707",
 	"ILI9881C",
 	"ILI9881D",
@@ -404,6 +406,13 @@ void SAMPLE_MIPI_SET_PANEL_DESC()
 			g_panel_desc.hs_timing_cfg = &hs_timing_cfg_hx8399_1080x1920;
 			g_panel_desc.dsi_init_cmds = dsi_init_cmds_hx8399_1080x1920;
 			g_panel_desc.dsi_init_cmds_size = ARRAY_SIZE(dsi_init_cmds_hx8399_1080x1920);
+			break;
+		case DSI_PANEL_EK79007:
+			g_panel_desc.panel_name = "EK79007-600x1024";
+			g_panel_desc.dev_cfg = &dev_cfg_ek79007_600x1024;
+			g_panel_desc.hs_timing_cfg = &hs_timing_cfg_ek79007_600x1024;
+			g_panel_desc.dsi_init_cmds = dsi_init_cmds_ek79007_600x1024;
+			g_panel_desc.dsi_init_cmds_size = ARRAY_SIZE(dsi_init_cmds_ek79007_600x1024);
 			break;
 		case DSI_PANEL_GM8775C:
 			g_panel_desc.panel_name = "GM8775C";
