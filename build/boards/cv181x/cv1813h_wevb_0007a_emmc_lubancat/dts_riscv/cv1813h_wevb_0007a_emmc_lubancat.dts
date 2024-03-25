@@ -89,3 +89,7 @@
 	pwm-gpio = <&portb 19 GPIO_ACTIVE_HIGH>;
 	power-ct-gpio = <&porte 12 GPIO_ACTIVE_HIGH>;
 };
+
+&uart2 {
+	status = "okay";
+};
