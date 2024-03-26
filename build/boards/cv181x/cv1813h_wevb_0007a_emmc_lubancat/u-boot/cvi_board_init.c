@@ -111,5 +111,9 @@ int cvi_board_init(void)
 	PINMUX_CONFIG(PAD_AUD_AINR_MIC, XGPIOC_22);
 	/****22 Pin****/
 
+	/***adc***/
+	mmio_write_32(0x03001810,0x40);
+	mmio_write_32(0x0300180C,0x40);
+
 	return 0;
 }
