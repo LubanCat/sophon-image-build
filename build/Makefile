@@ -555,6 +555,83 @@ define raw2cimg
 	${Q}python3 $(COMMON_TOOLS_PATH)/image_tool/raw2cimg.py $(OUTPUT_DIR)/rawimages/${1} $(OUTPUT_DIR) $(FLASH_PARTITION_XML)
 endef
 
+# EBF_BR_OVERLAY_DIR
+# EBF_BR_ROOTFS_RAWIMAGE
+ebf-br-rootfs-prepare:export CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
+ebf-br-rootfs-prepare:export CROSS_COMPILE_SDK=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_SDK))
+ebf-br-rootfs-prepare:export TARGET_OUTPUT_DIR=$(BR_DIR)/output/$(BR_BOARD)
+ebf-br-rootfs-prepare:export LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | sed 's#:\?[^:]*$##')
+ebf-br-rootfs-prepare:
+	#Build file system
+	$(call print_target)
+	${Q}$(MAKE) -C $(BR_DIR) $(BR_DEFCONFIG) BR2_TOOLCHAIN_EXTERNAL_PATH=$(CROSS_COMPILE_PATH)
+	${Q}$(MAKE) -j${NPROC} -C $(BR_DIR)
+	# ${Q}rm -rf $(BR_ROOTFS_DIR)/*
+	$(call print_target)
+	# Copy rootfs
+	${Q}rm -rf $(OUTPUT_DIR)/rootfs
+	${Q}mkdir -p  $(OUTPUT_DIR)/rootfs
+	${Q}tar xf $(TARGET_OUTPUT_DIR)/images/rootfs.tar -C $(OUTPUT_DIR)/rootfs
+        # Copy arch overlay rootfs
+ifneq ("$(wildcard $(SDK_VER_FOLDER_PATH))", "")
+	${Q}cp -r $(SDK_VER_FOLDER_PATH)/* $(OUTPUT_DIR)/rootfs
+endif
+	# Copy chip overlay rootfs
+ifneq ("$(wildcard $(CHIP_FOLDER_PATH))", "")
+	${Q}cp -r $(CHIP_FOLDER_PATH)/* $(OUTPUT_DIR)/rootfs
+endif
+	# Copy project overlay rootfs
+ifneq ("$(wildcard $(CUST_FOLDER_PATH))", "")
+	${Q}cp -r $(CUST_FOLDER_PATH)/* $(OUTPUT_DIR)/rootfs
+endif
+	$(call TARGET_PACKAGE_INSTALL_CMD)
+	${Q}${BUILD_PATH}/boards/default/rootfs_script/prepare_rootfs.sh $(OUTPUT_DIR)/rootfs
+	# Generate S10_automount
+	${Q}python3 $(COMMON_TOOLS_PATH)/image_tool/create_automount.py $(FLASH_PARTITION_XML) $(OUTPUT_DIR)/rootfs/etc/init.d/
+	# Generate /etc/fw_env.config
+	${Q}python3 $(COMMON_TOOLS_PATH)/image_tool/mkcvipart.py $(FLASH_PARTITION_XML) $(OUTPUT_DIR)/rootfs/etc/ --fw_env
+
+$(OUTPUT_DIR)/rawimages:
+	${Q}mkdir -p $@
+
+ebf-br-rootfs-pack:export CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
+ebf-br-rootfs-pack:export CROSS_COMPILE_SDK=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_SDK))
+ebf-br-rootfs-pack:$(OUTPUT_DIR)/rawimages
+ebf-br-rootfs-pack:
+	$(call print_target)
+	${Q}printf '\033[1;36;40m  Striping rootfs \033[0m\n'
+ifeq (${FLASH_SIZE_SHRINK},y)
+	${Q}printf 'remove unneeded files'
+	${Q}${BUILD_PATH}/boards/${CHIP_ARCH_L}/${PROJECT_FULLNAME}/rootfs_script/clean_rootfs.sh $(ROOTFS_DIR)
+endif
+	${Q}find $(ROOTFS_DIR) -name "*.ko" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-unneeded {} \;
+	${Q}find $(ROOTFS_DIR) -name "*.so*" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} \;
+	${Q}find $(ROOTFS_DIR) -executable -type f ! -name "*.sh" ! -path "*etc*" ! -path "*.ko" -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} 2>/dev/null \;
+ifeq ($(STORAGE_TYPE),emmc)
+	${Q}dd if=/dev/zero of=$(OUTPUT_DIR)/rawimages/rootfs.ext4 bs=1k count=$(shell expr `du -s $(OUTPUT_DIR)/rootfs | cut -f1` + 4096)
+	${Q}mkfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs.ext4
+	${Q}mkdir -p $(OUTPUT_DIR)/rawimages/rootfs_tmp
+	$(Q)echo $(PASSWORD) | sudo -S mount $(OUTPUT_DIR)/rawimages/rootfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs_tmp
+	$(Q)echo $(PASSWORD) | sudo -S cp -rfd $(OUTPUT_DIR)/rootfs/* $(OUTPUT_DIR)/rawimages/rootfs_tmp
+	$(Q)echo $(PASSWORD) | sudo -S umount $(OUTPUT_DIR)/rawimages/rootfs_tmp
+	${Q}rm -rf $(OUTPUT_DIR)/rawimages/rootfs_tmp
+	${Q}mv $(OUTPUT_DIR)/rawimages/rootfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs.$(STORAGE_TYPE)
+else
+	ifeq ($(STORAGE_TYPE),spinor)
+		${Q}mksquashfs $(ROOTFS_DIR) $(OUTPUT_DIR)/rawimages/rootfs.sqsh -root-owned -comp xz
+	else
+		${Q}mksquashfs $(ROOTFS_DIR) $(OUTPUT_DIR)/rawimages/rootfs.sqsh -root-owned -comp xz -e mnt/cfg/*
+	endif
+	ifeq ($(STORAGE_TYPE),spinand)
+		${Q}python3 $(COMMON_TOOLS_PATH)/spinand_tool/mkubiimg.py --ubionly $(FLASH_PARTITION_XML) ROOTFS $(OUTPUT_DIR)/rawimages/rootfs.sqsh $(OUTPUT_DIR)/rawimages/rootfs.spinand -b $(CONFIG_NANDFLASH_BLOCKSIZE) -p $(CONFIG_NANDFLASH_PAGESIZE)
+		${Q}rm $(OUTPUT_DIR)/rawimages/rootfs.sqsh
+	else
+		${Q}mv $(OUTPUT_DIR)/rawimages/rootfs.sqsh $(OUTPUT_DIR)/rawimages/rootfs.$(STORAGE_TYPE)
+	endif
+endif
+define raw2cimg
+	${Q}python3 $(COMMON_TOOLS_PATH)/image_tool/raw2cimg.py $(OUTPUT_DIR)/rawimages/${1} $(OUTPUT_DIR) $(FLASH_PARTITION_XML)
+endef
 
 # BR_OVERLAY_DIR
 # BR_ROOTFS_RAWIMAGE
@@ -577,12 +654,20 @@ br-rootfs-pack:
 	${Q}$(MAKE) -j${NPROC} -C $(BR_DIR)
 	# ${Q}rm -rf $(BR_ROOTFS_DIR)/*
 	# copy rootfs to rawimg dir
-	${Q}cp $(TARGET_OUTPUT_DIR)/images/rootfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs_ext4.$(STORAGE_TYPE)
-	$(call raw2cimg ,rootfs_ext4.$(STORAGE_TYPE))
+	${Q}cp $(TARGET_OUTPUT_DIR)/images/rootfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs.$(STORAGE_TYPE)
+	$(call raw2cimg ,rootfs.$(STORAGE_TYPE))
 
 ifeq ($(CONFIG_BUILDROOT_FS),y)
 rootfs:br-rootfs-prepare
 rootfs:br-rootfs-pack
+else ifeq ($(CONFIG_EBF_BUILDROOT_FS),y)
+rootfs:ebf-br-rootfs-prepare
+rootfs:ebf-br-rootfs-pack
+rootfs:
+	$(call print_target)
+ifneq ($(STORAGE_TYPE), sd)
+	$(call raw2cimg ,rootfs.$(STORAGE_TYPE))
+endif
 else
 rootfs:rootfs-pack
 rootfs:

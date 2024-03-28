@@ -618,3 +618,12 @@ export TOP_DIR BUILD_PATH
 source "$TOP_DIR/build/common_functions.sh"
 
 print_usage
+
+if [ "$USER" != 'root' ]; then
+  echo "Building rootfs stage requires root privileges, please enter your passowrd:"
+  read PASSWORD
+  echo "The password you entered is $PASSWORD"
+  export PASSWORD=$PASSWORD
+else
+  PASSWORD=
+fi
