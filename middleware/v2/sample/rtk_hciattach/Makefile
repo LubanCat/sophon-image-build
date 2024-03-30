@@ -6,7 +6,9 @@ OPT_LEVEL += -march=rv64imafdcvxthead -mcmodel=medany -mabi=lp64d
 
 rtk_hciattach: $(OBJS)
 	$(CROSS_COMPILE)gcc -o rtk_hciattach $(OBJS) $(OPT_LEVEL)
+	@tar xf rtkbt-firmware.tar.gz
 	@cp -r rtkbt-firmware/lib  $(OUTPUT_DIR)/rootfs
+	@rm -rf rtkbt-firmware
 
 %.o: %.c
 	$(CROSS_COMPILE)gcc -c $< -o $@ $(CFLAGS)
