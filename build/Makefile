@@ -633,6 +633,34 @@ define raw2cimg
 	${Q}python3 $(COMMON_TOOLS_PATH)/image_tool/raw2cimg.py $(OUTPUT_DIR)/rawimages/${1} $(OUTPUT_DIR) $(FLASH_PARTITION_XML)
 endef
 
+#ROOTFS_UBUNTU_SIZE=$(shell du -s $(OUTPUT_DIR)/rootfs_ubuntu | awk '{print $$1}')
+#NEW_ROOTFS_UBUNTU_SIZE=$(shell expr $(ROOTFS_UBUNTU_SIZE) + 102400)
+
+# UBUNTU_OVERLAY_DIR
+# UBUNTU_ROOTFS_RAWIMAGE
+ebf-ubuntu-rootfs-prepare:export CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
+ebf-ubuntu-rootfs-prepare:export CROSS_COMPILE_SDK=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_SDK))
+ebf-ubuntu-rootfs-prepare:
+	$(call print_target)
+	# copy ko and mmf libs
+	${Q}mkdir -p $(UBUNTU_OVERLAY_DIR)/mnt/system
+	${Q}cp -arf ${SYSTEM_OUT_DIR}/* $(UBUNTU_OVERLAY_DIR)/mnt/system/
+	# strip
+	${Q}find $(UBUNTU_OVERLAY_DIR) -name "*.ko" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-unneeded {} \;
+	${Q}find $(UBUNTU_OVERLAY_DIR) -name "*.so*" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-all {} \;
+	${Q}find $(UBUNTU_OVERLAY_DIR) -executable -type f ! -name "*.sh" ! -path "*etc*" ! -path "*.ko" -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} 2>/dev/null \;
+
+ebf-ubuntu-rootfs-pack:export TARGET_OUTPUT_DIR=$(UBUNTU_DIR)/binary
+ebf-ubuntu-rootfs-pack:
+	$(call print_target)
+ifeq ("$(wildcard $(UBUNTU_DIR)/binary)", "")
+	${Q}echo No ubuntu file system
+endif
+	# ${Q}rm -rf $(BR_ROOTFS_DIR)/*
+	# copy rootfs to rawimg dir
+	${Q}cp $(UBUNTU_DIR)/ubuntu-rootfs.ext4 $(OUTPUT_DIR)/rawimages/rootfs.$(STORAGE_TYPE)
+	$(call raw2cimg ,rootfs.$(STORAGE_TYPE))
+
 # BR_OVERLAY_DIR
 # BR_ROOTFS_RAWIMAGE
 br-rootfs-prepare:export CROSS_COMPILE_KERNEL=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
@@ -663,11 +691,9 @@ rootfs:br-rootfs-pack
 else ifeq ($(CONFIG_EBF_BUILDROOT_FS),y)
 rootfs:ebf-br-rootfs-prepare
 rootfs:ebf-br-rootfs-pack
-rootfs:
-	$(call print_target)
-ifneq ($(STORAGE_TYPE), sd)
-	$(call raw2cimg ,rootfs.$(STORAGE_TYPE))
-endif
+else ifeq ($(CONFIG_EBF_UBUNTU_FS),y)
+rootfs:ebf-ubuntu-rootfs-prepare
+rootfs:ebf-ubuntu-rootfs-pack
 else
 rootfs:rootfs-pack
 rootfs:

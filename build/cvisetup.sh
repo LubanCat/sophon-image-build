@@ -555,6 +555,10 @@ function cvi_setup_env()
   export BR_OVERLAY_DIR=${BR_DIR}/board/cvitek/${CHIP_ARCH}/overlay
   export BR_DEFCONFIG=${BR_BOARD}_defconfig
   export BR_ROOTFS_DIR="$OUTPUT_DIR"/tmp-rootfs
+
+  # ubuntu config
+  export UBUNTU_DIR="$TOP_DIR"/ubuntu
+  export UBUNTU_OVERLAY_DIR=${UBUNTU_DIR}/overlay-sophgo
 }
 
 cvi_print_env()
