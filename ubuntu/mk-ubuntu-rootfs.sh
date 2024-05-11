@@ -34,10 +34,25 @@ fi
 sudo cp -rpf overlay/* $TARGET_ROOTFS_DIR/
 
 # overlay-firmware folder
-sudo cp -rpf overlay-firmware/* $TARGET_ROOTFS_DIR/
+#sudo cp -rpf overlay-firmware/* $TARGET_ROOTFS_DIR/
 
 # overlay-sophgo folder
-sudo rsync -av --ignore-existing overlay-sophgo/* $TARGET_ROOTFS_DIR/
+sudo cp -rpf overlay-sophgo/bin/* $TARGET_ROOTFS_DIR/bin/
+
+sudo cp -rpf overlay-sophgo/sbin/* $TARGET_ROOTFS_DIR/sbin/
+
+sudo cp -rpf overlay-sophgo/etc/* $TARGET_ROOTFS_DIR/etc/
+
+sudo cp -rpf overlay-sophgo/mnt/* $TARGET_ROOTFS_DIR/mnt/
+
+sudo cp -rfd overlay-sophgo/usr/lib/* $TARGET_ROOTFS_DIR/usr/lib/
+
+sudo cp -rfd overlay-sophgo/lib64 $TARGET_ROOTFS_DIR/
+
+sudo cp -rf overlay-sophgo/usr/bin/* $TARGET_ROOTFS_DIR/usr/bin/
+sudo cp -rf overlay-sophgo/usr/sbin/* $TARGET_ROOTFS_DIR/usr/sbin/
+#sudo cp -rfd overlay-sophgo/usr/lib64v_xthead $TARGET_ROOTFS_DIR/usr/
+sudo cp -rfd overlay-sophgo/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
 
 echo -e "\033[47;36m Change root.....................\033[0m"
 
@@ -63,6 +78,9 @@ if [ $MIRROR ]; then
 	echo "deb [arch=riscv64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
 fi
 
+echo 'export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/mnt/system/lib:/usr/lib64v0p7_xthead/lp64d/"' >> /etc/profile
+echo 'export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/mnt/system/usr/bin"' >> /etc/profile
+
 export LC_ALL=C.UTF-8
 
 apt-get update
@@ -76,22 +94,16 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 echo -e "\033[47;36m ---------- LubanCat -------- \033[0m"
 \${APT_INSTALL} u-boot-tools logrotate
 
-if [ "$TARGET" == "lite" ]; then
-    \${APT_INSTALL} bluez bluez-tools
-fi
 
 apt install -fy --allow-downgrades /boot/kerneldeb/* || true
-
-if [ "$TARGET" == "lite" ]; then
-    echo -e "\033[47;36m ----- Install Camera ----- - \033[0m"
-    \${APT_INSTALL} v4l-utils
-fi
 
 echo -e "\033[47;36m ------- Custom Script ------- \033[0m"
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 systemctl disable hostapd
 rm /lib/systemd/system/wpa_supplicant@.service
+
+systemctl enable sophgo.service
 
 echo -e "\033[47;36m  ---------- Clean ----------- \033[0m"
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
