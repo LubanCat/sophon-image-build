@@ -1,0 +1,1 @@
+../../build/output/sg2000_lubancat_riscv_buildroot_sd/cvi_board_memmap.h

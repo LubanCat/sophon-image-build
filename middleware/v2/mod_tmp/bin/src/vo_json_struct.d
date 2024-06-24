@@ -1,0 +1,35 @@
+/home/hyw/cv1813/LicheeRV-Nano-Build/middleware/v2/modules/bin/src/vo_json_struct.o: \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/middleware/v2/modules/bin/src/vo_json_struct.c \
+ include/vo_json_struct.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_comm_vo.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_type.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_common.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_defines.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_base.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm/types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm-generic/types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm-generic/int-ll64.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm/bitsperlong.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm-generic/bitsperlong.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/posix_types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/stddef.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm/posix_types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/asm-generic/posix_types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/linux_5.10/build/sg2000_lubancat_riscv_buildroot_sd/riscv/usr/include/linux/cvi_comm_video.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/middleware/v2/modules/isp/include/sg200x/cvi_json_struct_comm.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_arraylist.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_debug.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_c_version.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_object.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_inttypes.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_config.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_types.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_printbuf.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_object_iterator.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_pointer.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_tokener.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_json_util.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/install/soc_sg2000_lubancat_riscv_buildroot_sd/mw_musl_riscv64/cvitek_mw_sdk/include/cvi_json-c/cvi_linkhash.h \
+ /home/hyw/cv1813/LicheeRV-Nano-Build/middleware/v2/include/cvi_bin.h

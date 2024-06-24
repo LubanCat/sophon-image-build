@@ -1,0 +1,118 @@
+/dts-v1/;
+#include "soph_base_arm.dtsi"
+#include "soph_asic_bga.dtsi"
+#include "soph_asic_sd.dtsi"
+#include "soph_default_memmap.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/input/linux-event-codes.h>
+
+/ {
+
+	sd:cv-sd@4310000 {
+        min-frequency = <400000>; // 400Khz
+        //max-frequency = <50000000>; // 50Mhz
+        max-frequency = <25000000>; // 25Mhz
+        //max-frequency = <10000000>; // 10Mhz
+        //max-frequency = <5000000>; // 5Mhz
+	};
+
+	leds: leds {
+		status = "okay";
+		compatible = "gpio-leds";
+
+		sys_status_led: sys-status-led {
+			label = "sys_status_led";
+			linux,default-trigger = "heartbeat";
+			default-state = "on";
+			gpios = <&portb 11 GPIO_ACTIVE_LOW>;
+			};
+		};
+
+	wifi_pwr_en: wifi_pwr_en {
+		compatible = "regulator-fixed";
+		regulator-name = "wifi_pwr_en";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		gpio = <&porte 1 GPIO_ACTIVE_HIGH>;
+		regulator-always-on;
+		enable-active-high;
+	};
+
+	usb_host_en: usb_host_en {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_host_en";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		gpio = <&porte 13 GPIO_ACTIVE_HIGH>;
+		regulator-always-on;
+		enable-active-high;
+	};
+
+	sgpio_keys: sgpio-keys {
+		status = "okay";
+		compatible = "gpio-keys";
+
+			Key0{
+				label = "usr_key";
+				linux,code=<KEY_0>;
+				gpios = <&portb 4 IRQ_TYPE_LEVEL_LOW>;
+			};
+
+			Key1{
+				label = "pwr_key";
+				linux,code=<KEY_POWER>;
+				gpios = <&porte 8 IRQ_TYPE_LEVEL_LOW>;
+			};
+		};
+};
+
+&wifisd {
+	status = "okay";
+};
+
+&wifi_pin {
+	poweron-gpio = <&porta 4 GPIO_ACTIVE_HIGH>;
+	wakeup-gpio = <&porta 0 GPIO_ACTIVE_HIGH>;
+};
+
+&mipi_rx {
+	snsr-reset = <&porta 18 GPIO_ACTIVE_LOW>, <&porta 20 GPIO_ACTIVE_LOW>;
+};
+
+&i2c1 {
+	clock-frequency = <100000>;
+	status = "okay";
+};
+
+&i2c2 {
+	clock-frequency = <100000>;
+	status = "okay";
+};
+
+&i2c4 {
+	clock-frequency = <100000>;
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	gt911: gt911@14 {
+			compatible = "goodix,gt9xx";
+			reg = <0x14>;
+			status = "okay";
+			goodix,irq-gpio = <&portb 22 GPIO_ACTIVE_HIGH>;
+			goodix,rst-gpio = <&portb 12 GPIO_ACTIVE_LOW>;
+		};
+};
+
+&mipi_tx {
+	reset-gpio = <&portb 15 GPIO_ACTIVE_LOW>;
+	pwm-gpio = <&portb 19 GPIO_ACTIVE_HIGH>;
+	power-ct-gpio = <&porte 12 GPIO_ACTIVE_HIGH>;
+};
+
+&uart2 {
+	status = "okay";
+};
+

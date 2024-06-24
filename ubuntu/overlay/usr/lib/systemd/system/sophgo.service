@@ -1,0 +1,14 @@
+#start
+[Unit]
+Description=Setup sophgo platform environment
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/sophgo.sh
+
+[Install]
+WantedBy=sysinit.target
+#end
+
