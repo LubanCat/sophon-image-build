@@ -176,6 +176,8 @@
 #define CONFIG_G_DNL_PRODUCT_NUM 0x4ee0
 #endif
 
+#define FILE_SYSTEM_TYBE_EXT4 1
+
 #define CONFIG_IPADDR			192.168.0.3
 #define CONFIG_NETMASK			255.255.255.0
 #define CONFIG_GATEWAYIP		192.168.0.11
@@ -213,7 +215,11 @@
 	#elif defined(CONFIG_SD_BOOT)
 		#define ROOTARGS "root=" ROOTFS_DEV " rootwait rw"
 	#else
-		#define ROOTARGS "rootfstype=squashfs rootwait ro root=" ROOTFS_DEV
+		#if FILE_SYSTEM_TYBE_EXT4
+			#define ROOTARGS "rootfstype=ext4 rootwait rw root=" ROOTFS_DEV
+		#else
+			#define ROOTARGS "rootfstype=squashfs rootwait ro root=" ROOTFS_DEV
+		#endif
 	#endif
 
 	/* BOOTARGS */
