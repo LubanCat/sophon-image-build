@@ -61,7 +61,7 @@ if [ $ARCH == "riscv64" ]; then
     sudo cp -rf overlay-sophgo-riscv64/usr/bin/* $TARGET_ROOTFS_DIR/usr/bin/
     sudo cp -rf overlay-sophgo-riscv64/usr/sbin/* $TARGET_ROOTFS_DIR/usr/sbin/
     #sudo cp -rfd overlay-sophgo-riscv64/usr/lib64v_xthead $TARGET_ROOTFS_DIR/usr/
-    #sudo cp -rfd overlay-sophgo-riscv64/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
+    sudo cp -rfd overlay-sophgo-riscv64/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
     
 elif [ $ARCH == "armhf" ]; then
     # overlay-sophgo-arm folder
@@ -109,6 +109,9 @@ cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
 for u in \$(ls /home/); do
     chown -h -R \$u:\$u /home/\$u
 done
+
+mount -t proc proc /proc
+mount -t sysfs sys /sys
 
 if [ $MIRROR ]; then
 	mkdir -p /etc/apt/keyrings
@@ -164,6 +167,9 @@ rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/
 rm -rf /packages/
 rm -rf /boot/*
+
+umount /proc
+umount /sys
 
 EOF
 
