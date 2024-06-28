@@ -113,6 +113,10 @@ done
 mount -t proc proc /proc
 mount -t sysfs sys /sys
 
+if [ -e "/usr/lib64v0p7_xthead/lp64d/libc.so" ] ; then
+    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v_xthead.so.1
+fi
+
 if [ $MIRROR ]; then
 	mkdir -p /etc/apt/keyrings
 	curl -fsSL https://Embedfire.github.io/keyfile | gpg --dearmor -o /etc/apt/keyrings/embedfire.gpg
