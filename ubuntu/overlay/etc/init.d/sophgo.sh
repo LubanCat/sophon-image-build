@@ -39,10 +39,11 @@ EOF
     touch /boot/boot_dilatation_init
 fi
 
-if ! grep -q "mmcblk" /etc/fstab ; then
-
-    echo "/dev/${ROOT_DEV}p1  /boot  auto  defaults  0 2" >> /etc/fstab
-    reboot
+if blkid | grep -q "/dev/${ROOT_DEV}p1"; then
+    if ! grep -q "mmcblk" /etc/fstab ; then
+        echo "/dev/${ROOT_DEV}p1  /boot  auto  defaults  0 2" >> /etc/fstab
+        reboot
+    fi
 fi
 
 if [ -e "/mnt/system/ko/loadsystemko.sh" ] ; then
