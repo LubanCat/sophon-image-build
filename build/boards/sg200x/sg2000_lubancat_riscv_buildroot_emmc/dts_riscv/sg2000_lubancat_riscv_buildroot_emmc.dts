@@ -91,6 +91,11 @@
 	status = "okay";
 };
 
+&i2c3 {
+	clock-frequency = <100000>;
+	status = "okay";
+};
+
 &i2c4 {
 	clock-frequency = <100000>;
 	status = "okay";
@@ -110,6 +115,10 @@
 	reset-gpio = <&portb 15 GPIO_ACTIVE_LOW>;
 	pwm-gpio = <&portb 19 GPIO_ACTIVE_HIGH>;
 	power-ct-gpio = <&porte 12 GPIO_ACTIVE_HIGH>;
+};
+
+&uart1 {
+	status = "okay";
 };
 
 &uart2 {

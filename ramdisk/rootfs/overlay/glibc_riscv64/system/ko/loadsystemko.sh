@@ -29,6 +29,7 @@ insmod /mnt/system/ko/soph_ive.ko
 insmod /mnt/system/ko/3rd/8821cs.ko
 insmod /mnt/system/ko/3rd/gt9xx.ko
 insmod /mnt/system/ko/soph_saradc.ko
+insmod /mnt/system/ko/soph_pwm.ko
 
 echo 3 > /proc/sys/vm/drop_caches
 dmesg -n 4
