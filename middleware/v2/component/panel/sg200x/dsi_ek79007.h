@@ -19,39 +19,11 @@ struct combo_dev_cfg_s dev_cfg_ek79007_600x1024 = {
 		.vid_vsa_lines = 1,
 		.vid_vbp_lines = 23,
 		.vid_vfp_lines = 12,
-		.vid_active_lines = 620,
-		.vid_vsa_pos_polarity = false,
-		.vid_hsa_pos_polarity = true,
-	},
-	.pixel_clk = 53294, 
-
-/*	.sync_info = {
-		.vid_hsa_pixels = 10,
-		.vid_hbp_pixels = 160,
-		.vid_hfp_pixels = 160,
-		.vid_hline_pixels = 1024,
-		.vid_vsa_lines = 1,
-		.vid_vbp_lines = 23,
-		.vid_vfp_lines = 12,
 		.vid_active_lines = 600,
 		.vid_vsa_pos_polarity = false,
 		.vid_hsa_pos_polarity = true,
 	},
-	.pixel_clk = 51669,   */
-
-/*	.sync_info = {
-		.vid_hsa_pixels = 70,
-		.vid_hbp_pixels = 160,
-		.vid_hfp_pixels = 160,
-		.vid_hline_pixels = 1024,
-		.vid_vsa_lines = 10,
-		.vid_vbp_lines = 23,
-		.vid_vfp_lines = 15,
-		.vid_active_lines = 768,
-		.vid_vsa_pos_polarity = false,
-		.vid_hsa_pos_polarity = true,
-	},
-	.pixel_clk = 68975,   */
+	.pixel_clk = 51669,
 };
 
 const struct hs_settle_s hs_timing_cfg_ek79007_600x1024 = { .prepare = 6, .zero = 32, .trail = 1 };
