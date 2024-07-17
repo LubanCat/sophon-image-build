@@ -1383,6 +1383,7 @@ static s32 gtp_init_panel(struct goodix_ts_data *ts)
     else
     {
         GTP_ERROR("Failed to get sensor_id, No config sent!");
+        printk("gt9xxx: Initialization failed, Device not found!");
         ts->pnl_init_error = 1;
         return -1;
     }
