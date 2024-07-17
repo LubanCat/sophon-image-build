@@ -123,3 +123,10 @@
 &uart2 {
 	status = "okay";
 };
+
+#if (CVIMMAP_FRAMEBUFFER_SIZE > 0)
+&fb_reserved{
+	alloc-ranges = <0x0 CVIMMAP_FRAMEBUFFER_ADDR 0 0xfd2000>;
+	size = <0x0 0xfd2000>;
+};
+#endif
