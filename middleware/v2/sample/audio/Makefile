@@ -164,7 +164,7 @@ AEC_TEST_LDLIBS = $(LDLIBS)
 endif
 
 AUDIO_ELFFLAGS := $(ELFFLAGS)
-ELFFLAGS = $(filter-out -static, $(AUDIO_ELFFLAGS))
+#ELFFLAGS = $(filter-out -static, $(AUDIO_ELFFLAGS))
 
 .PHONY : clean all
 
