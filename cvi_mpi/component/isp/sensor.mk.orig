@@ -53,6 +53,7 @@ sensor-$(CONFIG_SENSOR_VIVO_MCS369Q)         += vivo_mcs369q
 sensor-$(CONFIG_SENSOR_VIVO_MM308M2)         += vivo_mm308m2
 else ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X CV181X CV182X SG200X))
 sensor-$(CONFIG_SENSOR_BRIGATES_BG0808)      += brigates_bg0808
+sensor-$(CONFIG_SENSOR_CHIPUP_XS9922B)       += chipup_xs9922b
 sensor-$(CONFIG_SENSOR_CVSENS_CV2003)        += cvsens_cv2003
 sensor-$(CONFIG_SENSOR_CVSENS_CV2003_1L)     += cvsens_cv2003_1L
 sensor-$(CONFIG_SENSOR_CVSENS_CV2003_1L_SLAVE)  += cvsens_cv2003_1L_slave
@@ -81,7 +82,6 @@ sensor-$(CONFIG_SENSOR_IMGDS_MIS2008)        += imgds_mis2008
 sensor-$(CONFIG_SENSOR_IMGDS_MIS2008_1L)     += imgds_mis2008_1L
 sensor-$(CONFIG_SENSOR_NEXTCHIP_N5)          += nextchip_n5
 sensor-$(CONFIG_SENSOR_NEXTCHIP_N6)          += nextchip_n6
-sensor-$(CONFIG_SENSOR_OV_OS02N10_1L)        += ov_os02n10_1L
 sensor-$(CONFIG_SENSOR_OV_OS04A10)           += ov_os04a10
 sensor-$(CONFIG_SENSOR_OV_OS04C10)           += ov_os04c10
 sensor-$(CONFIG_SENSOR_OV_OS08A20)           += ov_os08a20
@@ -110,6 +110,7 @@ sensor-$(CONFIG_SENSOR_SMS_SC531AI_2L)       += sms_sc531ai_2L
 sensor-$(CONFIG_SENSOR_SMS_SC3332)           += sms_sc3332
 sensor-$(CONFIG_SENSOR_SMS_SC3335)           += sms_sc3335
 sensor-$(CONFIG_SENSOR_SMS_SC3336)           += sms_sc3336
+sensor-$(CONFIG_SENSOR_SMS_SC3336_1L)        += sms_sc3336_1L
 sensor-$(CONFIG_SENSOR_SMS_SC3336P)          += sms_sc3336p
 sensor-$(CONFIG_SENSOR_SMS_SC2331_1L)        += sms_sc2331_1L
 sensor-$(CONFIG_SENSOR_SMS_SC2331_1L_SLAVE)  += sms_sc2331_1L_slave
@@ -147,6 +148,7 @@ sensor-$(CONFIG_SENSOR_SONY_IMX675)          += sony_imx675
 sensor-$(CONFIG_SENSOR_TECHPOINT_TP2825)     += techpoint_tp2825
 sensor-$(CONFIG_SENSOR_TECHPOINT_TP2863)     += techpoint_tp2863
 sensor-$(CONFIG_SENSOR_LONTIUM_LT6911)       += lontium_lt6911
+sensor-$(CONFIG_SENSOR_LONTIUM_LT7911)       += lontium_lt7911
 else
 $(error not supported chip arch cv180x/cv181x/cv182x/cv183x)
 endif

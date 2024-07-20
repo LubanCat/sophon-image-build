@@ -29,6 +29,9 @@ brigates_bg0808:
 byd_bf2253l:
 	$(call MAKE_SENSOR, ${@})
 
+chipup_xs9922b:
+	$(call MAKE_SENSOR, ${@})
+
 cvsens_cv2003:
 	$(call MAKE_SENSOR, ${@})
 
@@ -108,9 +111,6 @@ nextchip_n5:
 	$(call MAKE_SENSOR, ${@})
 
 nextchip_n6:
-	$(call MAKE_SENSOR, ${@})
-
-ov_os02n10_1L:
 	$(call MAKE_SENSOR, ${@})
 
 ov_os04a10:
@@ -195,6 +195,9 @@ sms_sc3335:
 	$(call MAKE_SENSOR, ${@})
 
 sms_sc3336:
+	$(call MAKE_SENSOR, ${@})
+
+sms_sc3336_1L:
 	$(call MAKE_SENSOR, ${@})
 
 sms_sc3336p:
@@ -306,6 +309,9 @@ techpoint_tp2863:
 	$(call MAKE_SENSOR, ${@})
 
 lontium_lt6911:
+	$(call MAKE_SENSOR, ${@})
+
+lontium_lt7911:
 	$(call MAKE_SENSOR, ${@})
 
 all_sensor:
