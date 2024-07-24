@@ -60,6 +60,9 @@ if [ -e "/etc/run_usb.sh" ] ; then
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/system/lib
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64v0p7_xthead/lp64d
 
+    #host
+    #echo host > /proc/cviusb/otg_role
+
     #rndis
     /etc/run_usb.sh probe rndis
     echo "root" | su -c '/etc/run_usb.sh start' root
@@ -70,5 +73,5 @@ if [ -e "/etc/run_usb.sh" ] ; then
     #echo "root" | su -c '/etc/run_usb.sh start' root
 fi
 
-# sync system time
-hwclock --systohc
+# set the system time from the RTC
+#sudo /bin/busybox hwclock -s 
