@@ -152,6 +152,21 @@ rm /lib/systemd/system/wpa_supplicant@.service
 
 systemctl enable sophgo.service
 
+systemctl disable apt-daily-upgrade.timer
+systemctl disable apt-daily.timer
+systemctl disable apt-daily.service
+systemctl disable apt-daily-upgrade.service
+
+systemctl disable networkd-dispatcher.service
+
+sudo systemctl mask alsa-restore.service
+sudo systemctl mask modprobe@drm.service
+sudo systemctl mask modprobe@configfs.service
+sudo systemctl mask modprobe@fuse.service
+sudo systemctl mask modprobe@efi_pstore.service
+
+sed -i 's/^ProtectHostname=yes/# ProtectHostname=yes/' /usr/lib/systemd/system/systemd-udevd.service
+
 echo -e "\033[47;36m  ---------- Clean ----------- \033[0m"
 if [ -e "/usr/lib/arm-linux-gnueabihf/dri" ] ;
 then
