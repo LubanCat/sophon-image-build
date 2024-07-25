@@ -73,5 +73,30 @@ if [ -e "/etc/run_usb.sh" ] ; then
     #echo "root" | su -c '/etc/run_usb.sh start' root
 fi
 
+if [ ! -e /boot/boot_mac_eth0 ]; then
+	mac_address_eth0=$(ifconfig eth0 | grep ether | awk '{ print $2 }')
+	echo "$mac_address_eth0" > /boot/boot_mac_eth0
+else
+	sudo ifconfig eth0 down
+	mac_address_eth0=$(cat /boot/boot_mac_eth0)
+	sudo ifconfig eth0 hw ether $mac_address_eth0
+	sudo ifconfig eth0 up
+fi
+
+if ifconfig usb0 > /dev/null 2>&1; then
+	if [ ! -e /boot/boot_mac_usb0 ]
+	then
+		mac_address_rndis=$(ifconfig usb0 | grep ether | awk '{ print $2 }')
+		echo "$mac_address_rndis" > /boot/boot_mac_usb0
+	else
+		sudo ifconfig usb0 down
+		mac_address_rndis=$(cat /boot/boot_mac_usb0)
+		sudo ifconfig usb0 hw ether $mac_address_rndis
+		sudo ifconfig usb0 up
+	fi
+fi
+
+systemctl restart NetworkManager
+
 # set the system time from the RTC
 #sudo /bin/busybox hwclock -s 
