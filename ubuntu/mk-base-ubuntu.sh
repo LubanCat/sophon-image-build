@@ -69,9 +69,9 @@ elif [ "$TARGET" == "lite" ]; then
 fi
 
 \${APT_INSTALL} net-tools openssh-server ifupdown alsa-utils ntp network-manager inetutils-ping libssl-dev \
-    vsftpd tcpdump can-utils i2c-tools strace vim iperf3 ethtool netplan.io toilet htop pciutils usbutils curl \
+    vsftpd tcpdump i2c-tools strace vim iperf3 ethtool netplan.io toilet htop pciutils usbutils curl \
     whiptail gnupg bc gdisk parted sox libsox-fmt-all gpiod libgpiod-dev \
-    u-boot-tools bsdmainutils file fdisk
+    u-boot-tools bsdmainutils file fdisk bluez
 
 HOST=lubancat
 
