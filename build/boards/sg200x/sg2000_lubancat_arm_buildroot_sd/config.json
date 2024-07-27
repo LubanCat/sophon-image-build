@@ -4,5 +4,5 @@
         "ddr3_2133_x16",
         "ddr_auto_x16"
     ],
-    "board_information": "CA53 + SPINOR 16MB + BGA SIP 128MB"
+    "board_information": "CA53 + DDR 512MB"
 }
