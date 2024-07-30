@@ -13,7 +13,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 #/etc/init.d/boot_init.sh
 
-if [ ! -e "/boot/boot_dilatation_init" ] ; then
+if [ ! -e "/boot/boot_init" ] ; then
 	ROOT_PART=$(cat /proc/cmdline | sed 's/ /\n/g' | grep root= | awk -F 'root=' '{print $2}'| awk -F '/' '{print $3}')
 
 	ROOT_DEV=${ROOT_PART%p*}
@@ -26,24 +26,39 @@ if [ ! -e "/boot/boot_dilatation_init" ] ; then
     echo "$ROOT_PART is not the last partition. Don't know how to expand"
   fi
 
-  parted  /dev/${ROOT_DEV} <<EOF
+    #/*******************sd启动boot分区设置自动挂载*******************/
+    if blkid | grep -q "/dev/${ROOT_DEV}p1"; then
+        if ! grep -q "${ROOT_DEV}p1" /etc/fstab ; then
+            echo "/dev/${ROOT_DEV}p1  /boot  auto  defaults  0 2" >> /etc/fstab
+        fi
+        mount /dev/${ROOT_DEV}p1 /boot
+    fi
+
+    #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
+    if blkid | grep -q "/dev/${ROOT_DEV}p7"; then
+        if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
+            mkfs.ext4 "/dev/${ROOT_DEV}p7"
+            echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
+        fi
+    fi
+
+    #/*******************扩容*******************/
+    if [ ! -e "/boot/boot_dilatation_init" ] ; then
+        if blkid | grep -q "boot"; then
+            parted  /dev/${ROOT_DEV} <<EOF
 unit GB print
 resizepart ${LAST_PART_NUM}
 -1
 yes
 quit
 EOF
-
-    resize2fs /dev/$ROOT_PART
-
-    touch /boot/boot_dilatation_init
-fi
-
-if blkid | grep -q "/dev/${ROOT_DEV}p1"; then
-    if ! grep -q "mmcblk" /etc/fstab ; then
-        echo "/dev/${ROOT_DEV}p1  /boot  auto  defaults  0 2" >> /etc/fstab
-        reboot
+        resize2fs /dev/$ROOT_PART
+        touch /boot/boot_dilatation_init
+        fi
     fi
+
+    touch /boot/boot_init
+    reboot  
 fi
 
 if [ -e "/mnt/system/ko/loadsystemko.sh" ] ; then
