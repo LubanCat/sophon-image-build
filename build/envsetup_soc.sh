@@ -17,7 +17,7 @@ function _build_default_env()
   COMPRESSOR=${COMPRESSOR:-xz}
   COMPRESSOR_UBOOT=${COMPRESSOR_UBOOT:-lzma} # or none to disable
   MULTI_PROCESS_SUPPORT=${MULTI_PROCESS_SUPPORT:-0}
-  TPU_REL=${TPU_REL:-0} # TPU release build
+  TPU_REL=${TPU_REL:-1} # TPU release build
   SENSOR=${SENSOR:-sony_imx327}
 }
 

@@ -37,7 +37,11 @@ else
 fi
 BUILD_PATH=$TPU_SDK_BUILD_PATH
 
+if [[ "$CHIP_ARCH" == "SG200X" ]];then
+CHIP_ID="CV181X"
+else
 CHIP_ID="${CHIP_ARCH,,}"
+fi
 echo "CHIP_ID=$CHIP_ID"
 
 # build host flatbuffers
