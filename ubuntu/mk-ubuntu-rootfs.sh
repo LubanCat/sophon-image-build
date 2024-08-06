@@ -63,6 +63,7 @@ if [ $ARCH == "riscv64" ]; then
     sudo cp -rf overlay-sophgo-riscv64/usr/sbin/* $TARGET_ROOTFS_DIR/usr/sbin/
     #sudo cp -rfd overlay-sophgo-riscv64/usr/lib64v_xthead $TARGET_ROOTFS_DIR/usr/
     sudo cp -rfd overlay-sophgo-riscv64/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
+    sudo cp -rfd overlay-sophgo-riscv64/lib64v0p7_xthead $TARGET_ROOTFS_DIR/
     
 elif [ $ARCH == "armhf" ]; then
     # overlay-sophgo-arm folder
@@ -115,6 +116,7 @@ mount -t proc proc /proc
 mount -t sysfs sys /sys
 
 if [ -e "/usr/lib64v0p7_xthead/lp64d/libc.so" ] ; then
+    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so ld-musl-riscv64v0p7_xthead.so.1
     ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v_xthead.so.1
 fi
 
@@ -125,7 +127,7 @@ if [ $MIRROR ]; then
 	echo "deb [arch=riscv64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
 fi
 
-echo 'export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/mnt/system/lib:/usr/lib64v0p7_xthead/lp64d/"' >> /etc/profile
+echo 'export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/mnt/system/lib:/usr/lib64v0p7_xthead/lp64d/:/lib64v0p7_xthead/lp64d"' >> /etc/profile
 echo 'export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/mnt/system/usr/bin"' >> /etc/profile
 
 export LC_ALL=C.UTF-8
