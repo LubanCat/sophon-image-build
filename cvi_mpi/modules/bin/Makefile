@@ -8,9 +8,7 @@ SDIR = $(PWD)/src
 SRCS := $(wildcard $(SDIR)/*.c)
 
 # 3rdparty lib
-OSS_MODULE_INSTALL_PATH = $(OUTPUT_DIR)/mw_$(SDK_VER)/cvitek_mw_sdk
-OSS_MODULE_INCLUDE_PATH = $(OSS_MODULE_INSTALL_PATH)/include
-OSS_MODULE_LIB_PATH = $(OSS_MODULE_INSTALL_PATH)/lib
+TRD_INCLUDE_PATH = $(PWD)/3rd_lib/include
 
 ifneq ($(findstring $(CHIP_ARCH), MARS PHOBOS CV181X CV180X SG200X),)
 ISP_BIN_DIR = $(MW_PATH)/modules/isp/$(shell echo $(CVIARCH) | tr A-Z a-z)/isp_bin/inc
@@ -20,7 +18,7 @@ endif
 
 SRCS_ASM = $(wildcard $(SDIR)/*.S)
 INCS = -I$(MW_INC) -I$(KERNEL_INC) -I$(SYS_INC) -I$(VPSS_INC) -I$(ISP_INC) -Iinclude
-INCS += -I$(SYS_INC) -I$(OSS_MODULE_INCLUDE_PATH)/cvi_json-c -I$(ISP_BIN_DIR) -I$(OSS_MODULE_INCLUDE_PATH)/cvi_miniz
+INCS += -I$(SYS_INC) -I$(TRD_INCLUDE_PATH)/cvi_json-c -I$(ISP_BIN_DIR) -I$(TRD_INCLUDE_PATH)/cvi_miniz
 OBJS = $(SRCS:.c=.o)
 OBJS_ASM = $(SRCS_ASM:.S=.o)
 DEPS = $(SRCS:.c=.d)
@@ -37,34 +35,9 @@ ifeq ($(MULTI_PROCESS_SUPPORT), 1)
 EXTRA_CFLAGS += -DRPC_MULTI_PROCESS
 endif
 
-.PHONY : clean all prepare_3rdparty_module
-all : prepare_3rdparty_module $(TARGET_A) $(TARGET_SO)
+.PHONY : clean all
+all : $(TARGET_A) $(TARGET_SO)
 
-OSS_BUILD_SRCIPT = $(TOP_DIR)/oss/run_build.sh
-OSS_TARBALL_PATH = $(OUTPUT_DIR)/tpu_$(SDK_VER)/third_party
-OSS_TARBALL_CVI_JSONC_PATH = $(OSS_TARBALL_PATH)/cvi-json-c.tar.gz
-OSS_TARBALL_CVI_MINIZ_PATH = $(OSS_TARBALL_PATH)/cvi-miniz.tar.gz
-OSS_MODULE_LIB_CVI_JSONC_CHECK_PATH = $(OSS_MODULE_LIB_PATH)/libcvi_json-c*
-OSS_MODULE_LIB_CVI_MINIZ_CHECK_PATH = $(OSS_MODULE_LIB_PATH)/libcvi_miniz*
-
-prepare_3rdparty_module:
-# cvi_json-c
-ifeq "$(wildcard $(OSS_MODULE_LIB_CVI_JSONC_CHECK_PATH))" ""
-ifeq "$(wildcard $(OSS_TARBALL_CVI_JSONC_PATH))" ""
-	$(error libcvi_json-c source tarball not exist, please run build_3rd_party first!!)
-endif
-	@mkdir -p $(OSS_MODULE_INSTALL_PATH)
-	@$(OSS_BUILD_SRCIPT) -n cvi-json-c -e -t "$(OSS_TARBALL_PATH)" -i "$(OSS_MODULE_INSTALL_PATH)"
-endif
-
-# cvi_miniz
-ifeq "$(wildcard $(OSS_MODULE_LIB_CVI_MINIZ_CHECK_PATH))" ""
-ifeq "$(wildcard $(OSS_TARBALL_CVI_MINIZ_PATH))" ""
-	$(error libcvi_miniz source tarball not exist, please run build_3rd_party first!!)
-endif
-	@mkdir -p $(OSS_MODULE_INSTALL_PATH)
-	@$(OSS_BUILD_SRCIPT) -n cvi-miniz -e -t "$(OSS_TARBALL_PATH)" -i "$(OSS_MODULE_INSTALL_PATH)"
-endif
 
 $(SDIR)/%.o: $(SDIR)/%.c
 	@$(CC) $(DEPFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) -o $@ -c $<
@@ -86,6 +59,5 @@ $(TARGET_SO): $(OBJS) $(OBJS_ASM)
 
 clean:
 	@rm -f $(OBJS) $(OBJS_ASM) $(DEPS) $(TARGET_A) $(TARGET_SO)
-	@rm -rf $(OSS_MODULE_INSTALL_PATH)
 
 -include $(DEPS)

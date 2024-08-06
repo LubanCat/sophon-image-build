@@ -28,31 +28,6 @@ extern "C" {
 #define VB_MAX_COMM_POOLS       (16)
 #define VB_POOL_MAX_BLK         (64)
 
-/* user ID for VB */
-#define VB_MAX_USER VB_UID_BUTT
-
-typedef enum _VB_UID_E {
-	VB_UID_VI = 0,
-	VB_UID_VO = 1,
-	VB_UID_VPSS = 2,
-	VB_UID_VENC = 3,
-	VB_UID_VDEC = 4,
-	VB_UID_H265E = 5,
-	VB_UID_H264E = 6,
-	VB_UID_JPEGE = 7,
-	VB_UID_H264D = 8,
-	VB_UID_JPEGD = 9,
-	VB_UID_DIS = 10,
-	VB_UID_USER = 11,
-	VB_UID_AI = 12,
-	VB_UID_AENC = 13,
-	VB_UID_RC = 14,
-	VB_UID_VFMW = 15,
-	VB_UID_GDC = 16,
-	VB_UID_BUTT,
-
-} VB_UID_E;
-
 /* Generall common pool use this owner id, module common pool use VB_UID as owner id */
 #define POOL_OWNER_COMMON -1
 
@@ -115,16 +90,6 @@ typedef struct _VB_CONFIG_S {
 	CVI_U32 u32MaxPoolCnt;
 	VB_POOL_CONFIG_S astCommPool[VB_MAX_COMM_POOLS];
 } VB_CONFIG_S;
-
-#define VB_SUPPLEMENT_JPEG_MASK 0x1
-#define VB_SUPPLEMENT_ISPINFO_MASK 0x2
-#define VB_SUPPLEMENT_MOTION_DATA_MASK 0x4
-#define VB_SUPPLEMENT_DNG_MASK 0x8
-
-typedef struct _VB_SUPPLEMENT_CONFIG_S {
-	CVI_U32 u32SupplementConfig;
-} VB_SUPPLEMENT_CONFIG_S;
-
 
 #ifdef __cplusplus
 #if __cplusplus

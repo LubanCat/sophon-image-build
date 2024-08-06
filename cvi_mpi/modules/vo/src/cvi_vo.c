@@ -15,7 +15,7 @@
 #include <linux/cvi_comm_vo.h>
 #include "cvi_buffer.h"
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vo.h"
 #include "cvi_gdc.h"
 #include "cvi_vb.h"

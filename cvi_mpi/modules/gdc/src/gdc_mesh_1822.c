@@ -13,7 +13,7 @@
 #include "linux/cvi_comm_video.h"
 #endif
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vpss.h"
 #include "cvi_sys.h"
 #include "cvi_gdc.h"

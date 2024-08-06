@@ -1,6 +1,6 @@
 #include <linux/cvi_comm_vo.h>
 #include "vo_bin.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_bin.h"
 #include "cvi_vo.h"
 #include "vo_json_struct.h"

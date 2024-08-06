@@ -19,7 +19,7 @@
 #define  tiger_bmp  "res/tiger.bmp"
 #define  tiger_8bitmode "res/tiger_8bitmode.bmp"
 #define  test_bmp tiger_bmp
-#define IsASCII(a)				(((a) >= 0x00 && (a) <= 0x7F) ? 1 : 0)
+#define IsASCII(a)				(((a) <= 0x7F) ? 1 : 0)
 #define BYTE_BITS				8
 #define NOASCII_CHARACTER_BYTES	2
 #define OSD_LIB_FONT_W			24

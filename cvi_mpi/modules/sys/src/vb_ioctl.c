@@ -135,11 +135,6 @@ int vb_ioctl_print_pool(int fd, VB_POOL poolId)
 	VB_CTRL_S_VALUE(fd, poolId, VB_IOCTL_PRINT_POOL);
 }
 
-int vb_ioctl_unit_test(int fd, CVI_U32 op)
-{
-	VB_CTRL_S_VALUE(fd, op, VB_IOCTL_UNIT_TEST);
-}
-
 int vb_ioctl_get_vb_init(int fd, CVI_U32 *val)
 {
 	VB_CTRL_G_VALUE(fd, val, VB_IOCTL_GET_VB_INIT);

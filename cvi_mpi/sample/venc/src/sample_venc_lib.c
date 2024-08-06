@@ -14,9 +14,6 @@
 #include "sample_venc_lib.h"
 #include <limits.h>
 
-#include <linux/vi_uapi.h>
-#include <linux/vi_isp.h>
-#include <linux/vi_tun_cfg.h>
 #include <sys/ioctl.h>
 
 #define MAX_VENC_OPTIONS	128
@@ -1141,23 +1138,6 @@ VI_UT_CTX vi_ut_ctx;
 CVI_U64 plane_0_phy_addr;
 CVI_U64 plane_1_phy_addr;
 
-int S_CTRL_VALUE(int _fd, int _cfg, int _ioctl)
-{
-	struct vi_ext_control ec1;
-
-	memset(&ec1, 0, sizeof(ec1));
-	ec1.id = _ioctl;
-	ec1.value = _cfg;
-
-	if (ioctl(_fd, VI_IOC_S_CTRL, &ec1) < 0) {
-		fprintf(stderr, "VI_IOC_S_CTRL - %s NG\n", __func__);
-
-		return -1;
-	}
-
-	return 0;
-}
-
 CVI_S32 vi_ut_plat_sys_init(void)
 {
 	CVI_S32	s32Ret;
@@ -1220,21 +1200,6 @@ CVI_S32 vi_ut_plat_sys_init(void)
 	}
 
 	return s32Ret;
-}
-
-int _vi_set_hdr(void)
-{
-	return S_CTRL_VALUE(vi_fd, vi_ut_ctx.is_hdr_enable, VI_IOCTL_HDR);
-}
-
-int _vi_set_be_online(void)
-{
-	return S_CTRL_VALUE(vi_fd, vi_ut_ctx.is_be_online, VI_IOCTL_BE_ONLINE);
-}
-
-int _vi_set_post_online(void)
-{
-	return S_CTRL_VALUE(vi_fd, vi_ut_ctx.is_post_online, VI_IOCTL_ONLINE);
 }
 
 CVI_S32 _vpss_config_online_mode(sampleVenc *psv, CVI_BOOL bWrapEn)

@@ -172,13 +172,6 @@ int vi_set_clk(int fd, CVI_BOOL clk_on)
 	S_CTRL_VALUE(fd, clk_on, VI_IOCTL_CLK_CTRL);
 }
 
-#ifdef ARCH_CV182X
-int vi_set_rgbir(int fd, CVI_BOOL is_rgbir)
-{
-	S_CTRL_VALUE(fd, is_rgbir, VI_IOCTL_RGBIR);
-}
-#endif
-
 int vi_get_ip_dump_list(int fd, struct ip_info *ip_info_list)
 {
 	G_CTRL_PTR(fd, ip_info_list, VI_IOCTL_GET_IP_INFO);

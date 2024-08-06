@@ -13,7 +13,7 @@
 #include <linux/vpss_uapi.h>
 
 #include "cvi_buffer.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_sys.h"
 #include "cvi_vb.h"
 

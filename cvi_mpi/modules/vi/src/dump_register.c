@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vi.h"
 #include "cvi_sys.h"
 #include "vi_ioctl.h"

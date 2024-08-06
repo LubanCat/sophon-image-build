@@ -73,20 +73,6 @@ CVI_S32 CVI_VDEC_StopRecvStream(VDEC_CHN VdChn);
  */
 CVI_S32 CVI_VDEC_QueryStatus(VDEC_CHN VdChn, VDEC_CHN_STATUS_S *pstStatus);
 
-/* Get File Descriptor
- *
- * @param VdChn(In): channel number
- * @return Error code (0 if successful)
- */
-CVI_S32 CVI_VDEC_GetFd(VDEC_CHN VdChn);
-
-/* Close File Descriptor
- *
- * @param VdChn(In): channel number
- * @return Error code (0 if successful)
- */
-CVI_S32 CVI_VDEC_CloseFd(VDEC_CHN VdChn);
-
 /* Reset Channel
  *
  * @param VdChn(In): channel number

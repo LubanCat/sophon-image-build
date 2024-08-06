@@ -14,6 +14,10 @@
 #include <unistd.h>
 #include <sys/prctl.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
 
 #include <linux/cvi_defines.h>
 #include "sample_comm.h"
@@ -23,6 +27,7 @@
 #include "cvi_sns_ctrl.h"
 #include "cvi_ae.h"
 #include "cvi_isp.h"
+#include "motor_ioctl.h"//it depend cb how to design
 
 #ifdef SUPPORT_ISP_PQTOOL
 #include <dlfcn.h>
@@ -31,6 +36,8 @@ static void *g_ISPDHandle;
 #define ISPD_LIBNAME "libcvi_ispd.so"
 #define ISPD_CONNECT_PORT 5566
 #endif
+
+#define DEVICE_NAME "/dev/cvi-motor"
 
 static pthread_t g_IspPid[VI_MAX_DEV_NUM];
 static CVI_U32 g_au32IspSnsId[ISP_MAX_DEV_NUM] = { 0, 1, 2, 4, 5};
@@ -41,6 +48,307 @@ SAMPLE_SNS_TYPE_E g_enSnsType[VI_MAX_DEV_NUM] = {
 };
 
 static ISP_INIT_ATTR_S gstInitAttr[ISP_MAX_DEV_NUM];
+static int motor_fd = -1;
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusInCb(VI_PIPE ViPipe, CVI_U8 step)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+		reg.val = 0;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_IN, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus In err\n");
+			return CVI_FAILURE;
+		}
+
+		reg.val = step;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_IN, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus In err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement cb func\n");
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusOutCb(VI_PIPE ViPipe, CVI_U8 step)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+		reg.val = 0;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_OUT, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Out err\n");
+			return CVI_FAILURE;
+		}
+
+		reg.val = step;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_OUT, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Out err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomSpeedCb(VI_PIPE ViPipe, CVI_U8 speed)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+
+		reg.val = speed;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_SET_ZOOM_SPEED, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom Speed err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusSpeedCb(VI_PIPE ViPipe, CVI_U8 speed)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+
+		reg.val = speed;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_SET_FOCUS_SPEED, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Speed err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomInCb(VI_PIPE ViPipe, CVI_U8 step)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+		reg.val = 0;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_IN, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom In err\n");
+			return CVI_FAILURE;
+		}
+
+		reg.val = step;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_IN, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom In err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomOutCb(VI_PIPE ViPipe, CVI_U8 step)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+		reg.val = 0;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_OUT, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Out err\n");
+			return CVI_FAILURE;
+		}
+
+		reg.val = step;
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_OUT, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom Out err\n");
+			return CVI_FAILURE;
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomAndFocusCb(VI_PIPE ViPipe, AF_DIRECTION eDir, CVI_U8 zoomStep, CVI_U8 focusStep)
+{
+	struct cvi_motor_regval reg;
+
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+
+		if (eDir == AF_DIR_FAR) {
+			printf("test2 %d %d\n", zoomStep, focusStep);
+			reg.val = zoomStep;
+
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_IN, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom In err\n");
+				return CVI_FAILURE;
+			}
+
+			reg.val = focusStep;
+
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_IN, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Out err\n");
+				return CVI_FAILURE;
+			}
+
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+				return CVI_FAILURE;
+			}
+		} else {
+			reg.val = zoomStep;
+			printf("test2 %d %d\n", zoomStep, focusStep);
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_ZOOM_OUT, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Zoom Out err\n");
+				return CVI_FAILURE;
+			}
+
+			reg.val = focusStep;
+
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_FOCUS_OUT, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Focus Out err\n");
+				return CVI_FAILURE;
+			}
+
+			if (ioctl(motor_fd, CVI_MOTOR_IOC_APPLY, &reg) < 0) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "Apply err\n");
+				return CVI_FAILURE;
+			}
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_COMM_ISP_Motor_GetLensInfoCb(VI_PIPE ViPipe, ISP_AF_LEN_INFO_S *info)
+{
+	if (ViPipe == 0) {
+		if (motor_fd == -1) {
+			motor_fd = open(DEVICE_NAME, O_RDWR);
+			if (motor_fd == -1) {
+				CVI_TRACE_LOG(CVI_DBG_ERR, "open motor device:%s err\n", DEVICE_NAME);
+				return CVI_FAILURE;
+			}
+		}
+
+		if (ioctl(motor_fd, CVI_MOTOR_IOC_GET_INFO, info) < 0) {
+			CVI_TRACE_LOG(CVI_DBG_ERR, "Get Info err\n");
+			return CVI_FAILURE;
+		}
+	} else {
+		CVI_TRACE_LOG(CVI_DBG_ERR, "Not implement %d cb func\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	return CVI_SUCCESS;
+}
 
 CVI_S32 SAMPLE_COMM_ISP_GetIspAttrBySns(SAMPLE_SNS_TYPE_E enSnsType, ISP_PUB_ATTR_S *pstPubAttr)
 {
@@ -267,9 +575,25 @@ CVI_S32 SAMPLE_COMM_ISP_Aflib_Callback(ISP_DEV IspDev)
 	ALG_LIB_S stAfLib;
 	CVI_S32 s32Ret = 0;
 
+	//register af lib
 	stAfLib.s32Id = IspDev;
 	strncpy(stAfLib.acLibName, CVI_AF_LIB_NAME, sizeof(stAfLib.acLibName));
 	s32Ret = CVI_AF_Register(IspDev, &stAfLib);
+
+	//register control motor cb func if you use sophgo af algo
+	//you can implement control motor cb func by yourself
+	//use sophgo cb func for example
+	ISP_AF_MOTOR_FUNC_S motorCb;
+
+	motorCb.pfn_af_set_zoom_in = SAMPLE_COMM_ISP_Motor_SetZoomInCb;
+	motorCb.pfn_af_set_zoom_out = SAMPLE_COMM_ISP_Motor_SetZoomOutCb;
+	motorCb.pfn_af_set_zoom_speed = SAMPLE_COMM_ISP_Motor_SetZoomSpeedCb;
+	motorCb.pfn_af_set_focus_in = SAMPLE_COMM_ISP_Motor_SetFocusInCb;
+	motorCb.pfn_af_set_focus_out = SAMPLE_COMM_ISP_Motor_SetFocusOutCb;
+	motorCb.pfn_af_set_focus_speed = SAMPLE_COMM_ISP_Motor_SetFocusSpeedCb;
+	motorCb.pfn_af_set_zoom_focus = SAMPLE_COMM_ISP_Motor_SetZoomAndFocusCb;
+	motorCb.pfn_af_get_len_info = SAMPLE_COMM_ISP_Motor_GetLensInfoCb;
+	CVI_AF_MOTOR_Register(IspDev, &motorCb);
 
 	if (s32Ret != CVI_SUCCESS) {
 		printf("AF Algo register failed!, error: %d\n", s32Ret);
@@ -282,6 +606,10 @@ CVI_S32 SAMPLE_COMM_ISP_Aflib_UnCallback(ISP_DEV IspDev)
 {
 	CVI_S32 s32Ret = 0;
 	ALG_LIB_S stAfLib;
+
+	ISP_AF_MOTOR_FUNC_S motorCb;
+
+	CVI_AF_MOTOR_UnRegister(IspDev, &motorCb);
 
 	stAfLib.s32Id = IspDev;
 	strncpy(stAfLib.acLibName, CVI_AF_LIB_NAME, sizeof(stAfLib.acLibName));

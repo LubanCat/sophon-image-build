@@ -36,10 +36,6 @@ module: prepare 3rdparty
 
 prepare:
 	@if [ -d mod_tmp ]; then mv mod_tmp modules; fi;
-ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X CV181X CV182X SG200X))
-else
-	@cp $(CHIP_DIR)/cvi_defines.h $(MW_INC)
-endif
 	@mkdir -p include/isp
 	@cp -rf modules/isp/include/* include/isp
 ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X CV180X SG200X))

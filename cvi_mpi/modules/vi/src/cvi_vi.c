@@ -9,7 +9,7 @@
 #include <inttypes.h>
 
 #include "cvi_buffer.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vi.h"
 #include "cvi_vb.h"
 #include "cvi_sys.h"
@@ -1859,21 +1859,7 @@ CVI_S32 CVI_VI_DumpHwRegisterToFile(VI_PIPE ViPipe, FILE *fp, VI_DUMP_REGISTER_T
 
 	CVI_SYS_GetChipId(&chip);
 
-#if defined(ARCH_CV182X) || defined(ARCH_CV183X)
-	if (IS_CHIP_CV182X(chip)) {
-		s32Ret = dump_register_182x(ViPipe, fp, pstRegTbl);
-		if (s32Ret != CVI_SUCCESS) {
-			CVI_TRACE_VI(CVI_DBG_ERR, "dump_register_182x fail\n");
-			return s32Ret;
-		}
-	} else if (IS_CHIP_CV183X(chip)) {
-		s32Ret = dump_register_183x(ViPipe, fp, pstRegTbl);
-		if (s32Ret != CVI_SUCCESS) {
-			CVI_TRACE_VI(CVI_DBG_ERR, "dump_register_183x fail\n");
-			return s32Ret;
-		}
-	}
-#elif defined(__CV181X__) || defined(__CV180X__)
+#if defined(__CV181X__) || defined(__CV180X__)
 	if (IS_CHIP_CV181X(chip) || IS_CHIP_CV180X(chip)) {
 		s32Ret = dump_hw_register(ViPipe, fp, pstRegTbl);
 		if (s32Ret != CVI_SUCCESS) {
@@ -1908,11 +1894,6 @@ void _cfg_ctrl_test(struct vdev *d)
 	printf("is_3dnr_on(0/1)\n");
 	scanf("%d", &op);
 	vi_set_3dnr(d->fd, op);
-// #ifdef ARCH_CV182X
-//	printf("is_rgbir_on(0/1)\n");
-//	scanf("%d", &op);
-//	isp_set_rgbir(d->fd, op);
-// #endif
 	printf("is_preraw_from_dram(0/1)\n");
 	scanf("%d", &enable_pic);
 	if (enable_pic == 1) {

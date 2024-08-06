@@ -1,6 +1,6 @@
 #include <linux/cvi_type.h>
 #include "cvi_bin.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "vpss_bin.h"
 #include "cvi_vpss.h"
 #include "rw_json.h"

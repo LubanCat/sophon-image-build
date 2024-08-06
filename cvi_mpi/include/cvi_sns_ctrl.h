@@ -47,10 +47,10 @@ typedef struct _ISP_SNS_STATE_S {
 } ISP_SNS_STATE_S;
 
 typedef enum _ISP_SNS_MIRRORFLIP_TYPE_E {	/* Flip mirror function of sensor */
-	ISP_SNS_NORMAL      = 0,
-	ISP_SNS_MIRROR      = 1,
-	ISP_SNS_FLIP        = 2,
-	ISP_SNS_MIRROR_FLIP = 3,
+	ISP_SNS_NORMAL      = 0,	/*Normal mode, without mirroring or flipping operations*/
+	ISP_SNS_MIRROR      = 1,	/*Mirror mode, perform horizontal mirror operation*/
+	ISP_SNS_FLIP        = 2,	/*Flip mode, perform vertical flipping operation*/
+	ISP_SNS_MIRROR_FLIP = 3,	/*Mirror and flip modes, perform horizontal mirror and vertical flip operations*/
 	ISP_SNS_BUTT
 } ISP_SNS_MIRRORFLIP_TYPE_E;
 
@@ -79,41 +79,41 @@ typedef enum _SNS_BDG_MUX_MODE_E {
 } SNS_BDG_MUX_MODE_E;
 
 typedef struct _ISP_INIT_ATTR_S {	/* Sensor exp ctrl info */
-	CVI_U32 u32ExpTime;
-	CVI_U32 u32AGain;
-	CVI_U32 u32DGain;
-	CVI_U32 u32ISPDGain;
-	CVI_U32 u32Exposure;
-	CVI_U32 u32LinesPer500ms;
-	CVI_U32 u32PirisFNO;
-	CVI_U16 u16WBRgain;
-	CVI_U16 u16WBGgain;
-	CVI_U16 u16WBBgain;
-	CVI_U16 u16SampleRgain;
-	CVI_U16 u16SampleBgain;
-	CVI_U16 u16UseHwSync;
-	ISP_SNS_GAIN_MODE_E enGainMode;
-	ISP_SNS_INTTIME_MODE_E enL2SMode;
-	SNS_BDG_MUX_MODE_E enSnsBdgMuxMode;
+	CVI_U32 u32ExpTime;			/*exposure time*/
+	CVI_U32 u32AGain;			/*Analog Gain*/
+	CVI_U32 u32DGain;			/*Digital Gain*/
+	CVI_U32 u32ISPDGain;		/*ISP Digital Gain*/
+	CVI_U32 u32Exposure;		/*exposure*/
+	CVI_U32 u32LinesPer500ms;	/*Rows per 500 milliseconds*/
+	CVI_U32 u32PirisFNO;		/*P-iris aperture value*/
+	CVI_U16 u16WBRgain;			/*White Balance Red Gain*/
+	CVI_U16 u16WBGgain;			/*White balance green gain*/
+	CVI_U16 u16WBBgain;			/*White Balance Blue Gain*/
+	CVI_U16 u16SampleRgain;		/*Sampling red gain*/
+	CVI_U16 u16SampleBgain;		/*Sampling blue gain*/
+	CVI_U16 u16UseHwSync;		/*use hardware synchronization*/
+	ISP_SNS_GAIN_MODE_E enGainMode;		/*Gain mode*/
+	ISP_SNS_INTTIME_MODE_E enL2SMode;	/*L2S (Long to Short) mode*/
+	SNS_BDG_MUX_MODE_E enSnsBdgMuxMode;	/*Sensor Bridge Multiplexing Mode*/
 } ISP_INIT_ATTR_S;
 
 typedef struct _ISP_SNS_OBJ_S {		/* Sensor callback object struct */
-	CVI_S32 (*pfnRegisterCallback)(VI_PIPE ViPipe, ALG_LIB_S *, ALG_LIB_S *);
-	CVI_S32 (*pfnUnRegisterCallback)(VI_PIPE ViPipe, ALG_LIB_S *, ALG_LIB_S *);
-	CVI_S32 (*pfnSetBusInfo)(VI_PIPE ViPipe, ISP_SNS_COMMBUS_U unSNSBusInfo);
-	CVI_VOID (*pfnStandby)(VI_PIPE ViPipe);
-	CVI_VOID (*pfnRestart)(VI_PIPE ViPipe);
-	CVI_VOID (*pfnMirrorFlip)(VI_PIPE ViPipe, ISP_SNS_MIRRORFLIP_TYPE_E eSnsMirrorFlip);
-	CVI_S32 (*pfnWriteReg)(VI_PIPE ViPipe, CVI_S32 s32Addr, CVI_S32 s32Data);
-	CVI_S32 (*pfnReadReg)(VI_PIPE ViPipe, CVI_S32 s32Addr);
-	CVI_S32 (*pfnSetInit)(VI_PIPE ViPipe, ISP_INIT_ATTR_S *);
-	CVI_S32 (*pfnPatchRxAttr)(RX_INIT_ATTR_S *);
-	CVI_VOID (*pfnPatchI2cAddr)(CVI_S32 s32I2cAddr);
-	CVI_S32 (*pfnGetRxAttr)(VI_PIPE ViPipe, SNS_COMBO_DEV_ATTR_S *);
-	CVI_S32 (*pfnExpSensorCb)(ISP_SENSOR_EXP_FUNC_S *);
-	CVI_VOID (*pfnSetSensorSlave)(VI_PIPE ViPipe);
-	CVI_S32 (*pfnExpAeCb)(AE_SENSOR_EXP_FUNC_S *);
-	CVI_S32 (*pfnSnsProbe)(VI_PIPE ViPipe);
+	CVI_S32 (*pfnRegisterCallback)(VI_PIPE ViPipe, ALG_LIB_S *, ALG_LIB_S *);	/*Registering Callbacks*/
+	CVI_S32 (*pfnUnRegisterCallback)(VI_PIPE ViPipe, ALG_LIB_S *, ALG_LIB_S *);	/*Cancel callback function*/
+	CVI_S32 (*pfnSetBusInfo)(VI_PIPE ViPipe, ISP_SNS_COMMBUS_U unSNSBusInfo);	/*Set bus information*/
+	CVI_VOID (*pfnStandby)(VI_PIPE ViPipe);	/*sensor is set to standby mode*/
+	CVI_VOID (*pfnRestart)(VI_PIPE ViPipe);	/*restart sensor from standby mode*/
+	CVI_VOID (*pfnMirrorFlip)(VI_PIPE ViPipe, ISP_SNS_MIRRORFLIP_TYPE_E eSnsMirrorFlip);	/*Set mirror and flip modes*/
+	CVI_S32 (*pfnWriteReg)(VI_PIPE ViPipe, CVI_S32 s32Addr, CVI_S32 s32Data);	/*Write register*/
+	CVI_S32 (*pfnReadReg)(VI_PIPE ViPipe, CVI_S32 s32Addr);						/*Read register*/
+	CVI_S32 (*pfnSetInit)(VI_PIPE ViPipe, ISP_INIT_ATTR_S *);	/*Set initialization parameters*/
+	CVI_S32 (*pfnPatchRxAttr)(RX_INIT_ATTR_S *);		/*patch the mipirx attribute*/
+	CVI_VOID (*pfnPatchI2cAddr)(CVI_S32 s32I2cAddr);	/*patch I2C address*/
+	CVI_S32 (*pfnGetRxAttr)(VI_PIPE ViPipe, SNS_COMBO_DEV_ATTR_S *);	/*Get mipirx attributes*/
+	CVI_S32 (*pfnExpSensorCb)(ISP_SENSOR_EXP_FUNC_S *);	/*Sensor exposure callback function*/
+	CVI_VOID (*pfnSetSensorSlave)(VI_PIPE ViPipe);	/*Set sensor as slave device*/
+	CVI_S32 (*pfnExpAeCb)(AE_SENSOR_EXP_FUNC_S *);	/*Automatic exposure callback function*/
+	CVI_S32 (*pfnSnsProbe)(VI_PIPE ViPipe);	/*Sensor detection function*/
 } ISP_SNS_OBJ_S;
 
 extern ISP_SNS_OBJ_S stSnsBG0808_Obj;

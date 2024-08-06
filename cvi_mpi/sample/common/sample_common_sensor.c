@@ -573,19 +573,10 @@ CVI_S32 SAMPLE_COMM_SNS_GetSize(SAMPLE_SNS_TYPE_E enMode, PIC_SIZE_E *penSize)
 	case PICO384_THERMAL_384X288:
 		*penSize = PIC_288P;
 		break;
-#ifdef ARCH_CV183X
-	case PIXELPLUS_PR2100_2M_2CH_25FPS_8BIT:
-		*penSize = PIC_3844x1124;
-		break;
-	case PIXELPLUS_PR2100_2M_4CH_25FPS_8BIT:
-		*penSize = PIC_7688x1124;
-		break;
-#else
 	case PIXELPLUS_PR2100_2M_2CH_25FPS_8BIT:
 	case PIXELPLUS_PR2100_2M_4CH_25FPS_8BIT:
 		*penSize = PIC_1080P;
 		break;
-#endif
 	default:
 		s32Ret = CVI_FAILURE;
 		break;
@@ -1255,11 +1246,6 @@ CVI_S32 SAMPLE_COMM_SNS_GetIspAttrBySns(SAMPLE_SNS_TYPE_E enSnsType, ISP_PUB_ATT
 	case TECHPOINT_TP2850_MIPI_4M_30FPS_8BIT:
 		pstPubAttr->enBayer = BAYER_GRBG;
 		break;
-#ifdef ARCH_CV182X
-	case SOI_F23_MIPI_2M_30FPS_10BIT:
-		pstPubAttr->enBayer = BAYER_BGRGI;
-	break;
-#endif
 	default:
 		pstPubAttr->enBayer = BAYER_BGGR;
 		break;

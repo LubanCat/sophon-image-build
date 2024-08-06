@@ -27,14 +27,9 @@ extern "C"
 #endif
 #endif /* __cplusplus */
 
-#define AENC_ADAPT_MAGIC 0Xfcfcfcfc
 #ifdef CVI_MODIFIED
 CVI_S32 CVI_AUDIO_DEBUG(void);
 #endif
-//define print level -------------------------------------[start]
-#define CVI_AUD_MASK_ERR	(0x00)
-#define CVI_AUD_MASK_INFO	(0x01)
-#define CVI_AUD_MASK_DBG	(0x02)
 
 /* =====Audio function api===== */
 

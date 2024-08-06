@@ -8,7 +8,7 @@
 #include <linux/vo_uapi.h>
 #include <linux/vo_disp.h>
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 int vo_set_pattern(int fd, enum cvi_vip_pattern pattern);
 int vo_set_mode(int fd, int mode);

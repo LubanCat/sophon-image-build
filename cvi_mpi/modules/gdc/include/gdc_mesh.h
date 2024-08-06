@@ -59,49 +59,6 @@ struct gdc_job {
 	CVI_BOOL sync_io;
 };
 
-enum gdc_job_state {
-	GDC_JOB_SUCCESS = 0,
-	GDC_JOB_FAIL,
-	GDC_JOB_WORKING,
-};
-
-struct gdc_job_info {
-	CVI_S64 hHandle;
-	MOD_ID_E enModId; // the module submitted gdc job
-	CVI_U32 u32TaskNum; // number of tasks
-	enum gdc_job_state eState; // job state
-	CVI_U32 u32InSize;
-	CVI_U32 u32OutSize;
-	CVI_U32 u32CostTime; // From job submitted to job done
-	CVI_U32 u32HwTime; // HW cost time
-	CVI_U32 u32BusyTime; // From job submitted to job commit to driver
-	CVI_U64 u64SubmitTime; // us
-};
-
-struct gdc_job_status {
-	CVI_U32 u32Success;
-	CVI_U32 u32Fail;
-	CVI_U32 u32Cancel;
-	CVI_U32 u32BeginNum;
-	CVI_U32 u32BusyNum;
-	CVI_U32 u32ProcingNum;
-};
-
-struct gdc_task_status {
-	CVI_U32 u32Success;
-	CVI_U32 u32Fail;
-	CVI_U32 u32Cancel;
-	CVI_U32 u32BusyNum;
-};
-
-struct gdc_operation_status {
-	CVI_U32 u32AddTaskSuc;
-	CVI_U32 u32AddTaskFail;
-	CVI_U32 u32EndSuc;
-	CVI_U32 u32EndFail;
-	CVI_U32 u32CbCnt;
-};
-
 int get_mesh_size(int *p_mesh_hor, int *p_mesh_ver);
 int set_mesh_size(int mesh_hor, int mesh_ver);
 void mesh_gen_get_size(SIZE_S in_size, SIZE_S out_size, CVI_U32 *mesh_id_size, CVI_U32 *mesh_tbl_size);

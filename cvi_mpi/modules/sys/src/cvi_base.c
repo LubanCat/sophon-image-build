@@ -22,7 +22,7 @@
 #include <linux/cvi_base.h>
 #include <sys/prctl.h>
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_buffer.h"
 #include <linux/cvi_errno.h>
 

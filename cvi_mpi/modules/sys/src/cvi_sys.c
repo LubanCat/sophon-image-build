@@ -11,11 +11,10 @@
 #include <fcntl.h>		/* low-level i/o */
 #include <unistd.h>
 #include <sys/stat.h>
-#include <linux/ion_cvitek.h>
 #include <sys/ioctl.h>
 
 #include "devmem.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_sys.h"
 #include "hashmap.h"
 #include <linux/cvi_base.h>

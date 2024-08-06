@@ -1,3 +1,4 @@
+
 ifeq ($(PARAM_FILE), )
 	PARAM_FILE:=../../Makefile.param
 	include $(PARAM_FILE)
@@ -20,6 +21,7 @@ ifeq ($(SUBTYPE), asic)
 LIBS += $(MW_LIBS)
 endif
 
+
 EXTRA_CFLAGS = $(INCS) $(DEFS)
 LD_FLAGS = $(LIBS) -lm -lpthread
 
@@ -27,8 +29,8 @@ LD_FLAGS = $(LIBS) -lm -lpthread
 all: $(TARGET)
 
 $(SDIR)/%: $(SDIR)/%.c
-	@$(CXX) -o $(subst .o,,$(notdir $@)) $^ $(CXXFLAGS) $(EXTRA_CFLAGS) $(ELFFLAGS) $(LD_FLAGS)
-	@echo -e $(BLUE)[LINK]$(END)[$(notdir $(CXX))] $(notdir $@)
+	@$(CC) -o $(subst .o,,$(notdir $@)) $^ $(CFLAGS) $(EXTRA_CFLAGS) $(ELFFLAGS) $(LD_FLAGS)
+	@echo -e $(BLUE)[LINK]$(END)[$(notdir $(CC))] $(notdir $@)
 
 clean:
 	@rm -f $(OBJS) $(notdir $(TARGET))

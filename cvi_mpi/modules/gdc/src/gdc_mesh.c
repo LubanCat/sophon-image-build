@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <inttypes.h>
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include <linux/cvi_common.h>
 #include <linux/cvi_math.h>
 #include <linux/cvi_comm_video.h>

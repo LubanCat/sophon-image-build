@@ -886,6 +886,21 @@ CVI_S32 SAMPLE_COMM_VDEC_UnBind_VPSS(VDEC_CHN VdecChn, VPSS_GRP VpssGrp);
 CVI_S32 SAMPLE_COMM_VPSS_Bind_VPSS(VPSS_GRP VpssGrpSrc, VPSS_CHN VpssChnSrc, VPSS_GRP VpssGrpDst);
 CVI_S32 SAMPLE_COMM_VPSS_UnBind_VPSS(VPSS_GRP VpssGrpSrc, VPSS_CHN VpssChnSrc, VPSS_GRP VpssGrpDst);
 
+#define ENABLE_AF_LIB (1)
+//The customer can deisgin the control of the motor by themself,
+//and sophgo also provides the public practice for customer reference
+//please contact sophgo get motor ko source code
+//design it please flow cb func format
+//cb sample start
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusInCb(VI_PIPE ViPipe, CVI_U8 step);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusOutCb(VI_PIPE ViPipe, CVI_U8 step);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomSpeedCb(VI_PIPE ViPipe, CVI_U8 speed);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetFocusSpeedCb(VI_PIPE ViPipe, CVI_U8 speed);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomInCb(VI_PIPE ViPipe, CVI_U8 step);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomOutCb(VI_PIPE ViPipe, CVI_U8 step);
+CVI_S32 SAMPLE_COMM_ISP_Motor_SetZoomAndFocusInternalCb(VI_PIPE ViPipe, AF_DIRECTION eDir, CVI_U8 zoomStep, CVI_U8 focusStep);
+CVI_S32 SAMPLE_COMM_ISP_Motor_GetLensInfoCb(VI_PIPE ViPipe, ISP_AF_LEN_INFO_S *info);
+//cb sample end
 CVI_S32 SAMPLE_COMM_ISP_Run(CVI_U8 IspDev);
 CVI_VOID SAMPLE_COMM_ISP_Stop(CVI_U8 IspDev);
 CVI_VOID SAMPLE_COMM_All_ISP_Stop(void);

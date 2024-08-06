@@ -56,6 +56,7 @@ typedef enum {
 	DSI_PANEL_ST7701,
 	LVDS_PANEL_LCM185X56,
 	BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M,
+	BT_PANEL_PT1000K_BT656_1920x1080_30FPS_148M,
 	BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M,
 	BT_PANEL_TP2803_BT656_1280x720_25FPS_72M,
 	BT_PANEL_NVP6021_BT1120_1920x1080_25FPS_72M,
@@ -124,6 +125,7 @@ static char *s_panel_model_type_arr[] = {
 	"ST7701",
 	"LCM185X56",
 	"BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M",
+	"BT_PANEL_PT1000K_BT656_1920x1080_30FPS_148M",
 	"BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M",
 	"TP2803_BT656_1280x720_25FPS_72M",
 	"BT_PANEL_NVP6021_BT1120_1920x1080_25FPS_72M",
@@ -568,11 +570,22 @@ void SAMPLE_SET_PANEL_DESC(void)
 		g_panel_desc.panel_type = PANEL_MODE_BT;
 		g_panel_desc.stVoPubAttr.enIntfType = VO_INTF_BT656;
 		g_panel_desc.stVoPubAttr.enIntfSync = VO_OUTPUT_USER;
-		VO_SYNC_INFO_S stPt1000kbt656_SyncInfo = {.bSynm = 1, .bIop = 1, .u16FrameRate = 25
+		VO_SYNC_INFO_S stPt1000kbt656_720p_25fps_SyncInfo = {.bSynm = 1, .bIop = 1, .u16FrameRate = 25
 		, .u16Vact = 720, .u16Vbb = 20, .u16Vfb = 5
 		, .u16Hact = 1280, .u16Hbb = 220, .u16Hfb = 440
 		, .u16Vpw = 5, .u16Hpw = 40, .bIdv = 0, .bIhs = 0, .bIvs = 0};
-		g_panel_desc.stVoPubAttr.stSyncInfo = stPt1000kbt656_SyncInfo;
+		g_panel_desc.stVoPubAttr.stSyncInfo = stPt1000kbt656_720p_25fps_SyncInfo;
+		g_panel_desc.stVoPubAttr.stBtAttr = stpt1000kbt656cfg;
+		break;
+	case BT_PANEL_PT1000K_BT656_1920x1080_30FPS_148M:
+		g_panel_desc.panel_type = PANEL_MODE_BT;
+		g_panel_desc.stVoPubAttr.enIntfType = VO_INTF_BT656;
+		g_panel_desc.stVoPubAttr.enIntfSync = VO_OUTPUT_USER;
+		VO_SYNC_INFO_S stPt1000kbt656_1080p_30fps_SyncInfo = {.bSynm = 1, .bIop = 1, .u16FrameRate = 30
+		, .u16Vact = 1080, .u16Vbb = 20, .u16Vfb = 20
+		, .u16Hact = 1920, .u16Hbb = 120, .u16Hfb = 120
+		, .u16Vpw = 5, .u16Hpw = 40, .bIdv = 0, .bIhs = 0, .bIvs = 0};
+		g_panel_desc.stVoPubAttr.stSyncInfo = stPt1000kbt656_1080p_30fps_SyncInfo;
 		g_panel_desc.stVoPubAttr.stBtAttr = stpt1000kbt656cfg;
 		break;
 	case BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M:
@@ -741,7 +754,18 @@ void SAMPLE_PANEL_I2C_SEND(void)
 			if (ret != CVI_SUCCESS)
 				printf("i2c_write fail addr[0x%x]\n", bt656_720p25_pt1000k_init_cmds[i].addr);
 		}
-	} else if(g_input_para.panel_model == BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M) {
+	} else if (g_input_para.panel_model == BT_PANEL_PT1000K_BT656_1920x1080_30FPS_148M) {
+		ret = panel_i2c_init(g_input_para.dev_no);
+		if (ret != CVI_SUCCESS) {
+			printf("panel_i2c_init fail");
+		}
+		for (CVI_U32 i = 0; i < ARRAY_SIZE(bt656_1080p30_pt1000k_init_cmds); i++) {
+			ret = panel_write_register(g_input_para.dev_no, bt656_1080p30_pt1000k_init_cmds[i].addr,
+				  bt656_1080p30_pt1000k_init_cmds[i].data);
+			if (ret != CVI_SUCCESS)
+				printf("i2c_write fail addr[0x%x]\n", bt656_1080p30_pt1000k_init_cmds[i].addr);
+		}
+	} else if (g_input_para.panel_model == BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M) {
 		ret = panel_i2c_init(g_input_para.dev_no);
 		if (ret != CVI_SUCCESS) {
 			printf("panel_i2c_init fail");

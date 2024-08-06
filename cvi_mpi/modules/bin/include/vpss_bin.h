@@ -2,7 +2,7 @@
 #define _VPSS_BIN_H
 
 #include <linux/cvi_type.h>
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 
 #ifdef __cplusplus

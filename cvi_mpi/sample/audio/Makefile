@@ -1,13 +1,8 @@
 SHELL = /bin/bash
 STATIC = 0
 ifeq ($(PARAM_FILE), )
-ifeq ($(MW_VER), )
 PARAM_FILE:=../../Makefile.param
 include $(PARAM_FILE)
-else
-PARAM_FILE:=../../../$(shell echo $(MW_VER))/Makefile.param
-include $(PARAM_FILE)
-endif
 endif
 
 include ../sample.mk

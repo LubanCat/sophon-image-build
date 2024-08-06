@@ -9,7 +9,7 @@
 
 #include "hashmap.h"
 #include "devmem.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vb.h"
 #include "cvi_sys.h"
 #include "vb_ioctl.h"

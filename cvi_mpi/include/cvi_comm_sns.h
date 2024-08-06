@@ -26,26 +26,31 @@ extern "C" {
 #define NOISE_PROFILE_ISO_NUM 16
 #define USE_USER_SEN_DRIVER 1
 
+/*ISP CMOS sensor image mode*/
 typedef struct _ISP_CMOS_SENSOR_IMAGE_MODE_S {
-	CVI_U16 u16Width;
-	CVI_U16 u16Height;
-	CVI_FLOAT f32Fps;
-	CVI_U8 u8SnsMode;
+	CVI_U16 u16Width;	/*image width*/
+	CVI_U16 u16Height;	/*image height*/
+	CVI_FLOAT f32Fps;	/*Sensor frame rate*/
+	CVI_U8 u8SnsMode;	/*Sensor mode*/
 } ISP_CMOS_SENSOR_IMAGE_MODE_S;
 
+/*ISP CMOS sensor black level*/
 typedef struct _ISP_CMOS_BLACK_LEVEL_S {
-	CVI_BOOL bUpdate;
-	ISP_BLACK_LEVEL_ATTR_S blcAttr;
+	CVI_BOOL bUpdate;				/*Black level configuration need to be updated or not*/
+	ISP_BLACK_LEVEL_ATTR_S blcAttr;	/*Black level detailed attributes and configuration*/
 } ISP_CMOS_BLACK_LEVEL_S;
 
+/*Sensor attribute information*/
 typedef struct _ISP_SNS_ATTR_INFO_S {
-	CVI_U32 eSensorId;
+	CVI_U32 eSensorId;	/*Sensor id*/
 } ISP_SNS_ATTR_INFO_S;
 
+/*Noise calibration data for ISP CMOS sensors*/
 typedef struct cviISP_CMOS_NOISE_CALIBRATION_S {
-	CVI_FLOAT CalibrationCoef[NOISE_PROFILE_ISO_NUM][NOISE_PROFILE_CHANNEL_NUM][NOISE_PROFILE_LEVEL_NUM];
+	CVI_FLOAT CalibrationCoef[NOISE_PROFILE_ISO_NUM][NOISE_PROFILE_CHANNEL_NUM][NOISE_PROFILE_LEVEL_NUM];	/*Noise calibration coefficient*/
 } ISP_CMOS_NOISE_CALIBRATION_S;
 
+/*Default settings for CMOS sensors*/
 typedef struct _ISP_CMOS_DEFAULT_S {
 	ISP_CMOS_NOISE_CALIBRATION_S stNoiseCalibration;
 } ISP_CMOS_DEFAULT_S;
@@ -77,17 +82,19 @@ typedef struct bmISP_SENSOR_REGISTER_S {
 	ISP_SENSOR_EXP_FUNC_S stSnsExp;
 } ISP_SENSOR_REGISTER_S;
 
+/*Master Clock Frequency*/
 typedef enum _MCLK_FREQ_E {
 	MCLK_FREQ_NONE = 0,
-	MCLK_FREQ_37P125M,
-	MCLK_FREQ_25M,
-	MCLK_FREQ_27M,
+	MCLK_FREQ_37P125M,	/*37.125M hz*/
+	MCLK_FREQ_25M,		/*25M hz*/
+	MCLK_FREQ_27M,		/*27M hz*/
 	MCLK_FREQ_NUM
 } MCLK_FREQ_E;
 
+/*Sensor MCLK Configuration*/
 typedef struct _SNS_MCLK_S {
 	CVI_U32		u8Cam;
-	MCLK_FREQ_E	enFreq;
+	MCLK_FREQ_E	enFreq;	/*Master Clock Frequency*/
 } SNS_MCLK_S;
 
 // -------- If you want to change these interfaces, please contact the isp team. --------

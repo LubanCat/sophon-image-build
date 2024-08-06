@@ -1028,3 +1028,39 @@ CVI_S32 CVI_BIN_GetBinName(CVI_CHAR *binName)
 
 	return _getBinNameImp(binName);
 }
+
+// set the params of ispBinBypass, indicatting which param to be bypassed
+CVI_S32 CVI_ISP_BIN_SetBypassParams(enum CVI_BIN_SECTION_ID id, ISP_BIN_BYPASS_U *ispBinBypass)
+{
+	CVI_S32 ret = CVI_SUCCESS;
+
+	if (ispBinBypass == NULL) {
+		return CVI_FAILURE;
+	}
+
+	if (id_is_valid_IspID(id) != CVI_SUCCESS) {
+		return CVI_BIN_ID_ERROR;
+	}
+
+	ret = isp_bin_setBinBypassParams(id - CVI_BIN_ID_ISP0, ispBinBypass);
+
+	return ret;
+}
+
+// get the params of ispBinBypass, indicatting which param to be bypassed
+CVI_S32 CVI_ISP_BIN_GetBypassParams(enum CVI_BIN_SECTION_ID id, ISP_BIN_BYPASS_U *ispBinBypass)
+{
+	CVI_S32 ret = CVI_SUCCESS;
+
+	if (ispBinBypass == NULL) {
+		return CVI_FAILURE;
+	}
+
+	if (id_is_valid_IspID(id) != CVI_SUCCESS) {
+		return CVI_BIN_ID_ERROR;
+	}
+
+	ret = isp_bin_getBinBypassParams(id - CVI_BIN_ID_ISP0, ispBinBypass);
+
+	return ret;
+}

@@ -121,6 +121,11 @@ CVI_S32 CVI_VDEC_QueryStatus(VDEC_CHN VdChn, VDEC_CHN_STATUS_S *pstStatus)
 	return CVI_FAILURE;
 }
 
+/*
+* CVI_VDEC_GetFd and CVI_VDEC_CloseFd is NOT used now,
+* so we comment these two APIs temporarily.
+* If you need them, you can uncomment.
+
 CVI_S32 CVI_VDEC_GetFd(VDEC_CHN VdChn)
 {
 	if (s32VdecFd[VdChn] <= 0) {
@@ -139,6 +144,8 @@ CVI_S32 CVI_VDEC_CloseFd(VDEC_CHN VdChn)
 	UNUSED(VdChn);
 	return CVI_SUCCESS;
 }
+
+*/
 
 CVI_S32 CVI_VDEC_ResetChn(VDEC_CHN VdChn)
 {

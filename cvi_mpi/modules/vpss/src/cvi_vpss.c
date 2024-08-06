@@ -13,7 +13,7 @@
 #include <sys/mman.h>
 
 #include "cvi_buffer.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_vpss.h"
 #include "cvi_sys.h"
 #include "cvi_gdc.h"
@@ -253,8 +253,17 @@ CVI_S32 CVI_VPSS_DestroyGrp(VPSS_GRP VpssGrp)
 		CVI_TRACE_VPSS(CVI_DBG_ERR, "Grp(%d) destroy group fail\n", VpssGrp);
 		return s32Ret;
 	}
-	for (CVI_U8 i = 0; i < VPSS_MAX_CHN_NUM; ++i)
+
+	for (CVI_U8 i = 0; i < VPSS_MAX_CHN_NUM; ++i) {
+		if (mesh[VpssGrp][i].paddr) {
+			if (mesh[VpssGrp][i].paddr != DEFAULT_MESH_PADDR) {
+				CVI_SYS_IonFree(mesh[VpssGrp][i].paddr, mesh[VpssGrp][i].vaddr);
+			}
+			mesh[VpssGrp][i].paddr = 0;
+			mesh[VpssGrp][i].vaddr = 0;
+		}
 		pthread_mutex_destroy(&mesh[VpssGrp][i].lock);
+	}
 
 	return CVI_SUCCESS;
 }

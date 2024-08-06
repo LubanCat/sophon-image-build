@@ -12,7 +12,7 @@
 #include <cvi_sys.h>
 #include <cvi_misc.h>
 #include <linux/cvi_errno.h>
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 #define CVI_EFUSE_CHIP_SN_SIZE 8
 #define CVI_EFUSE_CHIP_SN_ADDR 0x0C
