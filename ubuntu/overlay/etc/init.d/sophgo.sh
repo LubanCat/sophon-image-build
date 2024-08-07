@@ -35,11 +35,9 @@ if [ ! -e "/boot/boot_init" ] ; then
     fi
 
     #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
-    if blkid | grep -q "/dev/${ROOT_DEV}p7"; then
-        if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
-            mkfs.ext4 "/dev/${ROOT_DEV}p7"
-            echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
-        fi
+    if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
+        mkfs.ext4 "/dev/${ROOT_DEV}p7"
+        echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
     fi
 
     #/*******************扩容*******************/
@@ -52,9 +50,9 @@ resizepart ${LAST_PART_NUM}
 yes
 quit
 EOF
-        resize2fs /dev/$ROOT_PART
-        touch /boot/boot_dilatation_init
         fi
+    resize2fs /dev/$ROOT_PART
+    touch /boot/boot_dilatation_init
     fi
 
     touch /boot/boot_init
