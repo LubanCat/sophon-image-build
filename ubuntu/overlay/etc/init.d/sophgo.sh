@@ -107,7 +107,7 @@ if ifconfig usb0 > /dev/null 2>&1; then
 		sudo ifconfig usb0 hw ether $mac_address_rndis
 	fi
     sudo ifconfig usb0 192.168.137.10 up
-    sudo route add default gw 192.168.137.1 metric 110
+    sudo route add default gw 192.168.137.1 metric 800
 fi
 
 systemctl restart NetworkManager
