@@ -29,6 +29,10 @@ finish() {
 }
 trap finish ERR
 
+echo -e "\033[47;36m Extract image \033[0m"
+sudo rm -rf $TARGET_ROOTFS_DIR
+sudo tar -xpf ubuntu-base-$TARGET-$ARCH-*.tar.gz
+
 #linux kernel deb
 if [ -e ../linux-headers* ]; then
     Image_Deb=$(basename ../linux-headers*)
