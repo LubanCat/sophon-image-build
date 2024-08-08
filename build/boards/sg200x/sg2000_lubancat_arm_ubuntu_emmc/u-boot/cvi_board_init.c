@@ -1,28 +1,5 @@
-
-static void set_rtc_register_for_power(void)
-{
-	printf("set_rtc_register_for_power\n");
-	mmio_write_32(0x050250AC, 0x2);
-	mmio_write_32(0x050260D0, 0x3);
-	mmio_write_32(0x03001098, 0x0);
-	mmio_write_32(0x0300109C, 0x0);
-	mmio_write_32(0x03001090, 0x0);
-	mmio_write_32(0x03001094, 0x0);
-	mmio_write_32(0x05027084, 0x0);
-	mmio_write_32(0x05027088, 0x0);
-	mmio_write_32(0x0502708C, 0x0);
-	mmio_write_32(0x05027090, 0x0);
-	mmio_write_32(0x050260BC, 0x1700);
-	mmio_write_32(0x05026128, 0x0);
-}
-
 int cvi_board_init(void)
 {
-	PINMUX_CONFIG(CAM_MCLK0, CAM_MCLK0);
-
-	PINMUX_CONFIG(IIC3_SCL, IIC3_SCL);
-	PINMUX_CONFIG(IIC3_SDA, IIC3_SDA);
-
 	/*Network indicator light*/
 	PINMUX_CONFIG(PWR_WAKEUP0, EPHY_LNK_LED);
 	PINMUX_CONFIG(PWR_GPIO2, EPHY_SPD_LED);
@@ -44,10 +21,6 @@ int cvi_board_init(void)
 	mmio_write_32(0x3001098,0x0);
 	mmio_write_32(0x05027084,0x0);
 	mmio_write_32(0x050260BC,0x1000); */
-
-	/*UART1*/
-	PINMUX_CONFIG(IIC0_SCL, UART1_TX);
-	PINMUX_CONFIG(IIC0_SDA, UART1_RX);
 
 	/*WIFI*/
 	pinmux_config(PINMUX_SDIO1);
@@ -132,8 +105,7 @@ int cvi_board_init(void)
 	/***adc***/
 	mmio_write_32(0x03001810,0x40);
 	mmio_write_32(0x0300180C,0x40);
-	
-	set_rtc_register_for_power();
 
 	return 0;
 }
+
