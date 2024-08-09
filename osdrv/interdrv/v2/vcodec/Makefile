@@ -1,21 +1,21 @@
 include $(PWD)/../Makefile.interdrv.param
 
-HAL_PATH = hal/$(CHIP_CODE)
+HAL_PATH = hal/$(CVIARCH_L)
 
-ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CHIP_CODE)/uapi/
+ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CVIARCH_L)/uapi/
 ccflags-y += -I$(PWD)/../include/common/kapi/
 ccflags-y += -I$(PWD) -I$(LDDINCDIR) -DCNM_FPGA_PLATFORM -DCNM_FPGA_PCI_INTERFACE -DCVI_H26X_USE_ION_FW_BUFFER -DUSE_KERNEL_MODE -Wno-date-time -Werror
 
 PWD	:= $(shell pwd)
-obj-m += soph_vcodec.o
-soph_vcodec-y += cvi_vcodec.o vcodec_common.o
-soph_vcodec-y += hal/$(CHIP_CODE)/cvi_vcodec_cfg.o
+obj-m += $(CVIARCH_L)_vcodec.o
+$(CVIARCH_L)_vcodec-y += cvi_vcodec.o vcodec_common.o
+$(CVIARCH_L)_vcodec-y += hal/$(CVIARCH_L)/cvi_vcodec_cfg.o
 
 all:
 	$(MAKE) ARCH=${ARCH} -C $(KERNEL_DIR) M=$(PWD) modules
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c *.mod
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c
 	rm -rf .tmp_versions Module.symvers
 	rm -rf modules.order
 	rm -rf $(HAL_PATH)/*.o $(HAL_PATH)/.*.cmd

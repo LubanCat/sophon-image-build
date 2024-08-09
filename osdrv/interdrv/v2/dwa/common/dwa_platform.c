@@ -31,11 +31,19 @@
 
 #define GDC_SHARE_MEM_SIZE (0x8000)
 
+#ifndef CONFIG_PM_SLEEP
+#define CONFIG_PM_SLEEP 1
+#endif
+
 u32 dwa_log_lv = CVI_DBG_DEBUG/*CVI_DBG_INFO*/;
 
 static const char *const CLK_DWA_NAME = "clk_dwa";
 
 module_param(dwa_log_lv, int, 0644);
+
+static struct mutex dwa_reg_lock;
+
+struct cvi_dwa_vdev *wdev_dwa;
 
 static int dwa_open(struct inode *inode, struct file *filp)
 {
@@ -261,7 +269,8 @@ int dwa_create_instance(struct platform_device *pdev)
 
 	// clk_ldc_src_sel default 1(clk_src_vip_sys_2), 600 MHz
 	// set 0(clk_src_vip_sys_4), 400MHz for ND
-	vip_sys_reg_write_mask(VIP_SYS_VIP_CLK_CTRL1, BIT(20), 0);
+	vip_sys_reg_write_mask(VIP_SYS_VIP_CLK_CTRL1, BIT(20), BIT(20));
+	CVI_TRACE_DWA(CVI_DBG_DEBUG, "VIP_SYS_VIP_CLK_CTRL1:%#x\n", vip_sys_reg_read(VIP_SYS_VIP_CLK_CTRL1));
 
 	//wdev->align = LDC_ADDR_ALIGN;
 
@@ -280,6 +289,8 @@ int dwa_create_instance(struct platform_device *pdev)
 		pr_err("gdc init fail\n");
 		goto err_work_init;
 	}
+
+	mutex_init(&dwa_reg_lock);
 
 	return 0;
 
@@ -302,6 +313,8 @@ int dwa_destroy_instance(struct platform_device *pdev)
 	gdc_proc_remove();
 	kfree(wdev->shared_mem);
 
+	mutex_destroy(&dwa_reg_lock);
+
 	return 0;
 }
 
@@ -309,9 +322,12 @@ void dwa_irq_handler(u8 intr_status, struct cvi_dwa_vdev *wdev)
 {
 	struct cvi_dwa_job *job = NULL;
 	struct gdc_task *tsk;
+	unsigned long flags;
 
+	spin_lock_irqsave(&wdev->lock, flags);
 	if (!list_empty(&wdev->jobq))
 		job = list_entry(wdev->jobq.next, struct cvi_dwa_job, node);
+	spin_unlock_irqrestore(&wdev->lock, flags);
 
 	if (job) {
 		if (!list_empty(&job->task_list)) {
@@ -451,6 +467,7 @@ static int cvi_dwa_probe(struct platform_device *pdev)
 	/* initialize locks */
 	//spin_lock_init(&dev->lock);
 	//mutex_init(&dev->mutex);
+	wdev_dwa = wdev;
 
 	dev_set_drvdata(&pdev->dev, wdev);
 
@@ -536,19 +553,56 @@ static const struct of_device_id cvi_dwa_dt_match[] = {
 };
 
 #ifdef CONFIG_PM_SLEEP
-static int dwa_suspend(struct device *dev)
+int dwa_suspend(struct device *dev)
 {
-	dev_info(dev, "%s\n", __func__);
-	return 0;
+	CVI_S32 ret = CVI_SUCCESS;
+
+	if (unlikely(!wdev_dwa)) {
+		CVI_TRACE_DWA(CVI_DBG_ERR, "dwa_dev is null\n");
+		return -1;
+	}
+
+	/*step 1 stop all envent_handlers*/
+	ret = dwa_stop_handler(wdev_dwa);
+	if (ret != CVI_SUCCESS) {
+		CVI_TRACE_DWA(CVI_DBG_ERR, "fail to stop dwa thread, err=%d\n", ret);
+		return ret;
+	} else
+		CVI_TRACE_DWA(CVI_DBG_ERR, "dwa thread stopped\n");
+
+	/*step 2 turn off clock*/
+	mutex_lock(&dwa_reg_lock);
+	ldc_clk_disable(wdev_dwa);
+	mutex_unlock(&dwa_reg_lock);
+
+	CVI_TRACE_DWA(CVI_DBG_ERR, "dwa suspended!\n");
+	return ret;
 }
 
-static int dwa_resume(struct device *dev)
+int dwa_resume(struct device *dev)
 {
-	dev_info(dev, "%s\n", __func__);
+	CVI_S32 ret = CVI_SUCCESS;
 
-	//VIP_CLK_RATIO_CONFIG(LDC, 0x10);
+	if (unlikely(!wdev_dwa)) {
+		CVI_TRACE_DWA(CVI_DBG_ERR, "dwa_dev is null\n");
+		return -1;
+	}
 
-	return 0;
+	/*step 1 start all envent_handlers*/
+	ret = dwa_start_handler(wdev_dwa);
+	if (ret != CVI_SUCCESS) {
+		CVI_TRACE_DWA(CVI_DBG_ERR, "fail to restart gdc thread, err=%d\n", ret);
+		return ret;
+	} else
+		CVI_TRACE_DWA(CVI_DBG_ERR, "gdc thread restarted\n");
+
+	/*step 2 turn on clock*/
+	mutex_lock(&dwa_reg_lock);
+	ldc_clk_enable(wdev_dwa);
+	mutex_unlock(&dwa_reg_lock);
+
+	CVI_TRACE_DWA(CVI_DBG_ERR, "dwa resume!\n");
+	return ret;
 }
 
 static SIMPLE_DEV_PM_OPS(dwa_pm_ops, dwa_suspend, dwa_resume);

@@ -340,7 +340,8 @@ int rtos_cmdqu_send_wait(cmdqu_t *cmdq, int wait_cmd_id)
 		pr_debug("list->cmdq.ip_id=%d\n", wait_list->cmdq.ip_id);
 		pr_debug("list->cmdq.cmd_id=%d\n", wait_list->cmdq.cmd_id);
 		if (cmdq->ip_id == wait_list->cmdq.ip_id &&
-			wait_cmd_id == wait_list->cmdq.cmd_id) {
+			wait_cmd_id == wait_list->cmdq.cmd_id &&
+			cmdq->param_ptr == wait_list->cmdq.param_ptr) {
 
 			pr_debug("exist : wait_list->cmdq.ip_id=%d\n", wait_list->cmdq.ip_id);
 			pr_debug("exist : wait_list->cmdq.cmd_id=%d\n", wait_list->cmdq.cmd_id);
@@ -532,6 +533,7 @@ static int cvi_rtos_cmdqu_probe(struct platform_device *pdev)
 	int ret = 0;
 	int err = -1;
 
+	pr_info("%s start ---\n", __func__);
 	pr_info("name=%s\n", pdev->name);
 	ndev = devm_kzalloc(&pdev->dev, sizeof(*ndev), GFP_KERNEL);
 	if (!ndev)
@@ -599,6 +601,7 @@ static int cvi_rtos_cmdqu_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+	pr_info("%s DONE\n", __func__);
 	return 0;
 
 //ERROR_PROVE_DEVICE:

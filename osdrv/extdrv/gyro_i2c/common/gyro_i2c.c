@@ -29,7 +29,8 @@
 #include "mpu9250.h"
 #include "linux/cvi_gyro_ioctl.h"
 #include "gyro_i2c.h"
-#include "pinctrl-cv181x.h"
+// #include "pinctrl-cv181x.h"
+#include "pinctrl-mars.h"
 
 #define CVI_GYRO_CDEV_NAME "cvi-gyro"
 #define CVI_GYRO_CLASS_NAME "cvi-gyro"

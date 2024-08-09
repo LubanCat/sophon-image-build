@@ -50,10 +50,9 @@
 #endif
 
 //***************************PART1:ON/OFF define*******************************
-#define GTP_CONFIG_OF
-#define GTP_CUSTOM_CFG        0
+#define GTP_CUSTOM_CFG        1	   
 #define GTP_CHANGE_X2Y        0	   //swap x y
-#define GTP_DRIVER_SEND_CFG   0	   //driver send config
+#define GTP_DRIVER_SEND_CFG   1	   //driver send config
 #define GTP_HAVE_TOUCH_KEY    0
 #define GTP_POWER_CTRL_SLEEP  0    //power off when suspend
 #define GTP_ICS_SLOT_REPORT   0    // slot protocol 
@@ -228,8 +227,8 @@ extern int gtp_int_gpio;
   #define GTP_MAX_WIDTH    320
   #define GTP_INT_TRIGGER  0            // 0: Rising 1: Falling
 #else
-  #define GTP_MAX_HEIGHT   1280
-  #define GTP_MAX_WIDTH    800
+  #define GTP_MAX_HEIGHT   4096
+  #define GTP_MAX_WIDTH    4096
   #define GTP_INT_TRIGGER  1
 #endif
 #define GTP_MAX_TOUCH         5
@@ -294,14 +293,8 @@ extern int gtp_int_gpio;
 
 #define CFG_GROUP_LEN(p_cfg_grp)  (sizeof(p_cfg_grp) / sizeof(p_cfg_grp[0]))
 // Log define
-#define GTP_INFO(fmt,arg...)           do{\
-                                         if(GTP_DEBUG_ON)\
-                                         printk("<<-GTP-INFO->> "fmt"\n",##arg);\
-                                         }while(0)
-#define GTP_ERROR(fmt,arg...)          do{\
-                                         if(GTP_DEBUG_ON)\
-                                         printk("<<-GTP-ERROR->> "fmt"\n",##arg);\
-                                        }while(0)
+#define GTP_INFO(fmt,arg...)           printk("<<-GTP-INFO->> "fmt"\n",##arg)
+#define GTP_ERROR(fmt,arg...)          printk("<<-GTP-ERROR->> "fmt"\n",##arg)
 #define GTP_DEBUG(fmt,arg...)          do{\
                                          if(GTP_DEBUG_ON)\
                                          printk("<<-GTP-DEBUG->> [%d]"fmt"\n",__LINE__, ##arg);\

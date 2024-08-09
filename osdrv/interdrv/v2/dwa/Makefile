@@ -1,18 +1,18 @@
 include $(PWD)/../Makefile.interdrv.param
 
 ifneq ($(KERNELRELEASE),)
-include $(PWD)/chip/$(CHIP_CODE)/chip.mk
-soph_dwa-y += common/cvi_vip_gdc_proc.o
-soph_dwa-y += common/dwa_platform.o
+include $(PWD)/chip/$(CVIARCH_L)/chip.mk
+$(CVIARCH_L)_dwa-y += common/cvi_vip_gdc_proc.o
+$(CVIARCH_L)_dwa-y += common/dwa_platform.o
 
-obj-m += soph_dwa.o
+obj-m += $(CVIARCH_L)_dwa.o
 #ccflags-y += -DPORTING_TEST
-ccflags-y += -I$(PWD)/chip/$(CHIP_CODE)/ -I$(PWD)/common/
-ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CHIP_CODE)/uapi/
+ccflags-y += -I$(PWD)/chip/$(CVIARCH_L)/ -I$(PWD)/common/
+ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CVIARCH_L)/uapi/
 ccflags-y += -I$(PWD)/../include/common/kapi/
 ccflags-y += -I$(PWD)/../include/
 ccflags-y += -I$(PWD)/../base/
-ccflags-y += -I$(PWD)/../base/chip/$(CHIP_CODE)
+ccflags-y += -I$(PWD)/../base/chip/$(CVIARCH_L)
 ccflags-y += -I$(PWD)/../sys/common/ -I$(PWD)/../sys/common/uapi
 ccflags-y += -I$(srctree)/drivers/tee
 ccflags-y += -I$(srctree)/drivers/staging/android
@@ -41,7 +41,7 @@ all:
 	$(MAKE) ARCH=$(ARCH) -C $(KERNEL_DIR) M=$(PWD) modules
 
 clean:
-	@rm -f *.o .*.cmd modules.order Module.symvers *.ko *.mod.c *.mod
+	@rm -f *.o .*.cmd modules.order Module.symvers *.ko *.mod.c
 	@rm -rf .tmp_versions
 	@find . -name \*.o* -type f -delete
 endif

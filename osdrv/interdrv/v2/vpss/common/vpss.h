@@ -92,8 +92,8 @@ CVI_S32 vpss_get_proc_amp(VPSS_GRP VpssGrp, CVI_S32 *proc_amp);
 CVI_S32 vpss_get_all_proc_amp(struct vpss_all_proc_amp_cfg *cfg);
 CVI_S32 vpss_get_binscene(struct vpss_scene *cfg);
 
-CVI_VOID vpss_set_mlv_info(CVI_U8 snr_num, struct mlv_i_s *p_m_lv_i);
-CVI_VOID vpss_get_mlv_info(CVI_U8 snr_num, struct mlv_i_s *p_m_lv_i);
+CVI_VOID vpss_set_mlv_info(CVI_U8 snr_num, struct mlv_wrap_i_s *p_m_lv_i);
+CVI_VOID vpss_get_mlv_info(CVI_U8 snr_num, struct mlv_wrap_i_s *p_m_lv_i);
 
 CVI_VOID vpss_set_isp_bypassfrm(CVI_U8 snr_num, CVI_U8 bypass_frm);
 
@@ -116,6 +116,9 @@ CVI_S32 vpss_overflow_check(VPSS_GRP VpssGrp, struct cvi_vpss_info *vpss_info, s
 CVI_VOID vpss_print_vb_info(CVI_U8 grp_id, CVI_U8 sc_idx);
 CVI_S32 vpss_sbm_notify_venc(VPSS_GRP VpssGrp, CVI_U8 sc_idx);
 CVI_VOID set_fb_on_vpss(CVI_BOOL is_fb_on_vpss);
+CVI_S32 vpss_suspend(void);
+CVI_S32 vpss_resume(void);
+CVI_BOOL is_handler_suspended(CVI_U32 ctx_id);
 
 //Check GRP and CHN VALID, CREATED and FMT
 #define VPSS_GRP_SUPPORT_FMT(fmt) \
