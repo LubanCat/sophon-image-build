@@ -3,33 +3,33 @@ ${CVI_SHOPTS}
 #
 # Start to insert kernel modules
 #
-insmod /mnt/system/ko/soph_sys.ko
-insmod /mnt/system/ko/soph_base.ko
-insmod /mnt/system/ko/soph_rtos_cmdqu.ko
-insmod /mnt/system/ko/soph_fast_image.ko
-insmod /mnt/system/ko/soph_mipi_rx.ko
-insmod /mnt/system/ko/soph_snsr_i2c.ko
-insmod /mnt/system/ko/soph_vi.ko
-insmod /mnt/system/ko/soph_vpss.ko
-insmod /mnt/system/ko/soph_dwa.ko
-insmod /mnt/system/ko/soph_vo.ko
-insmod /mnt/system/ko/soph_mipi_tx.ko
-insmod /mnt/system/ko/soph_rgn.ko
+insmod /mnt/system/ko/cv181x_sys.ko
+insmod /mnt/system/ko/cv181x_base.ko
+insmod /mnt/system/ko/cv181x_rtos_cmdqu.ko
+insmod /mnt/system/ko/cv181x_fast_image.ko
+insmod /mnt/system/ko/cvi_mipi_rx.ko
+insmod /mnt/system/ko/snsr_i2c.ko
+insmod /mnt/system/ko/cv181x_vi.ko
+insmod /mnt/system/ko/cv181x_vpss.ko
+insmod /mnt/system/ko/cv181x_dwa.ko
+insmod /mnt/system/ko/cv181x_vo.ko
+insmod /mnt/system/ko/cv181x_mipi_tx.ko
+insmod /mnt/system/ko/cv181x_rgn.ko
 
-#insmod /mnt/system/ko/soph_wdt.ko
-insmod /mnt/system/ko/soph_clock_cooling.ko
+#insmod /mnt/system/ko/cv181x_wdt.ko
+insmod /mnt/system/ko/cv181x_clock_cooling.ko
 
-insmod /mnt/system/ko/soph_tpu.ko
-insmod /mnt/system/ko/soph_vcodec.ko
-insmod /mnt/system/ko/soph_jpeg.ko
-insmod /mnt/system/ko/soph_vc_driver.ko MaxVencChnNum=9 MaxVdecChnNum=9
-insmod /mnt/system/ko/soph_rtc.ko
-insmod /mnt/system/ko/soph_ive.ko
+insmod /mnt/system/ko/cv181x_tpu.ko
+insmod /mnt/system/ko/cv181x_vcodec.ko
+insmod /mnt/system/ko/cv181x_jpeg.ko
+insmod /mnt/system/ko/cvi_vc_driver.ko MaxVencChnNum=9 MaxVdecChnNum=9
+insmod /mnt/system/ko/cv181x_rtc.ko
+insmod /mnt/system/ko/cv181x_ive.ko
 
 insmod /mnt/system/ko/3rd/8821cs.ko
 insmod /mnt/system/ko/3rd/gt9xx.ko
-insmod /mnt/system/ko/soph_saradc.ko
-insmod /mnt/system/ko/soph_pwm.ko
+insmod /mnt/system/ko/cv181x_saradc.ko
+insmod /mnt/system/ko/cv181x_pwm.ko
 
 echo 3 > /proc/sys/vm/drop_caches
 dmesg -n 4
