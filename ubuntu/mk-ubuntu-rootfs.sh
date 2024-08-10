@@ -131,7 +131,7 @@ if [ $MIRROR ]; then
 	echo "deb [arch=riscv64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
 fi
 
-echo 'export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/mnt/system/lib:/usr/lib64v0p7_xthead/lp64d/:/lib64v0p7_xthead/lp64d"' >> /etc/profile
+echo 'export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/mnt/system/lib:/usr/lib64v0p7_xthead/lp64d/"' >> /etc/profile
 echo 'export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/mnt/system/usr/bin"' >> /etc/profile
 
 export LC_ALL=C.UTF-8
