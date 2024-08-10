@@ -236,10 +236,10 @@ static CVI_S32 sensor_dump_yuv(void)
 	int tmp;
 	struct timespec start, end;
 
-	SAMPLE_PRT("Get frm from which chn(0~1): ");
+	SAMPLE_PRT("Get frm from which chn(0~1): \n");
 	scanf("%d", &tmp);
 	chn = tmp;
-	SAMPLE_PRT("how many loops to do(11111 is infinite: ");
+	SAMPLE_PRT("how many loops to do(11111 is infinite: \n");
 	scanf("%d", &loop);
 	while (loop > 0) {
 		clock_gettime(CLOCK_MONOTONIC, &start);
@@ -295,7 +295,7 @@ static CVI_S32 sensor_dump_raw(void)
 	stVideoFrame[0].stVFrame.enPixelFormat = PIXEL_FORMAT_RGB_BAYER_12BPP;
 	stVideoFrame[1].stVFrame.enPixelFormat = PIXEL_FORMAT_RGB_BAYER_12BPP;
 
-	SAMPLE_PRT("To get raw dump from dev(0~1): ");
+	SAMPLE_PRT("To get raw dump from dev(0~1): \n");
 	scanf("%d", &dev);
 
 	attr.bEnable = 1;
@@ -309,8 +309,8 @@ static CVI_S32 sensor_dump_raw(void)
 
 	CVI_VI_GetPipeDumpAttr(dev, &attr);
 
-	SAMPLE_PRT("Enable(%d), DumpType(%d):\n", attr.bEnable, attr.enDumpType);
-	SAMPLE_PRT("how many loops to do (1~60)");
+	CVI_TRACE_LOG(CVI_DBG_WARN, "Enable(%d), DumpType(%d):\n", attr.bEnable, attr.enDumpType);
+	SAMPLE_PRT("how many loops to do (1~60): \n");
 	scanf("%d", &loop);
 
 	if (loop > 60)

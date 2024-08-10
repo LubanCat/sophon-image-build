@@ -12,18 +12,18 @@ struct combo_dev_cfg_s dev_cfg_ili9881c_720x1280 = {
 	.video_mode = BURST_MODE,
 	.output_format = OUT_FORMAT_RGB_24_BIT,
 	.sync_info = {
-		.vid_hsa_pixels = 64,
-		.vid_hbp_pixels = 36,
-		.vid_hfp_pixels = 128,
-		.vid_hline_pixels = 720,
-		.vid_vsa_lines = 16,
-		.vid_vbp_lines = 4,
-		.vid_vfp_lines = 6,
+		.vid_hsa_pixels = 24,
+		.vid_hbp_pixels = 24,
+		.vid_hfp_pixels = 12,
+		.vid_hline_pixels = 800,
+		.vid_vsa_lines = 2,
+		.vid_vbp_lines = 9,
+		.vid_vfp_lines = 7,
 		.vid_active_lines = 1280,
 		.vid_vsa_pos_polarity = false,
 		.vid_hsa_pos_polarity = true,
 	},
-	.pixel_clk = 74250,
+	.pixel_clk = 67000,
 };
 
 const struct hs_settle_s hs_timing_cfg_ili9881c_720x1280 = { .prepare = 6, .zero = 32, .trail = 1 };
@@ -31,20 +31,20 @@ const struct hs_settle_s hs_timing_cfg_ili9881c_720x1280 = { .prepare = 6, .zero
 static CVI_U8 data_ili9881c_0[] = { 0xff, 0x98, 0x81, 0x03 };
 static CVI_U8 data_ili9881c_1[] = { 0x01, 0x00 };
 static CVI_U8 data_ili9881c_2[] = { 0x02, 0x00 };
-static CVI_U8 data_ili9881c_3[] = { 0x03, 0x73 };
-static CVI_U8 data_ili9881c_4[] = { 0x04, 0x00 };
+static CVI_U8 data_ili9881c_3[] = { 0x03, 0x53 };
+static CVI_U8 data_ili9881c_4[] = { 0x04, 0xd3 };
 static CVI_U8 data_ili9881c_5[] = { 0x05, 0x00 };
-static CVI_U8 data_ili9881c_6[] = { 0x06, 0x0a };
-static CVI_U8 data_ili9881c_7[] = { 0x07, 0x00 };
+static CVI_U8 data_ili9881c_6[] = { 0x06, 0x0d };
+static CVI_U8 data_ili9881c_7[] = { 0x07, 0x08 };
 static CVI_U8 data_ili9881c_8[] = { 0x08, 0x00 };
-static CVI_U8 data_ili9881c_9[] = { 0x09, 0x01 };
+static CVI_U8 data_ili9881c_9[] = { 0x09, 0x00 };
 static CVI_U8 data_ili9881c_10[] = { 0x0a, 0x00 };
 static CVI_U8 data_ili9881c_11[] = { 0x0b, 0x00 };
-static CVI_U8 data_ili9881c_12[] = { 0x0c, 0x01 };
+static CVI_U8 data_ili9881c_12[] = { 0x0c, 0x00 };
 static CVI_U8 data_ili9881c_13[] = { 0x0d, 0x00 };
 static CVI_U8 data_ili9881c_14[] = { 0x0e, 0x00 };
-static CVI_U8 data_ili9881c_15[] = { 0x0f, 0x1d };
-static CVI_U8 data_ili9881c_16[] = { 0x10, 0x1d };
+static CVI_U8 data_ili9881c_15[] = { 0x0f, 0x28 };
+static CVI_U8 data_ili9881c_16[] = { 0x10, 0x28 };
 static CVI_U8 data_ili9881c_17[] = { 0x11, 0x00 };
 static CVI_U8 data_ili9881c_18[] = { 0x12, 0x00 };
 static CVI_U8 data_ili9881c_19[] = { 0x13, 0x00 };
@@ -61,7 +61,7 @@ static CVI_U8 data_ili9881c_29[] = { 0x1d, 0x00 };
 static CVI_U8 data_ili9881c_30[] = { 0x1e, 0x40 };
 static CVI_U8 data_ili9881c_31[] = { 0x1f, 0x80 };
 static CVI_U8 data_ili9881c_32[] = { 0x20, 0x06 };
-static CVI_U8 data_ili9881c_33[] = { 0x21, 0x02 };
+static CVI_U8 data_ili9881c_33[] = { 0x21, 0x01 };
 static CVI_U8 data_ili9881c_34[] = { 0x22, 0x00 };
 static CVI_U8 data_ili9881c_35[] = { 0x23, 0x00 };
 static CVI_U8 data_ili9881c_36[] = { 0x24, 0x00 };
@@ -69,7 +69,7 @@ static CVI_U8 data_ili9881c_37[] = { 0x25, 0x00 };
 static CVI_U8 data_ili9881c_38[] = { 0x26, 0x00 };
 static CVI_U8 data_ili9881c_39[] = { 0x27, 0x00 };
 static CVI_U8 data_ili9881c_40[] = { 0x28, 0x33 };
-static CVI_U8 data_ili9881c_41[] = { 0x29, 0x03 };
+static CVI_U8 data_ili9881c_41[] = { 0x29, 0x33 };
 static CVI_U8 data_ili9881c_42[] = { 0x2a, 0x00 };
 static CVI_U8 data_ili9881c_43[] = { 0x2b, 0x00 };
 static CVI_U8 data_ili9881c_44[] = { 0x2c, 0x00 };
@@ -80,14 +80,14 @@ static CVI_U8 data_ili9881c_48[] = { 0x30, 0x00 };
 static CVI_U8 data_ili9881c_49[] = { 0x31, 0x00 };
 static CVI_U8 data_ili9881c_50[] = { 0x32, 0x00 };
 static CVI_U8 data_ili9881c_51[] = { 0x33, 0x00 };
-static CVI_U8 data_ili9881c_52[] = { 0x34, 0x04 };
+static CVI_U8 data_ili9881c_52[] = { 0x34, 0x03 };
 static CVI_U8 data_ili9881c_53[] = { 0x35, 0x00 };
 static CVI_U8 data_ili9881c_54[] = { 0x36, 0x00 };
 static CVI_U8 data_ili9881c_55[] = { 0x37, 0x00 };
-static CVI_U8 data_ili9881c_56[] = { 0x38, 0x3c };
+static CVI_U8 data_ili9881c_56[] = { 0x38, 0x96 };
 static CVI_U8 data_ili9881c_57[] = { 0x39, 0x00 };
-static CVI_U8 data_ili9881c_58[] = { 0x3a, 0x40 };
-static CVI_U8 data_ili9881c_59[] = { 0x3b, 0x40 };
+static CVI_U8 data_ili9881c_58[] = { 0x3a, 0x00 };
+static CVI_U8 data_ili9881c_59[] = { 0x3b, 0x00 };
 static CVI_U8 data_ili9881c_60[] = { 0x3c, 0x00 };
 static CVI_U8 data_ili9881c_61[] = { 0x3d, 0x00 };
 static CVI_U8 data_ili9881c_62[] = { 0x3e, 0x00 };
@@ -97,7 +97,7 @@ static CVI_U8 data_ili9881c_65[] = { 0x41, 0x00 };
 static CVI_U8 data_ili9881c_66[] = { 0x42, 0x00 };
 static CVI_U8 data_ili9881c_67[] = { 0x43, 0x00 };
 static CVI_U8 data_ili9881c_68[] = { 0x44, 0x00 };
-static CVI_U8 data_ili9881c_69[] = { 0x50, 0x01 };
+static CVI_U8 data_ili9881c_69[] = { 0x50, 0x00 };
 static CVI_U8 data_ili9881c_70[] = { 0x51, 0x23 };
 static CVI_U8 data_ili9881c_71[] = { 0x52, 0x45 };
 static CVI_U8 data_ili9881c_72[] = { 0x53, 0x67 };
@@ -111,117 +111,118 @@ static CVI_U8 data_ili9881c_79[] = { 0x5a, 0x89 };
 static CVI_U8 data_ili9881c_80[] = { 0x5b, 0xab };
 static CVI_U8 data_ili9881c_81[] = { 0x5c, 0xcd };
 static CVI_U8 data_ili9881c_82[] = { 0x5d, 0xef };
-static CVI_U8 data_ili9881c_83[] = { 0x5e, 0x11 };
-static CVI_U8 data_ili9881c_84[] = { 0x5f, 0x01 };
-static CVI_U8 data_ili9881c_85[] = { 0x60, 0x00 };
-static CVI_U8 data_ili9881c_86[] = { 0x61, 0x15 };
-static CVI_U8 data_ili9881c_87[] = { 0x62, 0x14 };
-static CVI_U8 data_ili9881c_88[] = { 0x63, 0x0e };
-static CVI_U8 data_ili9881c_89[] = { 0x64, 0x0f };
-static CVI_U8 data_ili9881c_90[] = { 0x65, 0x0c };
-static CVI_U8 data_ili9881c_91[] = { 0x66, 0x0d };
-static CVI_U8 data_ili9881c_92[] = { 0x67, 0x06 };
-static CVI_U8 data_ili9881c_93[] = { 0x68, 0x02 };
-static CVI_U8 data_ili9881c_94[] = { 0x69, 0x07 };
-static CVI_U8 data_ili9881c_95[] = { 0x6a, 0x02 };
-static CVI_U8 data_ili9881c_96[] = { 0x6b, 0x02 };
-static CVI_U8 data_ili9881c_97[] = { 0x6c, 0x02 };
-static CVI_U8 data_ili9881c_98[] = { 0x6d, 0x02 };
-static CVI_U8 data_ili9881c_99[] = { 0x6e, 0x02 };
-static CVI_U8 data_ili9881c_100[] = { 0x6f, 0x02 };
-static CVI_U8 data_ili9881c_101[] = { 0x70, 0x02 };
-static CVI_U8 data_ili9881c_102[] = { 0x71, 0x02 };
-static CVI_U8 data_ili9881c_103[] = { 0x72, 0x02 };
-static CVI_U8 data_ili9881c_104[] = { 0x73, 0x02 };
+static CVI_U8 data_ili9881c_83[] = { 0x5e, 0x00 };
+static CVI_U8 data_ili9881c_84[] = { 0x5f, 0x08 };
+static CVI_U8 data_ili9881c_85[] = { 0x60, 0x08 };
+static CVI_U8 data_ili9881c_86[] = { 0x61, 0x06 };
+static CVI_U8 data_ili9881c_87[] = { 0x62, 0x06 };
+static CVI_U8 data_ili9881c_88[] = { 0x63, 0x01 };
+static CVI_U8 data_ili9881c_89[] = { 0x64, 0x01 };
+static CVI_U8 data_ili9881c_90[] = { 0x65, 0x00 };
+static CVI_U8 data_ili9881c_91[] = { 0x66, 0x00 };
+static CVI_U8 data_ili9881c_92[] = { 0x67, 0x02 };
+static CVI_U8 data_ili9881c_93[] = { 0x68, 0x15 };
+static CVI_U8 data_ili9881c_94[] = { 0x69, 0x15 };
+static CVI_U8 data_ili9881c_95[] = { 0x6a, 0x14 };
+static CVI_U8 data_ili9881c_96[] = { 0x6b, 0x14 };
+static CVI_U8 data_ili9881c_97[] = { 0x6c, 0x0d };
+static CVI_U8 data_ili9881c_98[] = { 0x6d, 0x0d };
+static CVI_U8 data_ili9881c_99[] = { 0x6e, 0x0c };
+static CVI_U8 data_ili9881c_100[] = { 0x6f, 0x0c };
+static CVI_U8 data_ili9881c_101[] = { 0x70, 0x0f };
+static CVI_U8 data_ili9881c_102[] = { 0x71, 0x0f };
+static CVI_U8 data_ili9881c_103[] = { 0x72, 0x0e };
+static CVI_U8 data_ili9881c_104[] = { 0x73, 0x0e };
 static CVI_U8 data_ili9881c_105[] = { 0x74, 0x02 };
-static CVI_U8 data_ili9881c_106[] = { 0x75, 0x01 };
-static CVI_U8 data_ili9881c_107[] = { 0x76, 0x00 };
-static CVI_U8 data_ili9881c_108[] = { 0x77, 0x14 };
-static CVI_U8 data_ili9881c_109[] = { 0x78, 0x15 };
-static CVI_U8 data_ili9881c_110[] = { 0x79, 0x0e };
-static CVI_U8 data_ili9881c_111[] = { 0x7a, 0x0f };
-static CVI_U8 data_ili9881c_112[] = { 0x7b, 0x0c };
-static CVI_U8 data_ili9881c_113[] = { 0x7c, 0x0d };
-static CVI_U8 data_ili9881c_114[] = { 0x7d, 0x06 };
-static CVI_U8 data_ili9881c_115[] = { 0x7e, 0x02 };
-static CVI_U8 data_ili9881c_116[] = { 0x7f, 0x07 };
-static CVI_U8 data_ili9881c_117[] = { 0x80, 0x02 };
-static CVI_U8 data_ili9881c_118[] = { 0x81, 0x02 };
-static CVI_U8 data_ili9881c_119[] = { 0x82, 0x02 };
-static CVI_U8 data_ili9881c_120[] = { 0x83, 0x02 };
-static CVI_U8 data_ili9881c_121[] = { 0x84, 0x02 };
-static CVI_U8 data_ili9881c_122[] = { 0x85, 0x02 };
-static CVI_U8 data_ili9881c_123[] = { 0x86, 0x02 };
-static CVI_U8 data_ili9881c_124[] = { 0x87, 0x02 };
-static CVI_U8 data_ili9881c_125[] = { 0x88, 0x02 };
-static CVI_U8 data_ili9881c_126[] = { 0x89, 0x02 };
+static CVI_U8 data_ili9881c_106[] = { 0x75, 0x08 };
+static CVI_U8 data_ili9881c_107[] = { 0x76, 0x08 };
+static CVI_U8 data_ili9881c_108[] = { 0x77, 0x06 };
+static CVI_U8 data_ili9881c_109[] = { 0x78, 0x06 };
+static CVI_U8 data_ili9881c_110[] = { 0x79, 0x01 };
+static CVI_U8 data_ili9881c_111[] = { 0x7a, 0x01 };
+static CVI_U8 data_ili9881c_112[] = { 0x7b, 0x00 };
+static CVI_U8 data_ili9881c_113[] = { 0x7c, 0x00 };
+static CVI_U8 data_ili9881c_114[] = { 0x7d, 0x02 };
+static CVI_U8 data_ili9881c_115[] = { 0x7e, 0x15 };
+static CVI_U8 data_ili9881c_116[] = { 0x7f, 0x15 };
+static CVI_U8 data_ili9881c_117[] = { 0x80, 0x14 };
+static CVI_U8 data_ili9881c_118[] = { 0x81, 0x14 };
+static CVI_U8 data_ili9881c_119[] = { 0x82, 0x0d };
+static CVI_U8 data_ili9881c_120[] = { 0x83, 0x0d };
+static CVI_U8 data_ili9881c_121[] = { 0x84, 0x0c };
+static CVI_U8 data_ili9881c_122[] = { 0x85, 0x0c };
+static CVI_U8 data_ili9881c_123[] = { 0x86, 0x0f };
+static CVI_U8 data_ili9881c_124[] = { 0x87, 0x0f };
+static CVI_U8 data_ili9881c_125[] = { 0x88, 0x0e };
+static CVI_U8 data_ili9881c_126[] = { 0x89, 0x0e };
 static CVI_U8 data_ili9881c_127[] = { 0x8a, 0x02 };
 static CVI_U8 data_ili9881c_128[] = { 0xff, 0x98, 0x81, 0x04 };
-static CVI_U8 data_ili9881c_129[] = { 0x6c, 0x15 };
-static CVI_U8 data_ili9881c_130[] = { 0x6e, 0x2b };
-static CVI_U8 data_ili9881c_131[] = { 0x6f, 0x33 };
-static CVI_U8 data_ili9881c_132[] = { 0x8d, 0x18 };
+static CVI_U8 data_ili9881c_129[] = { 0x6e, 0x2b };
+static CVI_U8 data_ili9881c_130[] = { 0x6f, 0x37 };
+static CVI_U8 data_ili9881c_131[] = { 0x3a, 0x24 };
+static CVI_U8 data_ili9881c_132[] = { 0x8d, 0x1a };
 static CVI_U8 data_ili9881c_133[] = { 0x87, 0xba };
-static CVI_U8 data_ili9881c_134[] = { 0x26, 0x76 };
-static CVI_U8 data_ili9881c_135[] = { 0xb2, 0xd1 };
-static CVI_U8 data_ili9881c_136[] = { 0xb5, 0x06 };
-static CVI_U8 data_ili9881c_137[] = { 0x3a, 0x24 };
-static CVI_U8 data_ili9881c_138[] = { 0x35, 0x1f };
+static CVI_U8 data_ili9881c_134[] = { 0xb2, 0xd1 };
+static CVI_U8 data_ili9881c_135[] = { 0x38, 0x0b };
+static CVI_U8 data_ili9881c_136[] = { 0x39, 0x00 };
+static CVI_U8 data_ili9881c_137[] = { 0xb5, 0x02 };
+static CVI_U8 data_ili9881c_138[] = { 0x31, 0x25 };
+static CVI_U8 data_ili9881c_138_1[] = { 0x3b, 0x98 };
 static CVI_U8 data_ili9881c_139[] = { 0xff, 0x98, 0x81, 0x01 };
-static CVI_U8 data_ili9881c_140[] = { 0x22, 0x09 };
+static CVI_U8 data_ili9881c_140[] = { 0x22, 0x0a };
 static CVI_U8 data_ili9881c_141[] = { 0x31, 0x00 };
-static CVI_U8 data_ili9881c_142[] = { 0x40, 0x33 };
-static CVI_U8 data_ili9881c_143[] = { 0x53, 0xa2 };
-static CVI_U8 data_ili9881c_144[] = { 0x55, 0x92 };
-static CVI_U8 data_ili9881c_145[] = { 0x50, 0x96 };
-static CVI_U8 data_ili9881c_146[] = { 0x51, 0x96 };
-static CVI_U8 data_ili9881c_147[] = { 0x60, 0x22 };
-static CVI_U8 data_ili9881c_148[] = { 0x61, 0x00 };
-static CVI_U8 data_ili9881c_149[] = { 0x62, 0x19 };
-static CVI_U8 data_ili9881c_150[] = { 0x63, 0x00 };
-static CVI_U8 data_ili9881c_151[] = { 0xa0, 0x08 };
-static CVI_U8 data_ili9881c_152[] = { 0xa1, 0x11 };
-static CVI_U8 data_ili9881c_153[] = { 0xa2, 0x19 };
-static CVI_U8 data_ili9881c_154[] = { 0xa3, 0x0d };
-static CVI_U8 data_ili9881c_155[] = { 0xa4, 0x0d };
-static CVI_U8 data_ili9881c_156[] = { 0xa5, 0x1e };
-static CVI_U8 data_ili9881c_157[] = { 0xa6, 0x14 };
-static CVI_U8 data_ili9881c_158[] = { 0xa7, 0x17 };
-static CVI_U8 data_ili9881c_159[] = { 0xa8, 0x4f };
-static CVI_U8 data_ili9881c_160[] = { 0xa9, 0x1a };
+static CVI_U8 data_ili9881c_142[] = { 0x53, 0x3d };
+static CVI_U8 data_ili9881c_143[] = { 0x55, 0x3d };
+//static CVI_U8 data_ili9881c_144[] = { 0x55, 0x3d };
+static CVI_U8 data_ili9881c_145[] = { 0x50, 0xb5 };
+static CVI_U8 data_ili9881c_146[] = { 0x51, 0xad };
+static CVI_U8 data_ili9881c_147[] = { 0x60, 0x06 };
+//static CVI_U8 data_ili9881c_148[] = { 0x61, 0x00 };
+static CVI_U8 data_ili9881c_149[] = { 0x62, 0x20 };
+//static CVI_U8 data_ili9881c_150[] = { 0x63, 0x00 };
+static CVI_U8 data_ili9881c_151[] = { 0xa0, 0x00 };
+static CVI_U8 data_ili9881c_152[] = { 0xa1, 0x21 };
+static CVI_U8 data_ili9881c_153[] = { 0xa2, 0x35 };
+static CVI_U8 data_ili9881c_154[] = { 0xa3, 0x19 };
+static CVI_U8 data_ili9881c_155[] = { 0xa4, 0x1e };
+static CVI_U8 data_ili9881c_156[] = { 0xa5, 0x33 };
+static CVI_U8 data_ili9881c_157[] = { 0xa6, 0x27 };
+static CVI_U8 data_ili9881c_158[] = { 0xa7, 0x26 };
+static CVI_U8 data_ili9881c_159[] = { 0xa8, 0xaf };
+static CVI_U8 data_ili9881c_160[] = { 0xa9, 0x1b };
 static CVI_U8 data_ili9881c_161[] = { 0xaa, 0x27 };
-static CVI_U8 data_ili9881c_162[] = { 0xab, 0x49 };
+static CVI_U8 data_ili9881c_162[] = { 0xab, 0x8d };
 static CVI_U8 data_ili9881c_163[] = { 0xac, 0x1a };
-static CVI_U8 data_ili9881c_164[] = { 0xad, 0x18 };
-static CVI_U8 data_ili9881c_165[] = { 0xae, 0x4c };
-static CVI_U8 data_ili9881c_166[] = { 0xaf, 0x22 };
-static CVI_U8 data_ili9881c_167[] = { 0xb0, 0x27 };
-static CVI_U8 data_ili9881c_168[] = { 0xb1, 0x4b };
-static CVI_U8 data_ili9881c_169[] = { 0xb2, 0x60 };
-static CVI_U8 data_ili9881c_170[] = { 0xb3, 0x39 };
-static CVI_U8 data_ili9881c_171[] = { 0xc0, 0x08 };
-static CVI_U8 data_ili9881c_172[] = { 0xc1, 0x11 };
-static CVI_U8 data_ili9881c_173[] = { 0xc2, 0x19 };
-static CVI_U8 data_ili9881c_174[] = { 0xc3, 0x0d };
-static CVI_U8 data_ili9881c_175[] = { 0xc4, 0x0d };
-static CVI_U8 data_ili9881c_176[] = { 0xc5, 0x1e };
-static CVI_U8 data_ili9881c_177[] = { 0xc6, 0x14 };
-static CVI_U8 data_ili9881c_178[] = { 0xc7, 0x17 };
-static CVI_U8 data_ili9881c_179[] = { 0xc8, 0x4f };
-static CVI_U8 data_ili9881c_180[] = { 0xc9, 0x1a };
+static CVI_U8 data_ili9881c_164[] = { 0xad, 0x1b };
+static CVI_U8 data_ili9881c_165[] = { 0xae, 0x50 };
+static CVI_U8 data_ili9881c_166[] = { 0xaf, 0x26 };
+static CVI_U8 data_ili9881c_167[] = { 0xb0, 0x2b };
+static CVI_U8 data_ili9881c_168[] = { 0xb1, 0x54 };
+static CVI_U8 data_ili9881c_169[] = { 0xb2, 0x5e };
+static CVI_U8 data_ili9881c_170[] = { 0xb3, 0x23 };
+static CVI_U8 data_ili9881c_171[] = { 0xc0, 0x00 };
+static CVI_U8 data_ili9881c_172[] = { 0xc1, 0x21 };
+static CVI_U8 data_ili9881c_173[] = { 0xc2, 0x35 };
+static CVI_U8 data_ili9881c_174[] = { 0xc3, 0x19 };
+static CVI_U8 data_ili9881c_175[] = { 0xc4, 0x1e };
+static CVI_U8 data_ili9881c_176[] = { 0xc5, 0x33 };
+static CVI_U8 data_ili9881c_177[] = { 0xc6, 0x27 };
+static CVI_U8 data_ili9881c_178[] = { 0xc7, 0x26 };
+static CVI_U8 data_ili9881c_179[] = { 0xc8, 0xaf };
+static CVI_U8 data_ili9881c_180[] = { 0xc9, 0x1b };
 static CVI_U8 data_ili9881c_181[] = { 0xca, 0x27 };
-static CVI_U8 data_ili9881c_182[] = { 0xcb, 0x49 };
+static CVI_U8 data_ili9881c_182[] = { 0xcb, 0x8d };
 static CVI_U8 data_ili9881c_183[] = { 0xcc, 0x1a };
-static CVI_U8 data_ili9881c_184[] = { 0xcd, 0x18 };
-static CVI_U8 data_ili9881c_185[] = { 0xce, 0x4c };
-static CVI_U8 data_ili9881c_186[] = { 0xcf, 0x33 };
-static CVI_U8 data_ili9881c_187[] = { 0xd0, 0x27 };
-static CVI_U8 data_ili9881c_188[] = { 0xd1, 0x4b };
-static CVI_U8 data_ili9881c_189[] = { 0xd2, 0x60 };
-static CVI_U8 data_ili9881c_190[] = { 0xd3, 0x39 };
+static CVI_U8 data_ili9881c_184[] = { 0xcd, 0x1b };
+static CVI_U8 data_ili9881c_185[] = { 0xce, 0x50 };
+static CVI_U8 data_ili9881c_186[] = { 0xcf, 0x26 };
+static CVI_U8 data_ili9881c_187[] = { 0xd0, 0x2b };
+static CVI_U8 data_ili9881c_188[] = { 0xd1, 0x54 };
+static CVI_U8 data_ili9881c_189[] = { 0xd2, 0x5e };
+static CVI_U8 data_ili9881c_190[] = { 0xd3, 0x23 };
 static CVI_U8 data_ili9881c_191[] = { 0xff, 0x98, 0x81, 0x00 };
-static CVI_U8 data_ili9881c_192[] = { 0x36 };
-static CVI_U8 data_ili9881c_193[] = { 0x35 };
+//static CVI_U8 data_ili9881c_192[] = { 0x36 };
+//static CVI_U8 data_ili9881c_193[] = { 0x35 };
 static CVI_U8 data_ili9881c_194[] = { 0x11 };
 static CVI_U8 data_ili9881c_195[] = { 0x29 };
 
@@ -365,18 +366,19 @@ const struct dsc_instr dsi_init_cmds_ili9881c_720x1280[] = {
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_136 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_137 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_138 },
+	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_138_1 },
 	{.delay = 0, .data_type = 0x29, .size = 4, .data = data_ili9881c_139 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_140 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_141 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_142 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_143 },
-	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_144 },
+	//{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_144 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_145 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_146 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_147 },
-	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_148 },
+	//{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_148 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_149 },
-	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_150 },
+	//{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_150 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_151 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_152 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_153 },
@@ -418,8 +420,8 @@ const struct dsc_instr dsi_init_cmds_ili9881c_720x1280[] = {
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_189 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_ili9881c_190 },
 	{.delay = 0, .data_type = 0x29, .size = 4, .data = data_ili9881c_191 },
-	{.delay = 0, .data_type = 0x05, .size = 1, .data = data_ili9881c_192 },
-	{.delay = 0, .data_type = 0x05, .size = 1, .data = data_ili9881c_193 },
+	//{.delay = 0, .data_type = 0x05, .size = 1, .data = data_ili9881c_192 },
+	//{.delay = 0, .data_type = 0x05, .size = 1, .data = data_ili9881c_193 },
 	{.delay = 120, .data_type = 0x05, .size = 1, .data = data_ili9881c_194 },
 	{.delay = 20, .data_type = 0x05, .size = 1, .data = data_ili9881c_195 }
 };
