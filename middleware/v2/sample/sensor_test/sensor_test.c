@@ -45,7 +45,10 @@ static int sys_vi_init(void)
 	CVI_LOG_SetLevelConf(&log_conf);
 
 	// Get config from ini if found.
-	if (SAMPLE_COMM_VI_ParseIni(&stIniCfg)) {
+	s32Ret = SAMPLE_COMM_VI_ParseIni(&stIniCfg);
+	if (s32Ret != CVI_SUCCESS) {
+		SAMPLE_PRT("Parse fail\n");
+	} else {
 		SAMPLE_PRT("Parse complete\n");
 	}
 
@@ -233,17 +236,17 @@ static CVI_S32 sensor_dump_yuv(void)
 	int tmp;
 	struct timespec start, end;
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Get frm from which chn(0~1): ");
+	SAMPLE_PRT("Get frm from which chn(0~1): ");
 	scanf("%d", &tmp);
 	chn = tmp;
-	CVI_TRACE_LOG(CVI_DBG_WARN, "how many loops to do(11111 is infinite: ");
+	SAMPLE_PRT("how many loops to do(11111 is infinite: ");
 	scanf("%d", &loop);
 	while (loop > 0) {
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		if (_vi_get_chn_frame(chn) == CVI_SUCCESS) {
 			++ok;
 			clock_gettime(CLOCK_MONOTONIC, &end);
-			CVI_TRACE_LOG(CVI_DBG_WARN, "ms consumed: %f\n",
+			SAMPLE_PRT("ms consumed: %f\n",
 						(CVI_FLOAT)diff_in_us(start, end)/1000);
 		} else
 			++ng;
@@ -251,9 +254,9 @@ static CVI_S32 sensor_dump_yuv(void)
 		if (loop != 11111)
 			loop--;
 	}
-	CVI_TRACE_LOG(CVI_DBG_WARN, "VI GetChnFrame OK(%d) NG(%d)\n", ok, ng);
+	SAMPLE_PRT("VI GetChnFrame OK(%d) NG(%d)\n", ok, ng);
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Dump VI yuv TEST-PASS\n");
+	SAMPLE_PRT("Dump VI yuv TEST-PASS\n");
 
 	return CVI_SUCCESS;
 }
@@ -265,11 +268,11 @@ static CVI_S32 sensor_flip_mirror(void)
 	int chnID;
 	int pipeID;
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "chn(0~1): ");
+	SAMPLE_PRT("chn(0~1): ");
 	scanf("%d", &chnID);
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Flip enable/disable(1/0): ");
+	SAMPLE_PRT("Flip enable/disable(1/0): ");
 	scanf("%d", &flip);
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Mirror enable/disable(1/0): ");
+	SAMPLE_PRT("Mirror enable/disable(1/0): ");
 	scanf("%d", &mirror);
 	pipeID = chnID;
 	CVI_VI_SetChnFlipMirror(pipeID, chnID, flip, mirror);
@@ -292,7 +295,7 @@ static CVI_S32 sensor_dump_raw(void)
 	stVideoFrame[0].stVFrame.enPixelFormat = PIXEL_FORMAT_RGB_BAYER_12BPP;
 	stVideoFrame[1].stVFrame.enPixelFormat = PIXEL_FORMAT_RGB_BAYER_12BPP;
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "To get raw dump from dev(0~1): ");
+	SAMPLE_PRT("To get raw dump from dev(0~1): ");
 	scanf("%d", &dev);
 
 	attr.bEnable = 1;
@@ -306,8 +309,8 @@ static CVI_S32 sensor_dump_raw(void)
 
 	CVI_VI_GetPipeDumpAttr(dev, &attr);
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Enable(%d), DumpType(%d):\n", attr.bEnable, attr.enDumpType);
-	CVI_TRACE_LOG(CVI_DBG_WARN, "how many loops to do (1~60)");
+	SAMPLE_PRT("Enable(%d), DumpType(%d):\n", attr.bEnable, attr.enDumpType);
+	SAMPLE_PRT("how many loops to do (1~60)");
 	scanf("%d", &loop);
 
 	if (loop > 60)
@@ -334,7 +337,7 @@ static CVI_S32 sensor_dump_raw(void)
 				stVideoFrame[j].stVFrame.pu8VirAddr[0]
 					= CVI_SYS_Mmap(stVideoFrame[j].stVFrame.u64PhyAddr[0]
 					  , stVideoFrame[j].stVFrame.u32Length[0]);
-				CVI_TRACE_LOG(CVI_DBG_WARN, "paddr(%#"PRIx64") vaddr(%p)\n",
+				SAMPLE_PRT("paddr(%#"PRIx64") vaddr(%p)\n",
 							stVideoFrame[j].stVFrame.u64PhyAddr[0],
 							stVideoFrame[j].stVFrame.pu8VirAddr[0]);
 
@@ -368,7 +371,7 @@ static CVI_S32 sensor_dump_raw(void)
 						stVideoFrame[j].stVFrame.s16OffsetTop,
 						tv1.tv_sec, tv1.tv_usec);
 
-				CVI_TRACE_LOG(CVI_DBG_WARN, "dump image %s\n", img_name);
+				SAMPLE_PRT("dump image %s\n", img_name);
 
 				output = fopen(img_name, "wb");
 
@@ -381,13 +384,13 @@ static CVI_S32 sensor_dump_raw(void)
 		CVI_VI_ReleasePipeFrame(dev, stVideoFrame);
 
 		clock_gettime(CLOCK_MONOTONIC, &end);
-		CVI_TRACE_LOG(CVI_DBG_WARN, "ms consumed: %f\n",
+		SAMPLE_PRT("ms consumed: %f\n",
 					(CVI_FLOAT)diff_in_us(start, end) / 1000);
 
 		loop--;
 	}
 
-	CVI_TRACE_LOG(CVI_DBG_WARN, "Dump VI raw TEST-PASS\n");
+	SAMPLE_PRT("Dump VI raw TEST-PASS\n");
 
 	return s32Ret;
 }
@@ -452,16 +455,16 @@ int sensor_dump(void)
 	char img_name[128] = {0, };
 
 	CVI_TRACE_LOG(CVI_DBG_WARN, "dump addr:\n");
-	scanf("%lx", &addr);
+	scanf("%"PRIx64"", &addr);
 	CVI_TRACE_LOG(CVI_DBG_WARN, "dump size(0\1):\n");
 	scanf("%x", &size);
 
-	snprintf(img_name, sizeof(img_name), "register_%lx.bin", addr);
+	snprintf(img_name, sizeof(img_name), "register_%"PRIx64".bin", addr);
 
 	output = fopen(img_name, "wb");
 	if (output == NULL) {
 		memset(img_name, 0x0, sizeof(img_name));
-		snprintf(img_name, sizeof(img_name), "register_%lx.bin", addr);
+		snprintf(img_name, sizeof(img_name), "register_%"PRIx64".bin", addr);
 		output = fopen(img_name, "wb");
 		if (output == NULL) {
 			CVI_TRACE_LOG(CVI_DBG_ERR, "fopen fail\n");

@@ -12,10 +12,14 @@ OSS_MODULE_INSTALL_PATH = $(OUTPUT_DIR)/mw_$(SDK_VER)/cvitek_mw_sdk
 OSS_MODULE_INCLUDE_PATH = $(OSS_MODULE_INSTALL_PATH)/include
 OSS_MODULE_LIB_PATH = $(OSS_MODULE_INSTALL_PATH)/lib
 
-ISP_BIN_DIR = $(MW_PATH)/modules/isp/$(shell echo $(CHIP_ARCH) | tr A-Z a-z)/isp_bin/inc
+ifneq ($(findstring $(CHIP_ARCH), CV183X CV182X MARS PHOBOS CV181X CV180X SG200X),)
+ISP_BIN_DIR = $(MW_PATH)/modules/isp/$(shell echo $(CVIARCH) | tr A-Z a-z)/isp_bin/inc
+else
+$(error UNKNOWN chip architecture - $(CHIP_ARCH))
+endif
 
 SRCS_ASM = $(wildcard $(SDIR)/*.S)
-INCS = -I$(MW_INC) -I$(KERNEL_INC) -I$(SYS_INC) -I$(VPU_INC) -I$(ISP_INC) -Iinclude
+INCS = -I$(MW_INC) -I$(KERNEL_INC) -I$(SYS_INC) -I$(VPSS_INC) -I$(ISP_INC) -Iinclude
 INCS += -I$(SYS_INC) -I$(OSS_MODULE_INCLUDE_PATH)/cvi_json-c -I$(ISP_BIN_DIR) -I$(OSS_MODULE_INCLUDE_PATH)/cvi_miniz
 OBJS = $(SRCS:.c=.o)
 OBJS_ASM = $(SRCS_ASM:.S=.o)

@@ -201,6 +201,7 @@ CVI_VOID SAMPLE_COMM_VENC_InitChnInputCfg(chnInputCfg *pIc)
 	pIc->single_LumaBuf = 0;
 	pIc->single_core = 0;
 	pIc->forceIdr = -1;
+	pIc->u32ResetGop = 0;
 	pIc->chgNum = -1;
 	pIc->tempLayer = 0;
 	pIc->bgInterval = CVI_H26X_SMARTP_BG_INTERVAL_DEFAULT;
@@ -831,6 +832,21 @@ CVI_S32 SAMPLE_COMM_VENC_Create(
 			CVI_VENC_DestroyChn(VencChn);
 			goto ERR_SAMPLE_COMM_VENC_CREATE;
 		}
+
+		s32Ret = SAMPLE_COMM_VENC_EnableSvc(pIc, VencChn);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("SAMPLE_COMM_VENC_EnableSvc, %d\n", s32Ret);
+			CVI_VENC_DestroyChn(VencChn);
+			goto ERR_SAMPLE_COMM_VENC_CREATE;
+		}
+
+		s32Ret = SAMPLE_COMM_VENC_SetSvcParam(pIc, VencChn);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("SAMPLE_COMM_VENC_SetSvcParam, %d\n", s32Ret);
+			CVI_VENC_DestroyChn(VencChn);
+			goto ERR_SAMPLE_COMM_VENC_CREATE;
+		}
+
 	}
 
 	if (enType != PT_JPEG && enType != PT_MJPEG) {
@@ -2037,6 +2053,62 @@ CVI_S32 SAMPLE_COMM_VENC_SetH264IntraPred(
 	if (s32Ret != CVI_SUCCESS) {
 		CVI_VENC_ERR("SetH264IntraPred failed!\n");
 		return CVI_FAILURE;
+	}
+
+	return s32Ret;
+}
+
+CVI_S32 SAMPLE_COMM_VENC_EnableSvc(
+	chnInputCfg *pIc,
+	VENC_CHN VencChn)
+{
+	CVI_S32 s32Ret = CVI_SUCCESS;
+
+	if (pIc->svc_enable) {
+		s32Ret = CVI_VENC_EnableSvc(VencChn, pIc->svc_enable);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("Svc enable failed!\n");
+			return CVI_FAILURE;
+		}
+	}
+
+	return s32Ret;
+}
+
+CVI_S32 SAMPLE_COMM_VENC_SetSvcParam(
+	chnInputCfg *pIc,
+	VENC_CHN VencChn)
+{
+	CVI_S32 s32Ret = CVI_SUCCESS;
+	VENC_SVC_PARAM_S stSvcParam, *pstSvcParam = &stSvcParam;
+
+	if (pIc->svc_enable) {
+		s32Ret = CVI_VENC_GetSvcParam(VencChn, pstSvcParam);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("GetSvcParam failed!\n");
+			return CVI_FAILURE;
+		}
+		pstSvcParam->fg_protect_en = pIc->fg_protect_en;
+		pstSvcParam->fg_dealt_qp = pIc->fg_dealt_qp;
+		if (pIc->complex_scene_detect_en) {
+			pstSvcParam->complex_scene_detect_en = pIc->complex_scene_detect_en;
+			if (pIc->complex_scene_hight_th > pIc->complex_scene_low_th &&
+			pIc->complex_scene_low_th) {
+				pstSvcParam->complex_scene_hight_th = pIc->complex_scene_hight_th;
+				pstSvcParam->complex_scene_low_th = pIc->complex_scene_low_th;
+			}
+			if (pIc->complex_min_percent > pIc->middle_min_percent &&
+			pIc->middle_min_percent) {
+				pstSvcParam->middle_min_percent = pIc->middle_min_percent;
+				pstSvcParam->complex_min_percent = pIc->complex_min_percent;
+			}
+		}
+		pstSvcParam->smart_ai_en = pIc->smart_ai_en;
+		s32Ret = CVI_VENC_SetSvcParam(VencChn, pstSvcParam);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("SetSvcParam failed!\n");
+			return CVI_FAILURE;
+		}
 	}
 
 	return s32Ret;

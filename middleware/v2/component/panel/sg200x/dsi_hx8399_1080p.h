@@ -5,14 +5,14 @@
 #include <linux/cvi_comm_mipi_tx.h>
 
 #define HX8399_HACT		1080
-#define HX8399_HSA		10
-#define HX8399_HBP		20
-#define HX8399_HFP		10
+#define HX8399_HSA		5
+#define HX8399_HBP		148
+#define HX8399_HFP		5
 
 #define HX8399_VACT		1920
-#define HX8399_VSA		5
-#define HX8399_VBP		20
-#define HX8399_VFP		10
+#define HX8399_VSA		6
+#define HX8399_VBP		2
+#define HX8399_VFP		2
 
 #define PIXEL_CLK(x) ((x##_VACT + x##_VSA + x##_VBP + x##_VFP) \
 	* (x##_HACT + x##_HSA + x##_HBP + x##_HFP) * 60 / 1000)
@@ -24,7 +24,7 @@ struct combo_dev_cfg_s dev_cfg_hx8399_1080x1920 = {
 #else
 	.lane_id = {MIPI_TX_LANE_0, MIPI_TX_LANE_1, MIPI_TX_LANE_CLK, MIPI_TX_LANE_2, MIPI_TX_LANE_3},
 #endif
-	.lane_pn_swap = {false, false, false, false, false},
+	.lane_pn_swap = {true, true, true, true, true},
 	.output_mode = OUTPUT_MODE_DSI_VIDEO,
 	.video_mode = BURST_MODE,
 	.output_format = OUT_FORMAT_RGB_24_BIT,
@@ -46,28 +46,23 @@ struct combo_dev_cfg_s dev_cfg_hx8399_1080x1920 = {
 const struct hs_settle_s hs_timing_cfg_hx8399_1080x1920 = { .prepare = 6, .zero = 32, .trail = 1 };
 
 static CVI_U8 data_hx8399_0[] = {
-	0xB9, 0xFF, 0x83, 0x99
+	0xB9, 0xFF, 0x83, 0x99,
 };
 static CVI_U8 data_hx8399_1[] = {
-	0xD2, 0x77
+	0xD2, 0x77,
 };
 static CVI_U8 data_hx8399_2[] = {
 	0xB1, 0x02, 0x04, 0x74,
 	0x94, 0x01, 0x32, 0x33,
 	0x11, 0x11, 0xAB, 0x4D,
-	0x56, 0x73, 0x02, 0x02
+	0x56, 0x73, 0x02, 0x02,
 };
 static CVI_U8 data_hx8399_3[] = {
 	0xB2, 0x00, 0x80, 0x80,
 	0xAE, 0x05, 0x07, 0x5A,
 	0x11, 0x00, 0x00, 0x10,
-	0x1E, 0x70, 0x03, 0xD4
+	0x1E, 0x70, 0x03, 0xD4,
 };
-
-static CVI_U8 data_hx8399_ebf_0[] = {
-	0x36, 0x02
-};
-
 static CVI_U8 data_hx8399_4[] = {
 	0xB4, 0x00, 0xFF, 0x02,
 	0xC0, 0x02, 0xC0, 0x00,
@@ -80,7 +75,7 @@ static CVI_U8 data_hx8399_4[] = {
 	0x00, 0x04, 0x06, 0x00,
 	0x32, 0x04, 0x0A, 0x08,
 	0x01, 0x00, 0x0F, 0xB8,
-	0x01
+	0x01,
 };
 static CVI_U8 data_hx8399_5[] = {
 	0xD3, 0x00, 0x00, 0x00,
@@ -91,7 +86,7 @@ static CVI_U8 data_hx8399_5[] = {
 	0x00, 0x00, 0x00, 0x00,
 	0x01, 0x00, 0x05, 0x05,
 	0x07, 0x00, 0x00, 0x00,
-	0x05, 0x40
+	0x05, 0x40,
 };
 static CVI_U8 data_hx8399_6[] = {
 	0xD5, 0x18, 0x18, 0x19,
@@ -102,7 +97,7 @@ static CVI_U8 data_hx8399_6[] = {
 	0x18, 0x18, 0x18, 0x2F,
 	0x2F, 0x30, 0x30, 0x31,
 	0x31, 0x18, 0x18, 0x18,
-	0x18
+	0x18,
 };
 static CVI_U8 data_hx8399_7[] = {
 	0xD6, 0x18, 0x18, 0x19,
@@ -113,35 +108,35 @@ static CVI_U8 data_hx8399_7[] = {
 	0x40, 0x40, 0x40, 0x2F,
 	0x2F, 0x30, 0x30, 0x31,
 	0x31, 0x40, 0x40, 0x40,
-	0x40
+	0x40,
 };
 static CVI_U8 data_hx8399_8[] = {
 	0xD8, 0xA2, 0xAA, 0x02,
 	0xA0, 0xA2, 0xA8, 0x02,
 	0xA0, 0xB0, 0x00, 0x00,
 	0x00, 0xB0, 0x00, 0x00,
-	0x00
+	0x00,
 };
 static CVI_U8 data_hx8399_9[] = {
-	0xBD, 0x01
+	0xBD, 0x01,
 };
 static CVI_U8 data_hx8399_10[] = {
 	0xD8, 0xB0, 0x00, 0x00,
 	0x00, 0xB0, 0x00, 0x00,
 	0x00, 0xE2, 0xAA, 0x03,
 	0xF0, 0xE2, 0xAA, 0x03,
-	0xF0
+	0xF0,
 };
 static CVI_U8 data_hx8399_11[] = {
-	0xBD, 0x02
+	0xBD, 0x02,
 };
 static CVI_U8 data_hx8399_12[] = {
 	0xD8, 0xE2, 0xAA, 0x03,
 	0xF0, 0xE2, 0xAA, 0x03,
-	0xF0
+	0xF0,
 };
 static CVI_U8 data_hx8399_13[] = {
-	0xBD, 0x00
+	0xBD, 0x00,
 };
 static CVI_U8 data_hx8399_14[] = {
 	0xB6, 0x8D, 0x8D
@@ -160,10 +155,10 @@ static CVI_U8 data_hx8399_15[] = {
 	0x6C, 0x76, 0x7F, 0x85,
 	0x8A, 0x95, 0x9A, 0xA4,
 	0x9B, 0xAB, 0xB0, 0x5C,
-	0x58, 0x64, 0x77
+	0x58, 0x64, 0x77,
 };
 static CVI_U8 data_hx8399_16[] = {
-	0xcc, 0x08
+	0xcc, 0x08,
 };
 static CVI_U8 data_hx8399_17[] = {
 	0x11, 0x00
@@ -177,11 +172,10 @@ const struct dsc_instr dsi_init_cmds_hx8399_1080x1920[] = {
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_1 },
 	{.delay = 0, .data_type = 0x29, .size = 16, .data = data_hx8399_2 },
 	{.delay = 0, .data_type = 0x29, .size = 16, .data = data_hx8399_3 },
-	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_ebf_0 },
 	{.delay = 0, .data_type = 0x29, .size = 45, .data = data_hx8399_4 },
-	{.delay = 5, .data_type = 0x29, .size = 34, .data = data_hx8399_5 },
-	{.delay = 5, .data_type = 0x29, .size = 33, .data = data_hx8399_6 },
-	{.delay = 5, .data_type = 0x29, .size = 33, .data = data_hx8399_7 },
+	{.delay = 10, .data_type = 0x29, .size = 34, .data = data_hx8399_5 },
+	{.delay = 10, .data_type = 0x29, .size = 33, .data = data_hx8399_6 },
+	{.delay = 10, .data_type = 0x29, .size = 33, .data = data_hx8399_7 },
 	{.delay = 0, .data_type = 0x29, .size = 17, .data = data_hx8399_8 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_9 },
 	{.delay = 0, .data_type = 0x29, .size = 17, .data = data_hx8399_10 },
@@ -189,10 +183,10 @@ const struct dsc_instr dsi_init_cmds_hx8399_1080x1920[] = {
 	{.delay = 0, .data_type = 0x29, .size = 9, .data = data_hx8399_12 },
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_13 },
 	{.delay = 0, .data_type = 0x29, .size = 3, .data = data_hx8399_14 },
-	{.delay = 5, .data_type = 0x29, .size = 55, .data = data_hx8399_15 },
-	{.delay = 5, .data_type = 0x15, .size = 2, .data = data_hx8399_16 },
-	{.delay = 200, .data_type = 0x05, .size = 1, .data = data_hx8399_17 },
-	{.delay = 200, .data_type = 0x05, .size = 1, .data = data_hx8399_18 },
+	{.delay = 10, .data_type = 0x29, .size = 55, .data = data_hx8399_15 },
+	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_16 },
+	{.delay = 120, .data_type = 0x05, .size = 1, .data = data_hx8399_17 },
+	{.delay = 20, .data_type = 0x05, .size = 1, .data = data_hx8399_18 },
 };
 
 #else

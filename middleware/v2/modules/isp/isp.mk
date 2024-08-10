@@ -3,6 +3,6 @@ ifeq ($(PARAM_FILE), )
 	include $(PARAM_FILE)
 endif
 
-isp_chip_dir := $(shell echo $(CHIP_ARCH) | tr A-Z a-z)
+isp_chip_dir := $(shell echo $(CVIARCH) | tr A-Z a-z)
 
 

@@ -90,6 +90,8 @@ static optionExt long_option_ext[] = {
 		"pnswap sequence by order"},
 	{{"dsi-control",     no_argument, NULL, 'd'}, ARG_STRING, 0,   0,
 		"set/get dsi status or settings." },
+	{{"show-pattern", optional_argument, NULL, 's'}, ARG_STRING, 0,   0,
+		"show colorbar or snow or rgb color pattern." },
 	{{"help",      no_argument, NULL, 'h'},       ARG_STRING, 0,   0,
 		"print usage."},
 	{{NULL, 0, NULL, 0}, ARG_INT, 0, 0, "no param: just init the panel."}
@@ -131,6 +133,21 @@ void printdsiHelp(void)
 	printf(" 5: set hs settle settings\n");
 }
 
+void printPatternHelp(void)
+{
+	printf("\n// ------------------------show-pattern------------------------\n");
+	printf(" 0: VO_PAT_OFF\n");
+	printf(" 1: VO_PAT_SNOW\n");
+	printf(" 2: VO_PAT_AUTO\n");
+	printf(" 3: VO_PAT_RED\n");
+	printf(" 4: VO_PAT_GREEN\n");
+	printf(" 5: VO_PAT_BLUE\n");
+	printf(" 6: VO_PAT_COLORBAR\n");
+	printf(" 7: VO_PAT_GRAY_GRAD_H\n");
+	printf(" 8: VO_PAT_GRAY_GRAD_V\n");
+	printf(" 9: VO_PAT_BLACK\n");
+}
+
 void printHelp(char **argv)
 {
 	CVI_U32 idx;
@@ -146,7 +163,13 @@ void printHelp(char **argv)
 	printf(" %s --panel=HX8394_EVB --laneid=1,2,0,3,4 --pnswap=0,0,0,0,0\n", argv[0]);
 	printf("\n.for mipi panel You can also manually set the dsi by -d");
 	printf("\nEX.\n");
-	printf(" %s -d\n\n", argv[0]);
+	printf(" %s -d\n", argv[0]);
+	printf("\n.After initializing panel, to show specific pattern by --show-pattern");
+	printf("\nEX.\n");
+	printf(" %s --panel=HX8394_EVB --show-pattern=6\n", argv[0]);
+	printf("\n.After initializing panel, to show any kind of pattern by -s");
+	printf("\nEX.\n");
+	printf(" %s --panel=HX8394_EVB -s\n\n", argv[0]);
 
 	for (idx = 0; idx < sizeof(long_option_ext) / sizeof(optionExt); idx++) {
 		if (long_option_ext[idx].opt.name == NULL) {
@@ -230,6 +253,49 @@ CVI_S32 SAMPLE_MIPI_TX_ENABLE(void)
 
 	printf("Init for MIPI-Driver-%s\n", g_panel_desc.panel_mode);
 
+	close(fd);
+
+	return CVI_SUCCESS;
+}
+
+CVI_S32 SAMPLE_PANEL_ShowPattern(CVI_S32 patern_cmd)
+{
+	CVI_S32 ret = 0;
+	VO_DEV VoDev = 0;
+
+	if (patern_cmd >= 0 && patern_cmd < VO_PAT_MAX) {
+		ret = CVI_VO_ShowPattern(VoDev, patern_cmd);
+		if (ret != CVI_SUCCESS) {
+			printf("CVI_VO_ShowPattern failed with %#x!\n", ret);
+			return ret;
+		}
+		sleep(2);
+	} else if (patern_cmd == VO_PAT_MAX) {
+		do {
+			printPatternHelp();
+			printf(" others: exit\n");
+			scanf("%d", &patern_cmd);
+			if (patern_cmd >= 0 && patern_cmd < VO_PAT_MAX) {
+				ret = CVI_VO_ShowPattern(VoDev, patern_cmd);
+				if (ret != CVI_SUCCESS) {
+					printf("CVI_VO_ShowPattern failed with %#x!\n", ret);
+					return CVI_FAILURE;
+				}
+			} else {
+				break;
+			}
+		} while (1);
+	} else {
+		printf("invalid pattern mode parameter\n");
+		return ret;
+	}
+
+	ret = CVI_VO_ShowPattern(VoDev, VO_PAT_OFF);
+	if (ret != CVI_SUCCESS) {
+		printf("CVI_VO_ShowPattern failed with %#x!\n", ret);
+		return CVI_FAILURE;
+	}
+
 	return CVI_SUCCESS;
 }
 
@@ -253,18 +319,17 @@ CVI_S32 SAMPLE_PANEL_ENABLE(void)
 		printf("Init for Driver-%s\n", g_panel_desc.panel_mode);
 	}
 
-	ret = CVI_VO_ShowPattern(VoDev, VO_PAT_COLORBAR);
-	if (ret != CVI_SUCCESS) {
-		printf("failed with %#x!\n", ret);
-		return CVI_FAILURE;
-	}
-
 	return CVI_SUCCESS;
 }
 
 void SAMPLE_DSI_CONTROLE(void)
 {
 	CVI_U32 tmp;
+
+	fd = open(MIPI_TX_NAME, O_RDWR | O_NONBLOCK, 0);
+	if (fd == -1) {
+		printf("Cannot open '%s': %d, %s\n", MIPI_TX_NAME, errno, strerror(errno));
+	}
 
 	do {
 		printdsiHelp();
@@ -340,6 +405,8 @@ void SAMPLE_DSI_CONTROLE(void)
 		} else
 			break;
 	} while (1);
+
+	close(fd);
 }
 
 void SAMPLE_SET_PANEL_DESC(void)
@@ -630,7 +697,8 @@ int main(int argc, char *argv[])
 	}
 
 	struct option long_options[MAX_OPTIONS + 1];
-	CVI_S32 ch, idx, ret;
+	CVI_S32 ch, idx, ret, patern_cmd = VO_PAT_MAX;
+	bool is_pattern = false;
 
 	memset((void *)long_options, 0, sizeof(long_options));
 
@@ -647,7 +715,7 @@ int main(int argc, char *argv[])
 	}
 
 	optind = 0;
-	while ((ch = getopt_long(argc, argv, "dh", long_options, &idx)) != -1) {
+	while ((ch = getopt_long(argc, argv, "dhs", long_options, &idx)) != -1) {
 		switch (ch) {
 		case 'l':
 			ret = SAMPLE_SET_LANEID(optarg);
@@ -677,13 +745,21 @@ int main(int argc, char *argv[])
 			}
 			SAMPLE_DSI_CONTROLE();
 			break;
+		case 's':
+			is_pattern =true;
+			if (optarg != NULL){
+				sscanf(optarg, "%02d", &patern_cmd);
+				if (patern_cmd == VO_PAT_MAX)
+					patern_cmd = -1;
+			}
+			break;
 		case 'h':
 			printHelp(argv);
-			return CVI_SUCCESS;
+			goto EXIT1;
 		default:
 			printf("ch = %c\n", ch);
 			printHelp(argv);
-			return CVI_FAILURE;
+			goto EXIT1;
 		}
 	}
 
@@ -694,9 +770,19 @@ int main(int argc, char *argv[])
 	SAMPLE_SET_PANEL_DESC();
 	SAMPLE_PANEL_ENABLE();
 
-	while (1) {
-		sleep(1);
+	if (is_pattern) {
+		ret = SAMPLE_PANEL_ShowPattern(patern_cmd);
+		if (ret != CVI_SUCCESS) {
+			printf("Show pattern failed\n");
+			return ret;
+		}
 	}
+
+EXIT1:
+	if (ret == CVI_SUCCESS)
+		SAMPLE_PRT("sample_panel exit success!\n");
+	else
+		SAMPLE_PRT("sample_panel exit abnormally!\n");
 
 	return CVI_SUCCESS;
 }

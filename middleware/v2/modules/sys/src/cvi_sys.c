@@ -237,7 +237,7 @@ CVI_S32 CVI_SYS_Init(void)
 		//return CVI_ERR_SYS_NOTREADY;
 	}
 
-#ifndef __SOC_PHOBOS__
+#ifndef __CV180X__
 	s32ret = vo_dev_open();
 	if (s32ret != CVI_SUCCESS) {
 		CVI_TRACE_SYS(CVI_DBG_DEBUG, "base_vo_open failed\n");
@@ -298,6 +298,28 @@ CVI_S32 CVI_SYS_Init(void)
 	return s32ret;
 }
 
+CVI_S32 CVI_SYS_IsInited(void)
+{
+	CVI_S32 s32ret = CVI_SUCCESS, _sys_fd = -1;
+	CVI_U32 sys_init = 0;
+
+	_sys_fd = get_sys_fd();
+	if (_sys_fd == -1) {
+		CVI_TRACE_VB(CVI_DBG_ERR, "get_sys_fd failed.\n");
+		return CVI_FALSE;
+	}
+
+	sys_get_sys_init(_sys_fd, &sys_init);
+	if (s32ret != CVI_SUCCESS) {
+		CVI_TRACE_VB(CVI_DBG_ERR, "sys_get_sys_init failed.\n");
+		return CVI_FALSE;
+	}
+
+	if (sys_init == 0)
+		return CVI_FALSE;
+	else return CVI_TRUE;
+}
+
 CVI_S32 CVI_SYS_Exit(void)
 {
 	CVI_S32 s32ret = CVI_SUCCESS, _sys_fd = -1;
@@ -323,7 +345,7 @@ CVI_S32 CVI_SYS_Exit(void)
 		return CVI_ERR_SYS_NOTREADY;
 	}
 
-#ifndef __SOC_PHOBOS__
+#ifndef __CV180X__
 	s32ret = vo_dev_close();
 	if (s32ret != CVI_SUCCESS) {
 		CVI_TRACE_SYS(CVI_DBG_ERR, "base_vo_close failed\n");
@@ -386,7 +408,7 @@ CVI_S32 _CVI_SYS_BindIOCtl(const MMF_CHN_S *pstSrcChn, const MMF_CHN_S *pstDestC
 
 CVI_S32 CVI_SYS_Bind(const MMF_CHN_S *pstSrcChn, const MMF_CHN_S *pstDestChn)
 {
-#ifdef __SOC_PHOBOS__
+#ifdef __CV180X__
 	if (pstDestChn && (pstDestChn->enModId == CVI_ID_VO)) {
 		CVI_TRACE_SYS(CVI_DBG_ERR, "No vo device, vo cannot be bind!\n");
 		return CVI_ERR_SYS_ILLEGAL_PARAM;
@@ -397,7 +419,7 @@ CVI_S32 CVI_SYS_Bind(const MMF_CHN_S *pstSrcChn, const MMF_CHN_S *pstDestChn)
 
 CVI_S32 CVI_SYS_UnBind(const MMF_CHN_S *pstSrcChn, const MMF_CHN_S *pstDestChn)
 {
-#ifdef __SOC_PHOBOS__
+#ifdef __CV180X__
 	if (pstDestChn && (pstDestChn->enModId == CVI_ID_VO)) {
 		CVI_TRACE_SYS(CVI_DBG_ERR, "No vo device, cannot unbind vo!\n");
 		return CVI_ERR_SYS_ILLEGAL_PARAM;

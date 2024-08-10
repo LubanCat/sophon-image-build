@@ -1,7 +1,7 @@
 #ifndef __CVIAUDIO_IOCTL_CMD_H__
 #define __CVIAUDIO_IOCTL_CMD_H__
 
-#if defined(__SOC_MARS__) || defined(__SOC_PHOBOS__)
+#if defined(__CV181X__) || defined(__CV180X__)
 #include <linux/cvi_defines.h>
 #else
 #include <cvi_defines.h>
