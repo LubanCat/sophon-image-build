@@ -32,12 +32,12 @@ if [ ! -e "/boot/boot_init" ] ; then
             echo "/dev/${ROOT_DEV}p1  /boot  auto  defaults  0 2" >> /etc/fstab
         fi
         mount /dev/${ROOT_DEV}p1 /boot
-    fi
-
-    #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
-    if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
-        mkfs.ext4 "/dev/${ROOT_DEV}p7"
-        echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
+    else    
+        #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
+        if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
+            mkfs.ext4 "/dev/${ROOT_DEV}p7"
+            echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
+        fi
     fi
 
     #/*******************扩容*******************/
