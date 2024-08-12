@@ -4,6 +4,16 @@
 
 start() {
 	printf "start ethernet: "
+	if [ ! -e /boot/boot_mac_eth0 ]; then
+		mac_address_eth0=$(ifconfig eth0 | grep HWaddr | awk '{print $5}')
+		echo "$mac_address_eth0" > /boot/boot_mac_eth0
+	else
+		ifconfig eth0 down
+		mac_address_eth0=$(cat /boot/boot_mac_eth0)
+		ifconfig eth0 hw ether $mac_address_eth0
+		ifconfig eth0 up
+	fi
+
 	if [ ! -e /boot/eth.nodhcp ]
 	then
 		(udhcpc -i eth0 -t 10 -T 1 -A 5 -b -p /run/udhcpc.eth0.pid) &
