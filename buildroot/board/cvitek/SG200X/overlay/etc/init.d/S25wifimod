@@ -6,8 +6,7 @@ then
 	printf "load wifi kernel module: "
 	cd /mnt/system/ko/
 	insmod cfg80211.ko
-	insmod 3rd/aic8800_bsp.ko
-	insmod 3rd/aic8800_fdrv.ko
+	insmod 3rd/8821cs.ko
 	echo "OK"
 	exit 0
 fi
