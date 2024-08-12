@@ -6,6 +6,16 @@ then
 	if [ -e /boot/fb ]
 	then
 		echo "framebuffer enable"
+		
+		#5.5寸mipi屏幕初始化
+		#sudo /mnt/system/usr/bin/sample_dsi --panel=HX8399_1080P
+
+		#7寸mipi屏幕初始化
+		#sudo /mnt/system/usr/bin/sample_dsi --panel=EK79007
+
+		#10.1寸mipi屏幕初始化
+		#sudo /mnt/system/usr/bin/sample_dsi --panel=ILI9881C
+
 		insmod /mnt/system/ko/soph_fb.ko
 		# we need keep node /dev/fb0 open
 		# graphic layer will disable after node /dev/fb0 is closed
