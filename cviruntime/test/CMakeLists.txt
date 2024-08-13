@@ -6,6 +6,7 @@ include(CTest)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/test_utils)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 include_directories(${CMAKE_SYSROOT}/include)
+include_directories(${CMAKE_SYSROOT}/usr/include)
 
 set(CVI_LIBS ${CVI_LIBS} cviruntime)
 

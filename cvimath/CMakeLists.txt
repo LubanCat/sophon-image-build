@@ -8,6 +8,9 @@ set(CMAKE_CXX_EXTENSIONS ON)
 #set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 #set(CMAKE_INSTALL_RPATH "\${ORIGIN}/../lib;\${ORIGIN}/")
 
+include_directories(${CMAKE_SYSROOT}/include)
+include_directories(${CMAKE_SYSROOT}/usr/include)
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE "Release")
 endif()

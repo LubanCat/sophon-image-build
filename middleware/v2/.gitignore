@@ -56,3 +56,5 @@ modules/venc/vc/jpeg/driver/include/version.h
 #modules/isp
 component/isp
 modules/isp/cv181x/isp-daemon2/src/cvi_pqtool_json.h
+modules/isp/cv181x/isp/inc/isp_version.h
+modules/isp/common/toolJsonGenerator/pqtool_definition.json
