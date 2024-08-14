@@ -13,8 +13,6 @@ ccflags-y += -I$(src)/common -I$(src)/hal/$(CVIARCH_L) -I$(src)/hal/$(CVIARCH_L)
 ccflags-y += -I$(PWD)/../base/ -I$(srctree)/drivers/staging/android
 ccflags-y += -I$(PWD)/../base/chip/$(CVIARCH_L)
 
-ccflags-y +=-Wall -Wextra -Werror -Wno-unused-parameter -Wno-sign-compare
-
 KBUILD_EXTRA_SYMBOLS += $(PWD)/../sys/Module.symvers
 KBUILD_EXTRA_SYMBOLS += $(PWD)/../base/Module.symvers
 
