@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 // $Module: fmux_gpio $
 // $RegisterBank Version: V 1.0.00 $
 // $Author: ghost $

@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 //##==============================================================================
 //##=== This script is generate by genswconfig.pl from .\00_CV180X_Pinlist_20220315.xls
 //##=== Generate Time stamp is : 2022-03-17 14:04:49

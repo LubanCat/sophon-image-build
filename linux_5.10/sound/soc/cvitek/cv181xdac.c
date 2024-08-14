@@ -311,19 +311,6 @@ static struct cv181xdac *file_dac_dev(struct file *file)
 	return container_of(file->private_data, struct cv181xdac, miscdev);
 }
 
-static void dac_set_volume(struct cv181xdac *dac, u32 val) {
-	u32 temp;
-	pr_debug("dac: ACODEC_SET_OUTPUT_VOL with val=%d\n", val);
-	if ((val < 0) | (val > 32))
-		pr_err("Only support range 0 [mute] ~ 32 [maximum]\n");
-	else {
-		temp = dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1)
-				& ~(AUDIO_PHY_REG_TXDAC_GAIN_UB_0_MASK | AUDIO_PHY_REG_TXDAC_GAIN_UB_1_MASK);
-		temp |= DAC_VOL_L(val) | DAC_VOL_R(val);
-		dac_write_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1, temp);
-	}
-}
-
 static long dac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 
@@ -332,6 +319,7 @@ static long dac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct cvi_vol_ctrl vol;
 	u32 val;
 	u32 temp;
+	u32 ramp;
 
 	if (argp != NULL) {
 		if (!copy_from_user(&val, argp, sizeof(val))) {
@@ -349,7 +337,16 @@ static long dac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case ACODEC_SET_OUTPUT_VOL:
-		dac_set_volume(dac, val);
+		pr_debug("dac: ACODEC_SET_OUTPUT_VOL with val=%d\n", val);
+
+		if ((val < 0) | (val > 32))
+			pr_err("Only support range 0 [mute] ~ 32 [maximum]\n");
+		else {
+			temp = dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1)
+					& ~(AUDIO_PHY_REG_TXDAC_GAIN_UB_0_MASK | AUDIO_PHY_REG_TXDAC_GAIN_UB_1_MASK);
+			temp |= DAC_VOL_L(val) | DAC_VOL_R(val);
+			dac_write_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1, temp);
+		}
 		break;
 
 	case ACODEC_GET_OUTPUT_VOL:
@@ -373,6 +370,11 @@ static long dac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 			return -EFAULT;
 		}
+		pr_debug("dacl_ramp: 0x%x 0x%x\n", ramp, dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1));
+		ramp = dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1) | AUDIO_PHY_REG_TXDAC_RAMP_BP_MASK;
+		dac_write_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1, ramp);
+		pr_debug("dacl_ramp: 0x%x 0x%x\n", ramp, dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1));
+
 		if (vol.vol_ctrl_mute == 1) {
 			temp = dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA2);
 			temp |= AUDIO_PHY_REG_DA_DEML_TXDAC_OW_EN_ON;
@@ -658,10 +660,6 @@ static int cv181xdac_probe(struct platform_device *pdev)
 		gpio_direction_output(mute_pin_r, 1);
 		gpio_set_value(mute_pin_r, 0);
 	}
-
-
-	/* default volume 15 */
-	dac_set_volume(dac, 15);
 	return devm_snd_soc_register_component(&pdev->dev, &soc_component_dev_cv181xdac,
 					  &cv181xdac_dai, 1);
 }
