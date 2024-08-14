@@ -20,7 +20,7 @@ endif
 
 define package_mw
     @install -d $(1)
-    @tar -c --exclude='chips' --exclude='modules' --exclude='$(1)' --exclude='.git' --exclude='tool' --exclude='component/panel/cv1835/customer' -f - . | (cd $(1); tar xf -)
+    @tar -c --exclude='chips' --exclude='modules' --exclude='$(1)' --exclude='.git' --exclude='tool' --exclude='self_test' --exclude='component/panel/cv1835/customer' -f - . | (cd $(1); tar xf -)
     @rm $(1)/3rdparty/gtest -r
     @rm $(1)/sample/ -r
     @make -C sample/ clean
@@ -35,18 +35,27 @@ module: prepare 3rdparty
 	@make -C modules/
 
 prepare:
+	@if [ -d mod_tmp ]; then mv mod_tmp modules; fi;
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X CV181X CV182X SG200X))
+else
+	@cp $(CHIP_DIR)/cvi_defines.h $(MW_INC)
+endif
 	@mkdir -p include/isp
 	@cp -rf modules/isp/include/* include/isp
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X CV180X SG200X))
+	@cp -rf modules/isp/cv181x/isp-daemon2/inc/cvi_ispd2.h include/isp/cv181x/
+endif
 3rdparty:
 	@make -C 3rdparty/
 
 sample: module component
-	@rm -rf mod_tmp
-	@cp -rf modules mod_tmp
-	@make -C sample/
+	@mv modules mod_tmp
+	@make -C sample/ || mv mod_tmp modules
+	@mv mod_tmp modules
 
 component:
 	@make -C component/isp/ all
+
 
 ifneq ($(SUBTYPE), fpga)
 install:
@@ -54,29 +63,13 @@ install:
 	@mkdir -p $(DESTDIR)/usr/lib/3rd
 ifneq ($(FLASH_SIZE_SHRINK),y)
 	# copy sample_xxx
-	@cp -f sample/mipi_tx/sample_dsi $(DESTDIR)/usr/bin
-	@cp -f sample/vio/sample_vio $(DESTDIR)/usr/bin
-	@cp -f sample/sensor_test/sensor_test $(DESTDIR)/usr/bin
-	@cp -f sample/audio/sample_audio $(DESTDIR)/usr/bin
-	#@cp -f sample/cipher/sample_cipher $(DESTDIR)/usr/bin
-	#@cp -f sample/cvg/sample_cvg $(DESTDIR)/usr/bin
+	@cp -f sample/sample_panel/sample_panel $(DESTDIR)/usr/bin
 	@cp -f sample/venc/sample_venc $(DESTDIR)/usr/bin
 	@cp -f sample/venc/sample_vcodec $(DESTDIR)/usr/bin
 	@cp -f sample/vdec/sample_vdec $(DESTDIR)/usr/bin
-	@cp -f sample/ive/sample_* $(DESTDIR)/usr/bin
-	@cp -f sample/ive/ive_stress $(DESTDIR)/usr/bin
-	@cp -f sample/region/sample_region $(DESTDIR)/usr/bin
-	@cp -f sample/vdecvo/sample_vdecvo $(DESTDIR)/usr/bin
-	@cp -f sample/overlay/sample_overlay $(DESTDIR)/usr/bin
-	@cp -f sample/fisheye/sample_fisheye $(DESTDIR)/usr/bin
-endif
-
-ifneq ($(FLASH_SIZE_SHRINK),y)
-	# copy venc
-	#@cp -f modules/venc/vc_lib/bin/cvi_h265_enc_test $(DESTDIR)/usr/bin
-	#@cp -f modules/venc/vc_lib/bin/cvi_h265_dec $(DESTDIR)/usr/bin
-	#@cp -f modules/venc/vc_lib/bin/cvi_h264_dec $(DESTDIR)/usr/bin
-	#@cp -f modules/venc/vc_lib/bin/cvi_jpg_codec $(DESTDIR)/usr/bin
+	@cp -f sample/sensor_test/sensor_test $(DESTDIR)/usr/bin
+	@cp -f sample/rtk_hciattach/rtk_hciattach $(DESTDIR)/usr/bin
+	@cp -f sample/vio/sample_vio $(DESTDIR)/usr/bin
 endif
 
 ifneq ($(FLASH_SIZE_SHRINK),y)
@@ -102,6 +95,11 @@ package:
 	@echo "package done"
 endif
 clean:
+	@if [ -d mod_tmp ]; then mv mod_tmp modules; fi;
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X CV181X CV182X SG200X))
+else
+	@rm -f $(MW_INC)/cvi_defines.h
+endif
 	@rm -rf include/isp
 	@make -C modules/ clean
 	@make -C 3rdparty/ clean

@@ -2,11 +2,11 @@ include $(PWD)/../Makefile.interdrv.param
 
 PWD := $(shell pwd)
 
-ccflags-y += -I$(src)/common -I$(src)/hal/$(CHIP_CODE)
+ccflags-y += -I$(src)/common -I$(src)/hal/$(CVIARCH_L)
 
-obj-m += soph_mon.o
-soph_mon-y += common/cvi_mon_interface.o
-soph_mon-y += hal/$(CHIP_CODE)/mon_platform.o
+obj-m += $(CVIARCH_L)_mon.o
+$(CVIARCH_L)_mon-y += common/cvi_mon_interface.o
+$(CVIARCH_L)_mon-y += hal/$(CVIARCH_L)/mon_platform.o
 
 all:
 	$(MAKE) ARCH=${ARCH} -C $(KERNEL_DIR) M=$(PWD) modules
@@ -14,7 +14,7 @@ all:
 clean:
 	@rm -f *.o* *.ko
 	@rm -f Module.symvers modules.order
-	@rm -f *.mod.c *.mod
+	@rm -f *.mod.c
 	@rm -rf .tmp_versions
 	@rm -f .*cmd
 	@rm -f $(CHIP)/*.o*

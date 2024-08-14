@@ -1,4 +1,5 @@
 binary/
-*.img
-*.tar.gz
-*.7z
+overlay-sophgo-riscv64/mnt/system/
+
+ubuntu-rootfs.ext4
+ubuntu-base-*.tar.gz

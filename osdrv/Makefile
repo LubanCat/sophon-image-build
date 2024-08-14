@@ -1,8 +1,9 @@
 SHELL=/bin/bash
 -include $(BUILD_PATH)/.config
 #
-export CHIP_CODE := $(shell echo $(CHIP_CODE) | tr A-Z a-z)
+export CVIARCH_L := $(shell echo $(CVIARCH) | tr A-Z a-z)
 #
+export CHIP_ARCH_L := $(shell echo $(CHIP_ARCH) | tr A-Z a-z)
 INTERDRV_PATH := interdrv/$(shell echo $(MW_VER))
 
 ifeq ($(KERNEL_DIR), )
@@ -22,13 +23,11 @@ ifeq ($(CONFIG_BUILD_FOR_DEBUG), y)
 INTRERDRV_FLAGS += -DDRV_DEBUG -DDRV_TEST
 endif
 
-define COPY_KO
-	( cd $(1) && cp -f *.ko $(INSTALL_DIR); )
-endef
-
 define MAKE_KO
 	( cd $(1) && $(MAKE) KERNEL_DIR=$(KERNEL_DIR) all -j$(shell nproc))
-	$(call COPY_KO, $(1))
+	if [ $$(find $(1) -name '*.ko' | wc -l) -gt 0 ]; then \
+		cd $(1) && cp -f *.ko $(INSTALL_DIR); \
+	fi
 endef
 
 MAKE_EXT_KO_CP :=
@@ -61,11 +60,11 @@ ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV183X CV182X))
 	FB_DEP = vip
 endif
 
-ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X))
+ifeq ($(CVIARCH), $(filter $(CVIARCH), CV181X))
 	KO_LIST += sys vi snsr_i2c cif vpss dwa rgn vo rtos_cmdqu fast_image cvi_vc_drv ive
 	BASE_DEP = sys
 	FB_DEP = vpss
-else ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X))
+else ifeq ($(CVIARCH), $(filter $(CVIARCH), CV180X))
 	KO_LIST += sys vi snsr_i2c cif vpss dwa rgn rtos_cmdqu fast_image cvi_vc_drv
 	BASE_DEP = sys
 	FB_DEP = vpss
@@ -114,9 +113,6 @@ fb: base $(FB_DEP)
 base: $(BASE_DEP)
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
-audio:
-	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
-
 vcodec:
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
@@ -127,7 +123,7 @@ fast_image: rtos_cmdqu
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
 jpeg:
-	@$(call COPY_KO, ${INTERDRV_PATH}/${@}/${CHIP_CODE}_${ARCH})
+	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
 pwm:
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
@@ -186,8 +182,8 @@ vo: base
 ive:
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
-cvi_vc_drv:
-	@$(call COPY_KO, ${INTERDRV_PATH}/${@}/${CHIP_CODE}_${ARCH})
+cvi_vc_drv: sys base vcodec jpeg
+	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})
 
 rtos_cmdqu:
 	@$(call MAKE_KO, ${INTERDRV_PATH}/${@})

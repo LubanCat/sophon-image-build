@@ -4,7 +4,7 @@
 include isp.mk
 
 all:
-	cp lib/$(SDK_VER)/lib* $(MW_LIB)
-
+	cp $(shell echo $(CVIARCH) | tr A-Z a-z)/$(SDK_VER)/lib* $(MW_LIB)
+	if [ "$(wildcard $(isp_chip_dir))" != "" ]; then cd $(isp_chip_dir) ; $(MAKE) all || exit 1; fi;
 clean:
-
+	if [ "$(wildcard $(isp_chip_dir))" != "" ]; then cd $(isp_chip_dir) ; $(MAKE) clean || exit 1; fi;

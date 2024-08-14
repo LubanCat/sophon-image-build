@@ -1,15 +1,15 @@
 include $(PWD)/../Makefile.interdrv.param
 
 ifneq ($(KERNELRELEASE),)
-include $(PWD)/chip/$(CHIP_CODE)/chip.mk
+include $(PWD)/chip/$(CVIARCH_L)/chip.mk
 
-obj-m += soph_mipi_rx.o
+obj-m += cvi_mipi_rx.o
 
-ccflags-y += -I$(PWD)/chip/$(CHIP_CODE)/ -I$(PWD)/common/
-ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CHIP_CODE)/uapi/
+ccflags-y += -I$(PWD)/chip/$(CVIARCH_L)/ -I$(PWD)/common/
+ccflags-y += -I$(PWD)/../include/common/uapi/ -I$(PWD)/../include/chip/$(CVIARCH_L)/uapi/
 ccflags-y += -I$(srctree)/drivers/pinctrl/cvitek/
 ccflags-y += -I$(PWD)/../include/common/kapi/
-ccflags-y += -I$(PWD)/../base/chip/$(CHIP_CODE)/
+ccflags-y += -I$(PWD)/../base/chip/$(CVIARCH_L)/
 
 ifeq ($(SUBTYPE), fpga)
 export FPGA_PORTING := true

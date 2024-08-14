@@ -51,7 +51,7 @@
 #define GDC_SUPPORT_FMT(fmt) \
 	((fmt == PIXEL_FORMAT_RGB_888_PLANAR) || (fmt == PIXEL_FORMAT_BGR_888_PLANAR) ||	\
 	 (fmt == PIXEL_FORMAT_YUV_PLANAR_420) || (fmt == PIXEL_FORMAT_YUV_400))
-#elif defined(ARCH_CV182X) || defined(__SOC_MARS__) || defined(__SOC_PHOBOS__)
+#elif defined(ARCH_CV182X) || defined(__CV181X__) || defined(__CV180X__)
 #define VPSS_GRP_SUPPORT_FMT(fmt) \
 	((fmt == PIXEL_FORMAT_RGB_888_PLANAR) || (fmt == PIXEL_FORMAT_BGR_888_PLANAR) ||	\
 	 (fmt == PIXEL_FORMAT_RGB_888) || (fmt == PIXEL_FORMAT_BGR_888) ||			\
@@ -123,7 +123,7 @@
 		(var) && ((tvar) = STAILQ_NEXT((var), field), 1);	\
 		(var) = (tvar))
 
-#define Mo_Table_Size 256
+#define Mo_Table_Size 2048
 #define DEFAULT_MESH_PADDR	0x80000000
 
 enum vdev_type {

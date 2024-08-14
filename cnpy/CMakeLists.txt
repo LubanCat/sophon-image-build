@@ -10,6 +10,7 @@ if (NOT DEFINED LLVM_MAIN_SRC_DIR)
 
   message(STATUS "CMAKE_SYSROOT ${CMAKE_SYSROOT}")
   include_directories(${CMAKE_SYSROOT}/include)
+  include_directories(${CMAKE_SYSROOT}/usr/include)
 
   include_directories(${CMAKE_INSTALL_PREFIX}/include)
   link_directories(${CMAKE_INSTALL_PREFIX}/lib)

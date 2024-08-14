@@ -73,14 +73,27 @@ extern "C" {
 #define SPK_AGC_ENABLE 0x1  /* bit 0 */
 #define SPK_EQ_ENABLE 0x2  /* bit 1 */
 
-#define CVI_MAX_AI_DEVICE_ID_NUM 3
-#define CVI_MAX_AO_DEVICE_ID_NUM 3
+
+#define DNVQE_HPFILTER				0x1
+#define DNVQE_EQ					0x2
+#define DNVQE_DRC_EXPANDER_COMPRESS	0x4
+#define DNVQE_DRC_LIMITER			0x8
+
+
+#define CVI_MAX_AI_DEVICE_ID_NUM 5
+#define CVI_MAX_AI_CARD_ID_NUM 5
+#define CVI_MAX_AO_DEVICE_ID_NUM 5
+#define CVI_MAX_AO_CARD_ID_NUM 5
 /* define macro */
 
 #define CHECK_AI_DEVID_VALID(x) \
 	((((x) > (CVI_MAX_AI_DEVICE_ID_NUM-1))) ? 1:0)
+#define CHECK_AI_CARD_VALID(x) \
+	((((x) > (CVI_MAX_AI_CARD_ID_NUM-1))) ? 1:0)
 #define CHECK_AO_DEVID_VALID(x) \
 	((((x) > (CVI_MAX_AO_DEVICE_ID_NUM-1))) ? 1:0)
+#define CHECK_AO_CARD_VALID(x) \
+	((((x) > (CVI_MAX_AO_CARD_ID_NUM-1))) ? 1:0)
 #define CHECK_AENC_DEVID_VALID(x) \
 	((((x) > (AENC_MAX_CHN_NUM-1))) ? 1:0)
 #define CHECK_ADEC_DEVID_VALID(x) \
@@ -368,12 +381,66 @@ typedef struct _AI_TALKVQE_CONFIG_S {
 	CVI_CHAR customize[MAX_AUDIO_VQE_CUSTOMIZE_NAME];
 } AI_TALKVQE_CONFIG_S;
 
+typedef enum {
+	E_FILTER_LPF,
+	E_FILTER_HPF,
+	E_FILTER_LSF,
+	E_FILTER_HSF,
+	E_FILTER_PEF,
+	E_FILTER_MAX,
+} HPF_FILTER_TYPE;
+
+typedef struct _CVI_HPF_CONFIG_S {
+	int type;
+	float f0;
+	float Q;
+	float gainDb;
+} CVI_HPF_CONFIG_S;
+
+typedef struct _CVI_EQ_CONFIG_S {
+	int bandIdx;
+	uint32_t freq;
+	float QValue;
+	float gainDb;
+} CVI_EQ_CONFIG_S;
+
+
+typedef struct _CVI_DRC_COMPRESSOR_PARAM {
+	uint32_t attackTimeMs;
+	uint32_t releaseTimeMs;
+	uint16_t ratio;
+	float thresholdDb;
+} CVI_DRC_COMPRESSOR_PARAM;
+
+typedef struct _CVI_DRC_LIMITER_PARAM {
+	uint32_t attackTimeMs;
+	uint32_t releaseTimeMs;
+	float thresholdDb;
+	float postGain;
+} CVI_DRC_LIMITER_PARAM;
+
+typedef struct _CVI_DRC_EXPANDER_PARAM {
+	uint32_t attackTimeMs;
+	uint32_t releaseTimeMs;
+	uint32_t holdTimeMs;
+	uint16_t ratio;
+	float thresholdDb;
+	float minDb;
+} CVI_DRC_EXPANDER_PARAM;
+
 typedef struct _AO_VQE_CONFIG_S {
 	CVI_U32	 u32OpenMask;
 	CVI_S32 s32WorkSampleRate;
+	CVI_S32 s32channels;
 	/* Sample Rate: 8KHz/16KHz default: 8KHz*/
 	AUDIO_SPK_AGC_CONFIG_S stAgcCfg;
 	AUDIO_SPK_EQ_CONFIG_S stEqCfg;
+
+	CVI_HPF_CONFIG_S stHpfParam;
+	CVI_EQ_CONFIG_S stEqParam;
+	CVI_DRC_COMPRESSOR_PARAM stDrcCompressor;
+	CVI_DRC_LIMITER_PARAM stDrcLimiter;
+	CVI_DRC_EXPANDER_PARAM stDrcExpander;
 } AO_VQE_CONFIG_S;
 
 /**Defines the configure parameters of Record VQE.*/
@@ -538,6 +605,9 @@ extern ST_AudioUnitTestCfg  stAudTestCfg;
 #define CVI_ERR_AI_VQE_ERR       0xA0000010
 #define CVI_ERR_AI_VQE_BUF_FULL       0xA0000011
 #define CVI_ERR_AI_VQE_FILE_UNEXIST       0xA0000012
+/*invalid card ID*/
+#define CVI_ERR_AI_INVALID_CARDID    0xA100013
+
 /* invalid device ID */
 #define CVI_ERR_AO_INVALID_DEVID     0xA1000001
 /* invalid channel ID */
@@ -568,6 +638,8 @@ extern ST_AudioUnitTestCfg  stAudTestCfg;
 #define CVI_ERR_AO_BUSY              0xA100000E
 /* vqe  err */
 #define CVI_ERR_AO_VQE_ERR       0xA100000F
+/*invalid card ID*/
+#define CVI_ERR_AO_INVALID_CARDID    0xA100010
 
 
 #ifdef __cplusplus

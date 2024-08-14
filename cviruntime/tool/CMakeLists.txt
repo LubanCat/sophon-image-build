@@ -9,6 +9,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 if(CMAKE_CROSSCOMPILING)
   include_directories(${CMAKE_SYSROOT}/include)
+  include_directories(${CMAKE_SYSROOT}/usr/include)
   link_directories(${CNPY_PATH})
 endif()
 

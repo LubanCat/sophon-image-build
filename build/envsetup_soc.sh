@@ -720,12 +720,15 @@ function cvi_setup_env()
 
   if [[ "$CHIP_ARCH" == "SG200X" ]];then
   export  CHIP_CODE="MARS"
+  export  CVIARCH="CV181X"
   fi
   if [[ "$CHIP_ARCH" == "CV181X" ]];then
   export  CHIP_CODE="MARS"
+  export  CVIARCH="CV181X"
   fi
   if [[ "$CHIP_ARCH" == "CV180X" ]];then
   export  CHIP_CODE="PHOBOS"
+  export  CVIARCH="CV180X"
   fi
 
   export BRAND BUILD_VERBOSE DEBUG PROJECT_FULLNAME

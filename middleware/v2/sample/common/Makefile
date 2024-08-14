@@ -5,7 +5,7 @@ ifeq ($(PARAM_FILE), )
 endif
 include ../sample.mk
 
-PANEL_INC =../../component/panel/$(shell echo $(CHIP_ARCH) | tr A-Z a-z)
+PANEL_INC =../../component/panel/$(shell echo $(CVIARCH) | tr A-Z a-z)
 SDIR = $(PWD)
 SRCS = $(wildcard $(SDIR)/*.c)
 INCS = -I$(MW_INC) -I$(ISP_INC) -I$(KERNEL_INC) -I$(PANEL_INC) -Iinclude

@@ -1,7 +1,10 @@
 #include <vo_core.h>
 #include <base_cb.h>
+#include <linux/clk.h>
+#include <vo_sdk_layer.h>
 
 #include "scaler.h"
+extern bool __clk_is_enabled(struct clk *clk);
 
 #define CVI_VO_IRQ_NAME            "sc"
 #define CVI_VO_DEV_NAME            "cvi-vo"
@@ -168,7 +171,7 @@ static int vo_core_probe(struct platform_device *pdev)
 			/* IP register base address */
 			res = platform_get_resource(pdev, IORESOURCE_MEM, i);
 			dev->reg_base[i] = devm_ioremap_resource(&pdev->dev, res);
-			vo_pr(VO_INFO, "res-reg: start: 0x%llx, end: 0x%llx, virt-addr(%px).\n",
+			CVI_TRACE_VO(CVI_DBG_INFO, "res-reg: start: 0x%llx, end: 0x%llx, virt-addr(%p).\n",
 					res->start, res->end, dev->reg_base[i]);
 
 			if (IS_ERR(dev->reg_base)) {
@@ -184,7 +187,7 @@ static int vo_core_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "No IRQ resource for %s\n", CVI_VO_IRQ_NAME);
 			return -ENODEV;
 		}
-		vo_pr(VO_INFO, "irq(%d) for %s get from platform driver.\n",
+		CVI_TRACE_VO(CVI_DBG_INFO, "irq(%d) for %s get from platform driver.\n",
 				dev->irq_num, CVI_VO_IRQ_NAME);
 #endif
 
@@ -261,11 +264,89 @@ static int vo_core_remove(struct platform_device *pdev)
 	dev_set_drvdata(&pdev->dev, NULL);
 
 err_destroy_instance:
-	vo_pr(VO_INFO, "%s -\n", __func__);
+	CVI_TRACE_VO(CVI_DBG_INFO, "%s -\n", __func__);
 
 	return ret;
 }
 
+#if defined(CONFIG_PM)
+int vo_core_suspend(struct platform_device *pdev, pm_message_t state)
+{
+	CVI_S32 ret = CVI_FAILURE;
+	struct cvi_vo_dev *dev;
+	MMF_CHN_S chn = {.enModId = CVI_ID_VO, .s32DevId = 0, .s32ChnId = 0};
+
+	dev = dev_get_drvdata(&pdev->dev);
+	if (!dev) {
+		dev_err(&pdev->dev, "Can not get cvi_vo drvdata\n");
+		return -EINVAL;
+	}
+
+	ret = vo_destroy_thread(dev, E_VO_TH_DISP);
+	if (ret) {
+		CVI_TRACE_VO(CVI_DBG_ERR, "Failed to vo destory thread\n");
+		return -EAGAIN;
+	}
+
+	ret = vo_stop_streaming(dev);
+	if (ret) {
+		CVI_TRACE_VO(CVI_DBG_ERR, "Failed to vo stop streaming\n");
+		return -EAGAIN;
+	}
+
+	base_mod_jobs_exit(chn, CHN_TYPE_OUT);
+
+	if (dev->clk_disp && __clk_is_enabled(dev->clk_disp))
+		clk_disable_unprepare(dev->clk_disp);
+	if (dev->clk_bt && __clk_is_enabled(dev->clk_bt))
+		clk_disable_unprepare(dev->clk_bt);
+
+	return ret;
+
+}
+
+int vo_core_resume(struct platform_device *pdev)
+{
+	CVI_S32 ret = CVI_FAILURE;
+	struct cvi_vo_dev *dev;
+	struct cvi_vo_ctx *voctx = NULL;
+	MMF_CHN_S chn = {.enModId = CVI_ID_VO, .s32DevId = 0, .s32ChnId = 0};
+
+	dev = dev_get_drvdata(&pdev->dev);
+	if (!dev) {
+		dev_err(&pdev->dev, "Can not get cvi_vo drvdata\n");
+		return -EINVAL;
+	}
+
+	if (dev->shared_mem == NULL) {
+		CVI_TRACE_VO(CVI_DBG_ERR, "dev->shared_mem is NULL\n");
+		return -EINVAL;
+	}
+
+	voctx = (struct cvi_vo_ctx *)(dev->shared_mem);
+
+	base_mod_jobs_init(chn, CHN_TYPE_OUT, voctx->u32DisBufLen - 1, 2, 0);
+
+	if (dev->clk_disp && (!__clk_is_enabled(dev->clk_disp)) )
+		clk_prepare_enable(dev->clk_disp);
+	if (dev->clk_bt && (!__clk_is_enabled(dev->clk_bt)) )
+		clk_prepare_enable(dev->clk_bt);
+
+	ret = vo_create_thread(dev, E_VO_TH_DISP);
+	if (ret) {
+		CVI_TRACE_VO(CVI_DBG_ERR, "Failed to create E_VO_TH_DISP thread\n");
+	}
+
+	ret = vo_start_streaming(dev);
+	if (ret) {
+		CVI_TRACE_VO(CVI_DBG_ERR, "Failed to vo start streaming\n");
+		return -EAGAIN;
+	}
+
+	return ret;
+
+}
+#endif
 
 static const struct of_device_id vo_core_match[] = {
 	{
@@ -284,6 +365,10 @@ static struct platform_driver vo_core_driver = {
 		.name = CVI_VO_DEV_NAME,
 		.of_match_table = vo_core_match,
 	},
+#if defined(CONFIG_PM)
+	.suspend = vo_core_suspend,
+	.resume = vo_core_resume,
+#endif
 };
 
 module_platform_driver(vo_core_driver);

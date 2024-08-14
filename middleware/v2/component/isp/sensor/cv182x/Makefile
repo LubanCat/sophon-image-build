@@ -32,6 +32,12 @@ byd_bf2253l:
 cvsens_cv2003:
 	$(call MAKE_SENSOR, ${@})
 
+cvsens_cv2003_1L_slave:
+	$(call MAKE_SENSOR, ${@})
+
+cvsens_cv2003_1L_slave1:
+	$(call MAKE_SENSOR, ${@})
+
 cvsens_cv4001:
 	$(call MAKE_SENSOR, ${@})
 
@@ -51,6 +57,12 @@ gcore_gc1084:
 	$(call MAKE_SENSOR, ${@})
 
 gcore_gc1084_slave:
+	$(call MAKE_SENSOR, ${@})
+
+gcore_gc1084_slave1:
+	$(call MAKE_SENSOR, ${@})
+
+gcore_gc1084_slave2:
 	$(call MAKE_SENSOR, ${@})
 
 gcore_gc2053:
@@ -131,6 +143,12 @@ sms_sc035hgs:
 sms_sc035hgs_1L:
 	$(call MAKE_SENSOR, ${@})
 
+sms_sc132gs:
+	$(call MAKE_SENSOR, ${@})
+
+sms_sc132gs_slave:
+	$(call MAKE_SENSOR, ${@})
+
 sms_sc1336_1L:
 	$(call MAKE_SENSOR, ${@})
 
@@ -141,6 +159,9 @@ sms_sc1346_1L_slave:
 	$(call MAKE_SENSOR, ${@})
 
 sms_sc200ai:
+	$(call MAKE_SENSOR, ${@})
+
+sms_sc200ai_1L:
 	$(call MAKE_SENSOR, ${@})
 
 sms_sc301iot:

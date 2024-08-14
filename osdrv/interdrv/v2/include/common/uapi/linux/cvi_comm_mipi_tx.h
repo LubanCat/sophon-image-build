@@ -8,7 +8,7 @@
 #ifndef __CVI_COMM_MIPI_TX_H__
 #define __CVI_COMM_MIPI_TX_H__
 
-#define MIPI_TX_NAME "/dev/mipi-tx"
+#define MIPI_TX_NAME "/dev/cvi-mipi-tx"
 
 struct dsc_instr {
 	CVI_U8	delay;
