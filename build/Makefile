@@ -595,6 +595,9 @@ ifeq ("$(wildcard $(UBUNTU_DIR)/ubuntu-rootfs.ext4)", "")
 ifeq ($(ARCH), arm)
 	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-base-ubuntu.sh armhf
 	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-ubuntu-rootfs.sh armhf
+else ifeq ($(ARCH), arm64)
+	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-base-ubuntu.sh arm64
+	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-ubuntu-rootfs.sh arm64
 else ifeq ($(ARCH), riscv)
 	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-base-ubuntu.sh riscv64
 	${Q} cd $(UBUNTU_DIR) && echo $(PASSWORD) | sudo -S ./mk-ubuntu-rootfs.sh riscv64
