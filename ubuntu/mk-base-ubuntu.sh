@@ -8,6 +8,8 @@ if [ "$1" == "riscv64" ]; then
     ARCH=riscv64
 elif [ "$1" == "armhf" ]; then
     ARCH=armhf
+elif [ "$1" == "arm64" ]; then
+    ARCH=arm64
 else
     echo "Usage:"
     echo "	$0 <ARCH>"
@@ -31,6 +33,8 @@ if [ ! -d $TARGET_ROOTFS_DIR ] ; then
 	    sudo cp -b /usr/bin/qemu-riscv64-static $TARGET_ROOTFS_DIR/usr/bin/
     elif [ $ARCH==armhf ];then
         sudo cp -b /usr/bin/qemu-arm-static $TARGET_ROOTFS_DIR/usr/bin/
+    elif [ $ARCH==arm64 ];then
+        sudo cp -b /usr/bin/qemu-aarch64-static $TARGET_ROOTFS_DIR/usr/bin/
     else
         echo "Unsupported framework"
         exit -1

@@ -9,6 +9,8 @@ if [ "$1" == "riscv64" ]; then
     ARCH=riscv64
 elif [ "$1" == "armhf" ]; then
     ARCH=armhf
+elif [ "$1" == "arm64" ]; then
+    ARCH=arm64
 else
     echo "Usage:"
     echo "	$0 <ARCH>"
@@ -88,12 +90,34 @@ elif [ $ARCH == "armhf" ]; then
     sudo cp -rf overlay-sophgo-arm/usr/sbin/* $TARGET_ROOTFS_DIR/usr/sbin/
     #sudo cp -rfd overlay-sophgo-arm/usr/lib64v_xthead $TARGET_ROOTFS_DIR/usr/
     #sudo cp -rfd overlay-sophgo-arm/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
+
+elif [ $ARCH == "arm64" ]; then
+    # overlay-sophgo-arm64 folder
+    sudo cp -rpf overlay-sophgo-arm64/bin/* $TARGET_ROOTFS_DIR/bin/
+
+    sudo cp -rpf overlay-sophgo-arm64/sbin/* $TARGET_ROOTFS_DIR/sbin/
+
+    sudo cp -rpf overlay-sophgo-arm64/etc/* $TARGET_ROOTFS_DIR/etc/
+
+    sudo cp -rpf overlay-sophgo-arm64/mnt/* $TARGET_ROOTFS_DIR/mnt/
+
+    #sudo cp -rfd overlay-sophgo-arm64/usr/lib/* $TARGET_ROOTFS_DIR/usr/lib/  //error
+    sudo cp -rfd overlay-sophgo-arm64/usr/lib/firmware $TARGET_ROOTFS_DIR/usr/lib/  
+
+    sudo cp -rfd overlay-sophgo-arm64/lib64 $TARGET_ROOTFS_DIR/
+
+    sudo cp -rf overlay-sophgo-arm64/usr/bin/* $TARGET_ROOTFS_DIR/usr/bin/
+    sudo cp -rf overlay-sophgo-arm64/usr/sbin/* $TARGET_ROOTFS_DIR/usr/sbin/
+    #sudo cp -rfd overlay-sophgo-arm64/usr/lib64v_xthead $TARGET_ROOTFS_DIR/usr/
+    #sudo cp -rfd overlay-sophgo-arm64/usr/lib64v0p7_xthead $TARGET_ROOTFS_DIR/usr/
 fi
 
 if [ "$ARCH" == "riscv64" ]; then
     sudo cp -b /usr/bin/qemu-riscv64-static "$TARGET_ROOTFS_DIR/usr/bin/"
 elif [ "$ARCH" == "armhf" ]; then
     sudo cp -b /usr/bin/qemu-arm-static "$TARGET_ROOTFS_DIR/usr/bin/"
+elif [ "$ARCH" == "arm64" ]; then
+    sudo cp -b /usr/bin/qemu-aarch64-static "$TARGET_ROOTFS_DIR/usr/bin/"
 else
     echo "Unsupported framework"
     exit -1
@@ -120,7 +144,7 @@ mount -t proc proc /proc
 mount -t sysfs sys /sys
 
 if [ -e "/usr/lib64v0p7_xthead/lp64d/libc.so" ] ; then
-    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v0p7_xthead.so.1
+    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so ld-musl-riscv64v0p7_xthead.so.1
     ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v_xthead.so.1
 fi
 
