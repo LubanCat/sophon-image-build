@@ -886,6 +886,7 @@ function cvi_setup_env()
   # ubuntu config
   export UBUNTU_DIR="$TOP_DIR"/ubuntu
   export UBUNTU_OVERLAY_DIR_ARM=${UBUNTU_DIR}/overlay-sophgo-arm
+  export UBUNTU_OVERLAY_DIR_ARM64=${UBUNTU_DIR}/overlay-sophgo-arm64
   export UBUNTU_OVERLAY_DIR_RISCV=${UBUNTU_DIR}/overlay-sophgo-riscv64
 
 }

@@ -580,12 +580,21 @@ ifeq ($(patsubst "%",%,$(CONFIG_ARCH)),riscv)
 	${Q}find $(UBUNTU_OVERLAY_DIR_RISCV) -name "*.so*" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-all {} \;
 	${Q}find $(UBUNTU_OVERLAY_DIR_RISCV) -executable -type f ! -name "*.sh" ! -path "*etc*" ! -path "*.ko" -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} 2>/dev/null \;
 else
+ifeq ($(ARCH), arm)
 	${Q}mkdir -p $(UBUNTU_OVERLAY_DIR_ARM)/mnt/system
 	${Q}cp -arf ${SYSTEM_OUT_DIR}/* $(UBUNTU_OVERLAY_DIR_ARM)/mnt/system/
 	# strip
 	${Q}find $(UBUNTU_OVERLAY_DIR_ARM) -name "*.ko" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-unneeded {} \;
 	${Q}find $(UBUNTU_OVERLAY_DIR_ARM) -name "*.so*" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-all {} \;
 	${Q}find $(UBUNTU_OVERLAY_DIR_ARM) -executable -type f ! -name "*.sh" ! -path "*etc*" ! -path "*.ko" -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} 2>/dev/null \;
+else
+	${Q}mkdir -p $(UBUNTU_OVERLAY_DIR_ARM64)/mnt/system
+	${Q}cp -arf ${SYSTEM_OUT_DIR}/* $(UBUNTU_OVERLAY_DIR_ARM64)/mnt/system/
+	# strip
+	${Q}find $(UBUNTU_OVERLAY_DIR_ARM64) -name "*.ko" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-unneeded {} \;
+	${Q}find $(UBUNTU_OVERLAY_DIR_ARM64) -name "*.so*" -type f -printf 'striping %p\n' -exec $(CROSS_COMPILE_KERNEL)strip --strip-all {} \;
+	${Q}find $(UBUNTU_OVERLAY_DIR_ARM64) -executable -type f ! -name "*.sh" ! -path "*etc*" ! -path "*.ko" -printf 'striping %p\n' -exec $(CROSS_COMPILE_SDK)strip --strip-all {} 2>/dev/null \;
+endif
 endif
 
 ebf-ubuntu-rootfs-pack:export TARGET_OUTPUT_DIR=$(UBUNTU_DIR)/binary
