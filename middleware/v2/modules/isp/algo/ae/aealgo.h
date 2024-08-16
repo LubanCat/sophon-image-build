@@ -32,7 +32,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_comm_3a.h"
 #include "cvi_ae_comm.h"
 #include "cvi_ae.h"
@@ -742,8 +742,7 @@ CVI_S32 AE_SetRawDumpFrameID(CVI_U8 sID, CVI_U32 fid, CVI_U8 frmNum);
 CVI_S32 AE_GetRawReplayExpBuf(CVI_U8 sID, CVI_U8 *buf, CVI_U32 *bufSize);
 CVI_S32 AE_SetRawReplayExposure(CVI_U8 sID, const ISP_EXP_INFO_S *pstExpInfo);
 void AE_SetRawReplayMode(CVI_U8 sID, CVI_BOOL mode);
-CVI_S32 AE_isRawReplayMode(CVI_U8 sID);
-CVI_S32 AE_GetRawReplayFrmNum(CVI_U8 sID, CVI_U8 *bootFrmNum, CVI_U8 *ispDgainPeriodNum);
+CVI_BOOL AE_isRawReplayMode(CVI_U8 sID);
 
 
 

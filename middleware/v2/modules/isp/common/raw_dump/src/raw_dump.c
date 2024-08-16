@@ -609,15 +609,7 @@ static CVI_S32 dump_smooth_raw(VI_PIPE ViPipe, const RAW_DUMP_INFO_S *pstRawDump
 	tileWidth = 0xFFFFFFFF;
 	tileIdx = 0xFFFFFFFF;
 
-#if defined(CHIP_ARCH_CV182X)
-	tileWidth = VI_TILE_MODE_WIDTH;
-	tileIdx = VI_TILE_MODE_START_INDEX;
-#elif defined(CHIP_ARCH_CV183X)
-	tileWidth = VI_TILE_MODE_WIDTH;
-	tileIdx = VI_TILE_MODE_START_INDEX;
-	LOGOUT("cv183x is not readly for dump smooth raw!\n");
-	return CVI_FAILURE;
-#elif defined(__CV181X__) || defined(__CV180X__)
+#if defined(__CV181X__) || defined(__CV180X__)
 #else
 #error "should check here when porting new chip"
 #endif

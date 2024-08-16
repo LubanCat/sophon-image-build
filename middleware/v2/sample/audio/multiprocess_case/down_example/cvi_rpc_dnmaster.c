@@ -15,7 +15,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "cvi_audio.h"
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_audio_aac_adp.h"
 
 CVI_S32 AdChn;

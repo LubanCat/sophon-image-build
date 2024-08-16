@@ -3457,7 +3457,7 @@ CVI_S32 setNoiseProfile(VI_PIPE ViPipe)
 	}
 
 	if (checkSum == (CVI_FLOAT)0) {
-		ISP_LOG_ERR("Noise profile get fail. Please check\n");
+		ISP_LOG_DEBUG("Noise profile get fail. Please check\n");
 	}
 
 	CVI_ISP_SetNoiseProfileAttr(ViPipe, &np);

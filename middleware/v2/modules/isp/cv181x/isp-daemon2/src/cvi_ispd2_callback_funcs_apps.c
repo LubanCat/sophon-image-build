@@ -13,9 +13,7 @@
 #include "cvi_ispd2_callback_funcs_apps_local.h"
 #include "cvi_pqtool_json.h"
 
-#if defined(CHIP_ARCH_CV183X) || defined(CHIP_ARCH_CV182X)
-#include "cvi_math.h"
-#elif defined(__CV181X__) || defined(__CV180X__)
+#if defined(__CV181X__) || defined(__CV180X__)
 #include "linux/cvi_math.h"
 #endif // CHIP_ARCH
 
@@ -689,6 +687,9 @@ static CVI_S32 CVI_ISPD2_GetMultiplyYUV(TISPDeviceInfo *ptDevInfo, CVI_U32 u32To
 			+ ptVideoFrame->stVFrame.u32Length[2];
 
 		pvVirAddr = CVI_SYS_Mmap(ptVideoFrame->stVFrame.u64PhyAddr[0], u32MemoryBufSize);
+		if (pvVirAddr == NULL) {
+			return CVI_FAILURE;
+		}
 		CVI_SYS_IonInvalidateCache(ptVideoFrame->stVFrame.u64PhyAddr[0], pvVirAddr, u32MemoryBufSize);
 
 		if (ptFrameData->bTightlyMode) {
@@ -2114,31 +2115,6 @@ static CVI_S32 CVI_ISPD2_Update3AData(TFrameData *ptFrameData, TISPDeviceInfo *p
 }
 
 // -----------------------------------------------------------------------------
-static CVI_S32 CVI_ISPD2_IsRawReplayMode(TJSONRpcContentIn *ptContentIn)
-{
-	//In cv181x chips, we can't dump raw when in raw replay mode
-	//raw frame in pre be, raw dump in pre fe
-	TISPDeviceInfo		*ptDevInfo = ptContentIn->ptDeviceInfo;
-	VI_PIPE_FRAME_SOURCE_E frameSource = VI_PIPE_FRAME_SOURCE_DEV;
-	CVI_S32				ViPipe = 0;
-
-	ViPipe = ptDevInfo->s32ViPipe;
-	if (CVI_VI_GetPipeFrameSource(ViPipe, &frameSource) != CVI_SUCCESS) {
-		ISP_DAEMON2_DEBUG(LOG_WARNING, "Get Vi PipeFrameSource fail\n");
-		return CVI_FALSE;
-	}
-
-	if (frameSource != VI_PIPE_FRAME_SOURCE_DEV) {
-		//raw replay mode
-		return CVI_TRUE;
-
-	} else {
-		//normal mode
-		return CVI_FALSE;
-	}
-}
-
-// -----------------------------------------------------------------------------
 CVI_S32 CVI_ISPD2_CBFunc_GetMultipleRAWFrames(TJSONRpcContentIn *ptContentIn,
 	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
 {
@@ -2262,7 +2238,7 @@ CVI_S32 CVI_ISPD2_CBFunc_GetMultipleRAWFrames(TJSONRpcContentIn *ptContentIn,
 		}
 	}
 
-	if (!CVI_ISPD2_IsRawReplayMode(ptContentIn) && bDumpRaw) {
+	if (!CVI_ISPD2_Utils_IsRawReplayMode() && bDumpRaw) {
 		// Get RAW info.
 		if (CVI_ISPD2_UpdateRAWInfo(ptFrameData) != CVI_SUCCESS) {
 			CVI_ISPD2_ReleaseFrameData(ptDevInfo);
@@ -2962,6 +2938,12 @@ CVI_S32 CVI_ISPD2_CBFunc_SetBinaryData(TJSONRpcContentIn *ptContentIn,
 		GET_INT_FROM_JSON(ptContentIn->pParams, "/size", u32DataSize, s32Ret);
 	}
 
+	if (s32ContentID == EBINARYDATA_RAW_DATA && !CVI_ISPD2_Utils_IsRawReplayMode()) {
+		CVI_ISPD2_Utils_ComposeMessage(ptContentOut, JSONRPC_CODE_INVALID_REQUEST,
+				"Not replay mode!!!");
+		return CVI_FAILURE;
+	}
+
 	if (u32DataSize == 0) {
 		ISP_DAEMON2_DEBUG(LOG_DEBUG, "Binary size => 0");
 		CVI_ISPD2_Utils_ComposeMessage(ptContentOut, JSONRPC_CODE_INVALID_PARAMS,
@@ -2988,6 +2970,9 @@ CVI_S32 CVI_ISPD2_CBFunc_SetBinaryData(TJSONRpcContentIn *ptContentIn,
 		break;
 	case EBINARYDATA_RAW_DATA:
 		s32Ret = CVI_ISPD2_CBFunc_RecvRawReplayDataInfo(ptContentIn, ptContentOut, pJsonResponse);
+		if (s32Ret != CVI_SUCCESS) {
+			return s32Ret;
+		}
 
 		ISP_DAEMON2_DEBUG_EX(LOG_DEBUG, "set to recv raw data: %u", u32DataSize);
 
@@ -3008,6 +2993,28 @@ CVI_S32 CVI_ISPD2_CBFunc_SetBinaryData(TJSONRpcContentIn *ptContentIn,
 			ptBinaryInData->pu8Buffer = pRawReplayHandle->data;
 			ptBinaryInData->u32BufferSize = pRawReplayHandle->u32DataSize;
 		}
+		break;
+	case EBINARYDATA_VI_LDC_BIN_DATA:
+		ISP_DAEMON2_DEBUG_EX(LOG_DEBUG, "Set to recv. ldc vi bin (%u)", u32DataSize);
+
+		ptDevInfo->bKeepBinaryInDataInfoOnce = CVI_TRUE;
+		ptBinaryInData->eDataType = EBINARYDATA_VI_LDC_BIN_DATA;
+		ptBinaryInData->eDataState = EBINARYSTATE_INITIAL;
+		ptBinaryInData->u32Size = u32DataSize;
+		ptBinaryInData->u32RecvSize = 0;
+		ptBinaryInData->pu8Buffer = CVI_NULL;
+		ptBinaryInData->u32BufferSize = u32DataSize;
+		break;
+	case EBINARYDATA_VPSS_LDC_BIN_DATA:
+		ISP_DAEMON2_DEBUG_EX(LOG_DEBUG, "Set to recv. ldc vpss bin (%u)", u32DataSize);
+
+		ptDevInfo->bKeepBinaryInDataInfoOnce = CVI_TRUE;
+		ptBinaryInData->eDataType = EBINARYDATA_VPSS_LDC_BIN_DATA;
+		ptBinaryInData->eDataState = EBINARYSTATE_INITIAL;
+		ptBinaryInData->u32Size = u32DataSize;
+		ptBinaryInData->u32RecvSize = 0;
+		ptBinaryInData->pu8Buffer = CVI_NULL;
+		ptBinaryInData->u32BufferSize = u32DataSize;
 		break;
 	default:
 		ISP_DAEMON2_DEBUG(LOG_DEBUG, "Un-support content id");

@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include "cvi_audio.h"
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
 CVI_S32 s32DevId;
 CVI_S32 AiChn;

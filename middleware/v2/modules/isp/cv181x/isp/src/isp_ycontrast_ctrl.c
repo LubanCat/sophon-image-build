@@ -6,7 +6,7 @@
  *
  */
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
 #include "isp_main_local.h"
 #include "isp_debug.h"

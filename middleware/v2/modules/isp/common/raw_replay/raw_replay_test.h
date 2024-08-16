@@ -9,7 +9,7 @@
 #ifndef _RAW_REPLAY_TEST_H_
 #define _RAW_REPLAY_TEST_H_
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
 #ifdef __cplusplus
 #if __cplusplus

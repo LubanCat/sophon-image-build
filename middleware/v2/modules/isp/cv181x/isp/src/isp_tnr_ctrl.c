@@ -821,25 +821,6 @@ static CVI_S32 isp_tnr_ctrl_postprocess_compatible(VI_PIPE ViPipe)
 {
 	CVI_S32 ret = CVI_SUCCESS;
 
-#ifdef CHIP_ARCH_CV182X
-	CVI_U32 scene = 0;
-
-	isp_get_scene_info(ViPipe, &scene);
-
-	if (scene != FE_ON_BE_ON_POST_ON_SC)
-		return ret;
-
-	struct cvi_vip_isp_post_cfg *post_addr = get_post_tuning_buf_addr(ViPipe);
-	CVI_U8 tun_idx = get_tuning_buf_idx(ViPipe);
-
-	struct cvi_vip_isp_tnr_config *tnr_cfg =
-		(struct cvi_vip_isp_tnr_config *)&(post_addr->tun_cfg[tun_idx].tnr_cfg);
-
-	// rgbmap_size should only be 3 due to hw limitation on-the-fly mode in cv182x
-	tnr_cfg->rgbmap_w_bit = 3;
-	tnr_cfg->rgbmap_h_bit = 3;
-#endif // CHIP_ARCH_CV182X
-
 	UNUSED(ViPipe);
 
 	return ret;
@@ -1026,58 +1007,6 @@ static CVI_S32 isp_tnr_ctrl_check_tnr_motion_adapt_attr_valid(const ISP_TNR_MOTI
 static CVI_S32 isp_tnr_ctrl_set_tnr_mt_prt_attr_compatible(VI_PIPE ViPipe, ISP_TNR_MT_PRT_ATTR_S *pstTNRMtPrtAttr)
 {
 	CVI_S32 ret = CVI_SUCCESS;
-
-#ifdef CHIP_ARCH_CV182X
-	CVI_U8 rounding_protect = 128 * 1.1;
-
-	for (CVI_U32 idx = 0 ; idx < 4 ; idx++) {
-		pstTNRMtPrtAttr->stManual.LowMtPrtInU[idx] =
-			MAX(pstTNRMtPrtAttr->stManual.LowMtPrtInU[idx], 1);
-		pstTNRMtPrtAttr->stManual.LowMtPrtInV[idx] =
-			MAX(pstTNRMtPrtAttr->stManual.LowMtPrtInV[idx], 1);
-	}
-
-	for (CVI_U32 idx = 0 ; idx < 4 ; idx++) {
-		CVI_U8 in;
-		CVI_U8 val;
-
-		in = pstTNRMtPrtAttr->stManual.LowMtPrtInU[idx];
-		val = (rounding_protect + in - 1) / in;
-		pstTNRMtPrtAttr->stManual.LowMtPrtOutU[idx] =
-			MAX(pstTNRMtPrtAttr->stManual.LowMtPrtOutU[idx], val);
-
-		in = pstTNRMtPrtAttr->stManual.LowMtPrtInV[idx];
-		val = (rounding_protect + in - 1) / in;
-		pstTNRMtPrtAttr->stManual.LowMtPrtOutV[idx] =
-			MAX(pstTNRMtPrtAttr->stManual.LowMtPrtOutV[idx], val);
-	}
-
-	for (CVI_U32 idx = 0 ; idx < 4 ; idx++) {
-		for (CVI_U32 iso = 0 ; iso < ISP_AUTO_ISO_STRENGTH_NUM ; iso++) {
-			pstTNRMtPrtAttr->stAuto.LowMtPrtInU[idx][iso] =
-				MAX(pstTNRMtPrtAttr->stAuto.LowMtPrtInU[idx][iso], 1);
-			pstTNRMtPrtAttr->stAuto.LowMtPrtInV[idx][iso] =
-				MAX(pstTNRMtPrtAttr->stAuto.LowMtPrtInV[idx][iso], 1);
-		}
-	}
-
-	for (CVI_U32 idx = 0 ; idx < 4 ; idx++) {
-		CVI_U8 in;
-		CVI_U8 val;
-
-		for (CVI_U32 iso = 0 ; iso < ISP_AUTO_ISO_STRENGTH_NUM ; iso++) {
-			in = pstTNRMtPrtAttr->stAuto.LowMtPrtInU[idx][iso];
-			val = (rounding_protect + in - 1) / in;
-			pstTNRMtPrtAttr->stAuto.LowMtPrtOutU[idx][iso] =
-				MAX(pstTNRMtPrtAttr->stAuto.LowMtPrtOutU[idx][iso], val);
-
-			in = pstTNRMtPrtAttr->stAuto.LowMtPrtInV[idx][iso];
-			val = (rounding_protect + in - 1) / in;
-			pstTNRMtPrtAttr->stAuto.LowMtPrtOutV[idx][iso] =
-				MAX(pstTNRMtPrtAttr->stAuto.LowMtPrtOutV[idx][iso], val);
-		}
-	}
-#endif // CHIP_ARCH_CV182X
 
 	UNUSED(ViPipe);
 	UNUSED(pstTNRMtPrtAttr);

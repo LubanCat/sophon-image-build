@@ -1576,8 +1576,8 @@ static CVI_S32 _SAMPLE_VENC_SBM_testViVpssVenc(sampleVenc *psv)
 
 	for (idx = 0; idx < pIc->num_frames; idx++) {
 		if ((pcic->numChn == 2) && (idx%2 == 0)) {
-			if (CVI_VPSS_TriggerSnapFrame(0, 0, 1) != CVI_SUCCESS) {
-			}
+			// if (CVI_VPSS_TriggerSnapFrame(0, 0, 1) != CVI_SUCCESS) {
+			// }
 		}
 RETRY_GET_STREAM:
 		s32Ret = _SAMPLE_VENC_GetStream(pvecc);
@@ -2757,14 +2757,10 @@ static CVI_S32 initSysAndVb(sampleVenc *psv)
 						enPixelFormat,
 						DATA_BITWIDTH_8,
 						COMPRESS_MODE_NONE);
-#ifdef ARCH_CV183X
-		CVI_VENC_FLOW("arch183x u32BlkSize[%d]align[%d]\n",
-			u32BlkSize, VENC_ALIGN_W);
-#else
+
 		u32BlkSize += 0x1000 * 3;
-		CVI_VENC_FLOW("arch182x u32BlkSize[%d]align[%d]\n",
+		CVI_VENC_FLOW("u32BlkSize[%d]align[%d]\n",
 			u32BlkSize, VENC_ALIGN_W);
-#endif
 
 		for (CVI_U32 j = 0; j < stVbConf.u32MaxPoolCnt; j++) {
 			if (u32BlkSize == stVbConf.astCommPool[j].u32BlkSize) {

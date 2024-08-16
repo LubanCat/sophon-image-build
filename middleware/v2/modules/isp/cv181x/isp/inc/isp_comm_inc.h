@@ -18,16 +18,7 @@ extern "C" {
 #include "stdint.h"
 #include <sys/time.h>
 
-#if defined(ARCH_CV183X) || defined(ARCH_CV182X)
-#include <cvi_common.h>
-#include <cvi_comm_video.h>
-#include <cvi_defines.h>
-#include <cvi_math.h>
-#include <linux/cvi_vip_isp.h>
-#include <linux/cvi_vip_tun_cfg.h>
-#include <linux/cvi_vip.h>
-#include <linux/cvi_vip_snsr.h>
-#elif defined(__CV181X__) || defined(__CV180X__)
+#if defined(__CV181X__) || defined(__CV180X__)
 #include <linux/cvi_common.h>
 #include <linux/cvi_comm_vi.h>
 #include <linux/cvi_comm_video.h>

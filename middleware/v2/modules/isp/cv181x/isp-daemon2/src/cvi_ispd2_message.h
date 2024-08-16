@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_ispd2_define.h"
 
 #define MAX_CBFUNC_NAME_SIZE			(48)

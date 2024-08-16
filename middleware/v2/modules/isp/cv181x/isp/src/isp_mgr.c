@@ -364,7 +364,7 @@ static CVI_S32 _global_exit(VI_PIPE ViPipe)
 		return CVI_FAILURE;
 	}
 	for (i = 0 ; i < ISP_VD_MAX ; i++) {
-		pthread_cond_destroy(&pstIspCtx->ispEventCond[i]);
+		s32Ret = pthread_cond_destroy(&pstIspCtx->ispEventCond[i]);
 		if (s32Ret < 0) {
 			ISP_LOG_ERR("ispEventCond %d destroy fail with %#x.\n", i, s32Ret);
 			return CVI_FAILURE;

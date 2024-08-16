@@ -53,11 +53,7 @@ LOCAL_CFLAGS = $(INCS) -std=gnu11
 LOCAL_LDFLAGS =
 
 # SOC Architecture
-ifeq ($(CHIP_ARCH), CV183X)
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV183X
-else ifeq ($(CHIP_ARCH), CV182X)
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV182X
-else ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH),CV181X SG200X))
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH),CV181X SG200X))
 	LOCAL_CFLAGS += -DCHIP_ARCH_CV181X
 else ifeq ($(CHIP_ARCH), CV180X)
 	LOCAL_CFLAGS += -DCHIP_ARCH_CV180X
@@ -136,10 +132,10 @@ check_kernel_dependence:
 	rm dependent-commit-id.list
 
 update_isp_version:
-	$(eval date := $(shell git log -n1 --date=format:'%Y-%m-%d' --pretty=format:'%cd'))
-	$(eval chid := $(shell git log -n1 -- $(PWD) | grep Change-Id: | sed 's/^.*Change-Id: //g' | cut -c1-7))
-	$(eval cmid := $(shell git log -n1 --pretty=format:'%h' -- $(PWD)))
-	echo "#define ISP_VERSION \"T(${date}), V(${chid}, ${cmid})\"" > $(PWD)/inc/isp_version.h
+	#$(eval date := $(shell git log -n1 --date=format:'%Y-%m-%d' --pretty=format:'%cd'))
+	#$(eval chid := $(shell git log -n1 -- $(PWD) | grep Change-Id: | sed 's/^.*Change-Id: //g' | cut -c1-7))
+	#$(eval cmid := $(shell git log -n1 --pretty=format:'%h' -- $(PWD)))
+	#echo "#define ISP_VERSION \"T(${date}), V(${chid}, ${cmid})\"" > $(PWD)/inc/isp_version.h
 
 sdk_release: update_isp_version
 	-@rm -rf $(TMP_FOLDER)

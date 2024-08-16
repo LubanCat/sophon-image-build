@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_HX8399_1080P_H_
 #define _MIPI_TX_PARAM_HX8399_1080P_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 #define HX8399_HACT		1080

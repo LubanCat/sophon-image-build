@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_ST7785M_H_
 #define _MIPI_TX_PARAM_ST7785M_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 #define ST7785M_HACT	240

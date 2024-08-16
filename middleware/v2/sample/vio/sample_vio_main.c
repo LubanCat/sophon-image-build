@@ -35,9 +35,7 @@ void SAMPLE_VIO_Usage(char *sPrgNm)
 	printf("\t 1)VI (Offline) - VPSS(Offline,Keep Aspect Ratio) - VO.\n");
 	printf("\t 2)VI (Offline, Rotation) - VPSS(Offline,Keep Aspect Ratio) - VO.\n");
 	printf("\t 3)VI (Offline) - VPSS(Offline, Rotation) - VO.\n");
-	printf("\t 4)VPSS(Offline, file read/write).\n");
-	printf("\t 5)VI (Two devs) - VPSS - VO.\n");
-	printf("\t 6)VPSS(Offline, file read/write, combine 2 frame into 1).\n");
+	printf("\t 4)VI (Two devs) - VPSS - VO.\n");
 }
 
 int main(int argc, char *argv[])
@@ -76,23 +74,9 @@ int main(int argc, char *argv[])
 		s32Ret = SAMPLE_VIO_VpssRotation();
 		break;
 
-	case 4: {
-		SIZE_S stSize = {1920, 1080};
-
-		s32Ret = SAMPLE_VIO_VpssFileIO(stSize);
-		break;
-	}
-
-	case 5:
+	case 4:
 		s32Ret = SAMPLE_VIO_TWO_DEV_VO();
 		break;
-
-	case 6: {
-		SIZE_S stSize = {1920 ,1080};
-
-		s32Ret = SAMPLE_VIO_VpssCombine2File(stSize);
-		break;
-	}
 	default:
 		SAMPLE_PRT("the index %d is invaild!\n", s32Index);
 		SAMPLE_VIO_Usage(argv[0]);

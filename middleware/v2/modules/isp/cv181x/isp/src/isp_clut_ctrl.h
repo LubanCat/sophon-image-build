@@ -44,6 +44,7 @@ struct isp_clut_ctrl_runtime {
 	CVI_U32 tun_table_updated_flage;
 	CVI_U32 tun_lut_updated_flage;
 	CVI_BOOL bSatLutUpdated;
+	CVI_BOOL bEnStatus;
 };
 
 CVI_S32 isp_clut_ctrl_init(VI_PIPE ViPipe);

@@ -1011,19 +1011,6 @@ static CVI_S32 isp_drc_ctrl_set_drc_attr_compatible(VI_PIPE ViPipe, ISP_DRC_ATTR
 {
 	CVI_S32 ret = CVI_SUCCESS;
 
-#ifdef CHIP_ARCH_CV182X
-	// For U01/U02 compatible (CV182X only)
-	uint32_t chip_ver;
-
-	CVI_SYS_GetChipVersion(&chip_ver);
-
-	if (chip_ver == CVIU01) {
-		pstDRCAttr->DetailEnhanceEnable = CVI_FALSE;
-	} else if (chip_ver == CVIU02) {
-		pstDRCAttr->DetailEnhanceEnable = CVI_TRUE;
-	}
-#endif // CHIP_ARCH_CV182X
-
 	UNUSED(ViPipe);
 	UNUSED(pstDRCAttr);
 

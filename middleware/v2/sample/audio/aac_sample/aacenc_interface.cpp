@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "fdkaac/libAACenc/include/aacenc_lib.h"
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_aacenc.h"
 
 

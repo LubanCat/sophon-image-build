@@ -1459,6 +1459,7 @@ CVI_S32 CVI_VI_EnableChn(VI_PIPE ViPipe, VI_CHN ViChn)
 {
 	CVI_S32 fd = -1;
 	CVI_S32 s32Ret = CVI_SUCCESS;
+	gViDbgTH.dbg_th_disable = CVI_FALSE;
 
 	CHECK_VI_PIPEID_VALID(ViPipe);
 	if (CHECK_VI_CTX_NULL_PTR(gViCtx) != CVI_SUCCESS)

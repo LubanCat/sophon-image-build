@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_JD9366AB_H_
 #define _MIPI_TX_PARAM_JD9366AB_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 struct combo_dev_cfg_s dev_cfg_jd9366ab_800x1280 = {

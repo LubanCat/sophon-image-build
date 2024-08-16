@@ -115,16 +115,6 @@ void rawReplayAutoTestSetConfig(void)
 	ISP_DRC_ATTR_S stDRCAttr;
 	ISP_TNR_ATTR_S stTNRAttr;
 
-#ifdef ARCH_CV182X
-	ISP_FSWDR_ATTR_S stFSWDRAttr;
-
-	ret = CVI_ISP_GetFSWDRAttr(0, &stFSWDRAttr);
-	ERROR_IF(ret != CVI_SUCCESS);
-	stFSWDRAttr.WDRDitherEnable = 0;
-	ret = CVI_ISP_SetFSWDRAttr(0, &stFSWDRAttr);
-	ERROR_IF(ret != CVI_SUCCESS);
-#endif
-
 	ret = CVI_ISP_GetDRCAttr(0, &stDRCAttr);
 	ERROR_IF(ret != CVI_SUCCESS);
 	stDRCAttr.ToneCurveSmooth = 0;

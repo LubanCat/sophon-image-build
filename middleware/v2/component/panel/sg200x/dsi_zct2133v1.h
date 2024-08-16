@@ -2,7 +2,6 @@
 #define _MIPI_TX_PARAM_ZCT2133V1_H_
 
 #ifndef __UBOOT__
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 #else
 #include <cvi_mipi.h>

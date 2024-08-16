@@ -31,8 +31,11 @@ extern "C" {
 #include "dsi_lt9611.h"
 #include "lvds_lcm185x56.h"
 #include "hw_mcu_st7789v3.h"
+#include "bt656_pt1000k.h"
+#include "bt1120_pt1000k.h"
 #include "bt656_tp2803.h"
 #include "bt1120_nvp6021.h"
+#include "panel_i2c.h"
 
 typedef enum {
 	PANEL_MODE_DSI,

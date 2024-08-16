@@ -1,5 +1,7 @@
 binary/
 overlay-sophgo-riscv64/mnt/system/
+overlay-sophgo-arm64/mnt/system/
+overlay-sophgo-arm/mnt/system/
 
 ubuntu-rootfs.ext4
 ubuntu-base-*.tar.gz

@@ -776,7 +776,6 @@ CVI_S32 SAMPLE_COMM_VI_StartIsp(SAMPLE_VI_INFO_S *pstViInfo)
 	CVI_S32 s32Ret = 0, i;
 	VI_PIPE ViPipe = 0;
 	ISP_PUB_ATTR_S stPubAttr;
-	ISP_STATISTICS_CFG_S stsCfg = {0};
 	ISP_BIND_ATTR_S stBindAttr;
 
 	for (i = 0; i < WDR_MAX_PIPE_NUM; i++) {
@@ -812,78 +811,6 @@ CVI_S32 SAMPLE_COMM_VI_StartIsp(SAMPLE_VI_INFO_S *pstViInfo)
 			s32Ret = CVI_ISP_SetPubAttr(ViPipe, &stPubAttr);
 			if (s32Ret != CVI_SUCCESS) {
 				CVI_TRACE_LOG(CVI_DBG_ERR, "SetPubAttr failed with %#x!\n", s32Ret);
-				return s32Ret;
-			}
-			CVI_ISP_GetStatisticsConfig(0, &stsCfg);
-			stsCfg.stAECfg.stCrop[0].bEnable = 0;
-			stsCfg.stAECfg.stCrop[0].u16X = stsCfg.stAECfg.stCrop[0].u16Y = 0;
-			stsCfg.stAECfg.stCrop[0].u16W = stPubAttr.stWndRect.u32Width;
-			stsCfg.stAECfg.stCrop[0].u16H = stPubAttr.stWndRect.u32Height;
-			memset(stsCfg.stAECfg.au8Weight, 1,
-				AE_WEIGHT_ZONE_ROW * AE_WEIGHT_ZONE_COLUMN * sizeof(CVI_U8));
-
-			#ifdef ARCH_CV183X
-			stsCfg.stAECfg.stCrop[1].bEnable = 0;
-			stsCfg.stAECfg.stCrop[1].u16X = stsCfg.stAECfg.stCrop[1].u16Y = 0;
-			stsCfg.stAECfg.stCrop[1].u16W = stPubAttr.stWndRect.u32Width;
-			stsCfg.stAECfg.stCrop[1].u16H = stPubAttr.stWndRect.u32Height;
-			#endif
-
-			stsCfg.stWBCfg.u16ZoneRow = AWB_ZONE_ORIG_ROW;
-			stsCfg.stWBCfg.u16ZoneCol = AWB_ZONE_ORIG_COLUMN;
-			stsCfg.stWBCfg.stCrop.bEnable = 0;
-			stsCfg.stWBCfg.stCrop.u16X = stsCfg.stWBCfg.stCrop.u16Y = 0;
-			stsCfg.stWBCfg.stCrop.u16W = stPubAttr.stWndRect.u32Width;
-			stsCfg.stWBCfg.stCrop.u16H = stPubAttr.stWndRect.u32Height;
-			stsCfg.stWBCfg.u16BlackLevel = 0;
-			stsCfg.stWBCfg.u16WhiteLevel = 4095;
-			stsCfg.stFocusCfg.stConfig.bEnable = 1;
-			stsCfg.stFocusCfg.stConfig.u8HFltShift = 1;
-			stsCfg.stFocusCfg.stConfig.s8HVFltLpCoeff[0] = 1;
-			stsCfg.stFocusCfg.stConfig.s8HVFltLpCoeff[1] = 2;
-			stsCfg.stFocusCfg.stConfig.s8HVFltLpCoeff[2] = 3;
-			stsCfg.stFocusCfg.stConfig.s8HVFltLpCoeff[3] = 5;
-			stsCfg.stFocusCfg.stConfig.s8HVFltLpCoeff[4] = 10;
-			stsCfg.stFocusCfg.stConfig.stRawCfg.PreGammaEn = 0;
-			stsCfg.stFocusCfg.stConfig.stPreFltCfg.PreFltEn = 1;
-			stsCfg.stFocusCfg.stConfig.u16Hwnd = 17;
-			stsCfg.stFocusCfg.stConfig.u16Vwnd = 15;
-			stsCfg.stFocusCfg.stConfig.stCrop.bEnable = 0;
-			// AF offset and size has some limitation.
-			stsCfg.stFocusCfg.stConfig.stCrop.u16X = AF_XOFFSET_MIN;
-			stsCfg.stFocusCfg.stConfig.stCrop.u16Y = AF_YOFFSET_MIN;
-			stsCfg.stFocusCfg.stConfig.stCrop.u16W = stPubAttr.stWndRect.u32Width - AF_XOFFSET_MIN * 2;
-			stsCfg.stFocusCfg.stConfig.stCrop.u16H = stPubAttr.stWndRect.u32Height - AF_YOFFSET_MIN * 2;
-			//Horizontal HP0
-			stsCfg.stFocusCfg.stHParam_FIR0.s8HFltHpCoeff[0] = 0;
-			stsCfg.stFocusCfg.stHParam_FIR0.s8HFltHpCoeff[1] = 0;
-			stsCfg.stFocusCfg.stHParam_FIR0.s8HFltHpCoeff[2] = 13;
-			stsCfg.stFocusCfg.stHParam_FIR0.s8HFltHpCoeff[3] = 24;
-			stsCfg.stFocusCfg.stHParam_FIR0.s8HFltHpCoeff[4] = 0;
-			//Horizontal HP1
-			stsCfg.stFocusCfg.stHParam_FIR1.s8HFltHpCoeff[0] = 1;
-			stsCfg.stFocusCfg.stHParam_FIR1.s8HFltHpCoeff[1] = 2;
-			stsCfg.stFocusCfg.stHParam_FIR1.s8HFltHpCoeff[2] = 4;
-			stsCfg.stFocusCfg.stHParam_FIR1.s8HFltHpCoeff[3] = 8;
-			stsCfg.stFocusCfg.stHParam_FIR1.s8HFltHpCoeff[4] = 0;
-			//Vertical HP
-			stsCfg.stFocusCfg.stVParam_FIR.s8VFltHpCoeff[0] = 13;
-			stsCfg.stFocusCfg.stVParam_FIR.s8VFltHpCoeff[1] = 24;
-			stsCfg.stFocusCfg.stVParam_FIR.s8VFltHpCoeff[2] = 0;
-			stsCfg.unKey.bit1FEAeGloStat = stsCfg.unKey.bit1FEAeLocStat =
-				stsCfg.unKey.bit1AwbStat1 = stsCfg.unKey.bit1AwbStat2 = stsCfg.unKey.bit1FEAfStat = 1;
-#ifndef ARCH_CV183X
-			//LDG
-			stsCfg.stFocusCfg.stConfig.u8ThLow = 0;
-			stsCfg.stFocusCfg.stConfig.u8ThHigh = 255;
-			stsCfg.stFocusCfg.stConfig.u8GainLow = 30;
-			stsCfg.stFocusCfg.stConfig.u8GainHigh = 20;
-			stsCfg.stFocusCfg.stConfig.u8SlopLow = 8;
-			stsCfg.stFocusCfg.stConfig.u8SlopHigh = 15;
-#endif
-			s32Ret = CVI_ISP_SetStatisticsConfig(ViPipe, &stsCfg);
-			if (s32Ret != CVI_SUCCESS) {
-				CVI_TRACE_LOG(CVI_DBG_ERR, "ISP Set Statistic failed with %#x!\n", s32Ret);
 				return s32Ret;
 			}
 

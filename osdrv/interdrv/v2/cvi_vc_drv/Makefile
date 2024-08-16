@@ -102,6 +102,8 @@ else
 ccflags-y += -DARCH_CV182X
 endif
 
+ccflags-y += -Werror
+
 ccflags-y += -DVC_DEBUG_BASIC_LEVEL
 
 KBUILD_EXTRA_SYMBOLS = $(PWD)/../sys/Module.symvers

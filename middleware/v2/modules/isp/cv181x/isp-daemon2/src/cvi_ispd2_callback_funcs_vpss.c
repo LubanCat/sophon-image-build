@@ -6,8 +6,50 @@
  */
 
 #include "cvi_ispd2_callback_funcs_local.h"
-
+#include "cvi_gdc.h"
 #include "cvi_vpss.h"
+
+// -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_VPSS_LDCBinData(CVI_S32 VpssGrp, CVI_S32 VpssChn, TBinaryData *ptBinaryData,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	if ((ptBinaryData->eDataType != EBINARYDATA_VPSS_LDC_BIN_DATA)
+		|| (ptBinaryData->pu8Buffer == NULL)
+		|| (ptBinaryData->u32Size == 0)
+	) {
+		ISP_DAEMON2_DEBUG(LOG_DEBUG, "Invalid binary info.");
+		CVI_ISPD2_Utils_ComposeAPIErrorMessage(ptContentOut);
+		return CVI_FAILURE;
+	}
+
+	CVI_S32 ret = CVI_SUCCESS;
+	MESH_DUMP_ATTR_S meshDumpAttr = {0};
+	VPSS_LDC_ATTR_S stVpssLDCAttr = {0};
+	LDC_ATTR_S stLDCAttr;
+
+	ret = CVI_VPSS_GetChnLDCAttr(VpssGrp, VpssChn, &stVpssLDCAttr);
+	if (ret == CVI_SUCCESS) {
+		stLDCAttr = stVpssLDCAttr.stAttr;
+		meshDumpAttr.enModId = CVI_ID_VPSS;
+		meshDumpAttr.vpssMeshAttr.grp = VpssGrp;
+		meshDumpAttr.vpssMeshAttr.chn = VpssChn;
+		ret = CVI_GDC_LoadMeshWithBuf(&meshDumpAttr, &stLDCAttr, ptBinaryData->pu8Buffer, ptBinaryData->u32Size);
+		if (ret != CVI_SUCCESS) {
+			ISP_DAEMON2_DEBUG_EX(LOG_ALERT, "(VPSS) CVI_GDC_LoadMeshWithBuf fail");
+			CVI_ISPD2_Utils_ComposeAPIErrorMessageEX(ptContentOut, "(VPSS) CVI_GDC_LoadMeshWithBuf fail");
+		}
+	} else {
+		ISP_DAEMON2_DEBUG_EX(LOG_ALERT, "(VPSS) Load LDC bin to buf fail!");
+		CVI_ISPD2_Utils_ComposeAPIErrorMessageEX(ptContentOut, "(VPSS) Load LDC bin to buf fail!");
+		return CVI_FAILURE;
+	}
+
+	ptContentOut->s32StatusCode = JSONRPC_CODE_OK;
+
+	UNUSED(pJsonResponse);
+
+	return CVI_SUCCESS;
+}
 
 // -----------------------------------------------------------------------------
 CVI_S32 CVI_ISPD2_CBFunc_VPSS_SetChnLDCAttr(TJSONRpcContentIn *ptContentIn,

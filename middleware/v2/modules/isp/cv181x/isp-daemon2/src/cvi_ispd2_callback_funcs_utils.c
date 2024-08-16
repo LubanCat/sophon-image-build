@@ -90,3 +90,18 @@ CVI_S32 CVI_ISPD2_Utils_GetCurrentVPSSInfo(const TISPDeviceInfo *ptDevInfo, CVI_
 }
 
 // -----------------------------------------------------------------------------
+CVI_BOOL CVI_ISPD2_Utils_IsRawReplayMode(void)
+{
+	CVI_S32  mode = 0;
+	const char *input = getenv("CVI_REPLAY_MODE");
+
+	if (input)
+		mode = atoi(input);
+
+	if (mode)
+		return CVI_TRUE;
+
+	return CVI_FALSE;
+}
+
+// -----------------------------------------------------------------------------

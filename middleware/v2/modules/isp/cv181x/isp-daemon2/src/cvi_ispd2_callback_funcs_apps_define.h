@@ -13,13 +13,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_comm_vb.h"
 
-#if defined(CHIP_ARCH_CV183X) || defined(CHIP_ARCH_CV182X)
-#include "cvi_defines.h"
-#include "cvi_comm_video.h"
-#elif defined(__CV181X__) || defined(__CV180X__)
+#if defined(__CV181X__) || defined(__CV180X__)
 #include "linux/cvi_defines.h"
 #include "linux/cvi_comm_video.h"
 #endif // CHIP_ARCH
@@ -113,7 +110,9 @@ typedef enum {
 	EBINARYDATA_AWB_BIN_DATA			= 2,
 	EBINARYDATA_TUNING_BIN_DATA			= 3,
 	EBINARYDATA_RAW_DATA				= 4,
-	EBINARYDATA_TOOL_DEFINITION_DATA	= 5
+	EBINARYDATA_TOOL_DEFINITION_DATA	= 5,
+	EBINARYDATA_VI_LDC_BIN_DATA			= 6,
+	EBINARYDATA_VPSS_LDC_BIN_DATA		= 7
 } EBinaryDataType;
 
 typedef enum {

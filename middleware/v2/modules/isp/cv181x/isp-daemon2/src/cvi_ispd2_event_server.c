@@ -11,7 +11,7 @@
 #include "uv.h"
 #include <sys/prctl.h>
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_ispd2_define.h"
 #include "cvi_ispd2_log.h"
 

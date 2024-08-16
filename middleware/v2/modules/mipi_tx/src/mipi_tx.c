@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 
-#include "mipi_tx.h"
+#include "cvi_mipi_tx.h"
 
 static void _cal_htt_extra(struct combo_dev_cfg_s *dev_cfg)
 {
@@ -78,7 +78,7 @@ static void _cal_htt_extra(struct combo_dev_cfg_s *dev_cfg)
 	}
 }
 
-int mipi_tx_cfg(int fd, struct combo_dev_cfg_s *dev_cfg)
+int CVI_MIPI_TX_Cfg(int fd, struct combo_dev_cfg_s *dev_cfg)
 {
 	struct combo_dev_cfg_s dev_cfg_t = *dev_cfg;
 
@@ -90,7 +90,7 @@ int mipi_tx_cfg(int fd, struct combo_dev_cfg_s *dev_cfg)
 	return 0;
 }
 
-int mipi_tx_send_cmd(int fd, struct cmd_info_s *cmd_info)
+int CVI_MIPI_TX_SendCmd(int fd, struct cmd_info_s *cmd_info)
 {
 	if (cmd_info->cmd_size == 0)
 		return -1;
@@ -103,7 +103,7 @@ int mipi_tx_send_cmd(int fd, struct cmd_info_s *cmd_info)
 }
 
 
-int mipi_tx_recv_cmd(int fd, struct get_cmd_info_s *cmd_info)
+int CVI_MIPI_TX_RecvCmd(int fd, struct get_cmd_info_s *cmd_info)
 {
 	if (cmd_info->get_data_size == 0)
 		return -1;
@@ -115,7 +115,7 @@ int mipi_tx_recv_cmd(int fd, struct get_cmd_info_s *cmd_info)
 	return 0;
 }
 
-int mipi_tx_enable(int fd)
+int CVI_MIPI_TX_Enable(int fd)
 {
 	if (-1 == ioctl(fd, CVI_VIP_MIPI_TX_ENABLE, NULL)) {
 		perror("CVI_VIP_MIPI_TX_ENABLE");
@@ -124,7 +124,7 @@ int mipi_tx_enable(int fd)
 	return 0;
 }
 
-int mipi_tx_disable(int fd)
+int CVI_MIPI_TX_Disable(int fd)
 {
 	if (-1 == ioctl(fd, CVI_VIP_MIPI_TX_DISABLE, NULL)) {
 		perror("CVI_VIP_MIPI_TX_DISABLE");
@@ -133,7 +133,7 @@ int mipi_tx_disable(int fd)
 	return 0;
 }
 
-int mipi_tx_set_hs_settle(int fd, const struct hs_settle_s *hs_cfg)
+int CVI_MIPI_TX_SetHsSettle(int fd, const struct hs_settle_s *hs_cfg)
 {
 	if (-1 == ioctl(fd, CVI_VIP_MIPI_TX_SET_HS_SETTLE, hs_cfg)) {
 		perror("CVI_VIP_MIPI_TX_SET_HS_SETTLE");
@@ -142,7 +142,7 @@ int mipi_tx_set_hs_settle(int fd, const struct hs_settle_s *hs_cfg)
 	return 0;
 }
 
-int mipi_tx_get_hs_settle(int fd, struct hs_settle_s *hs_cfg)
+int CVI_MIPI_TX_GetHsSettle(int fd, struct hs_settle_s *hs_cfg)
 {
 	if (-1 == ioctl(fd, CVI_VIP_MIPI_TX_GET_HS_SETTLE, hs_cfg)) {
 		perror("CVI_VIP_MIPI_TX_GET_HS_SETTLE");
@@ -150,4 +150,3 @@ int mipi_tx_get_hs_settle(int fd, struct hs_settle_s *hs_cfg)
 	}
 	return 0;
 }
-

@@ -9,7 +9,7 @@
 #ifndef _ISP_ALGO_DIS_H_
 #define _ISP_ALGO_DIS_H_
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "isp_defines.h"
 
 #ifdef __cplusplus

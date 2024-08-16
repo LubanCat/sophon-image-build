@@ -9,7 +9,7 @@
 #ifndef _RAW_REPLAY_H_
 #define _RAW_REPLAY_H_
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "isp_comm_inc.h"
 
 #ifdef __cplusplus
@@ -36,6 +36,7 @@ typedef struct _RAW_REPLAY_INFO {
 	CVI_S32 longExposure;
 	CVI_S32 shortExposure;
 	CVI_S32 WB_RGain;
+	CVI_S32 WB_GGain;
 	CVI_S32 WB_BGain;
 	CVI_S32 CCM[9];
 	CVI_S32 BLC_Offset[4];

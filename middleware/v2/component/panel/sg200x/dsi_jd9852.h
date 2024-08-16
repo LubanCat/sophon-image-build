@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_JD9852_H_
 #define _MIPI_TX_PARAM_JD9852_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 #define JD9852_HACT 240

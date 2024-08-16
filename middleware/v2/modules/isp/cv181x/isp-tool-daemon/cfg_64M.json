@@ -17,6 +17,8 @@
 	"buf1-blk-cnt": 0,
 	"vi-vpss-mode": 1,
 	"model": "./cvi_models/retinaface_mnet0.25_342_608.cvimodel",
+	"replay-mode": false,
+	"replay-param": "./replay.json",
 	"sbm": 0,
 	"sbm-buf-line": 64,
 	"sbm-buf-size": 16,
@@ -37,7 +39,7 @@
 		},
 		{
 			"chn": 1,
-			"buf-blk-cnt": 5,
+			"buf-blk-cnt": 2,
 			"venc-bind-vpss": false,
 			"enable-isp-info-osd": false,
 			"enable-retinaface": false,

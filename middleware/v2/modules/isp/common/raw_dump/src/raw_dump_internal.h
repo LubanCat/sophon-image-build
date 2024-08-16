@@ -9,13 +9,10 @@
 #ifndef _RAW_DUMP_INTERNAL_H_
 #define _RAW_DUMP_INTERNAL_H_
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
-#if defined(CHIP_ARCH_CV183X) || defined(CHIP_ARCH_CV182X)
-#include "cvi_common.h"
-#else
 #include <linux/cvi_common.h>
-#endif //
+
 
 #ifdef __cplusplus
 #if __cplusplus

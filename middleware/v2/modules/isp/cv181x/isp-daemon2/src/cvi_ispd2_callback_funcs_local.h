@@ -137,5 +137,6 @@ void CVI_ISPD2_Utils_ComposeFileErrorMessage(TJSONRpcContentOut *ptContentOut);
 void CVI_ISPD2_Utils_ComposeMissParameterErrorMessage(TJSONRpcContentOut *ptContentOut);
 
 CVI_S32 CVI_ISPD2_Utils_GetCurrentVPSSInfo(const TISPDeviceInfo *ptDevInfo, CVI_S32 *pVPSSGrp, CVI_S32 *pVPSSChn);
+CVI_BOOL CVI_ISPD2_Utils_IsRawReplayMode(void);
 
 #endif // _CVI_ISPD2_CALLBACK_FUNCS_LOCAL_H_

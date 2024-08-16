@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_ispd2.h"
 
 #include "uv.h"

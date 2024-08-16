@@ -90,18 +90,6 @@ vdecChnInputCfg h264_conti_dec_inputCfg_testcase[] = {
 		.input_path = "enc-2k-6.264",
 		.output_path = "enc-2k-6",
 	},
-	#ifdef ARCH_CV183X
-	{
-		.codec = "264",
-		.input_path = "enc-4k.264",
-		.output_path = "enc-4k",
-	},
-	{
-		.codec = "264",
-		.input_path = "enc-4k-2.264",
-		.output_path = "enc-4k-2",
-	},
-	#endif
 	{
 		.codec = "264",
 		.input_path = "enc-roi.264",
@@ -258,13 +246,6 @@ vdecChnInputCfg jpeg_conti_dec_inputCfg_testcase[] = {
 		.input_path = "sintel_trailer_720x480_1.jpg",
 		.output_path = "sintel_trailer_720x480_1.jpg",
 	},
-	#if defined(ARCH_CV183X) || defined(FPGA_PORTING)
-	{
-		.codec = "jpg",
-		.input_path = "lab_handwave_3840x2160_90.jpg",
-		.output_path = "lab_handwave_3840x2160_90.jpg",
-	},
-	#endif
 	{
 		.codec = "mjp",
 		.input_path = "coastguard_352x288_300.mjp",

@@ -12,7 +12,7 @@
 #include <inttypes.h>
 
 #include "sample_comm.h"
-#include "mipi_tx.h"
+#include "cvi_mipi_tx.h"
 #include "sample_panel.h"
 
 static int fd;
@@ -55,6 +55,8 @@ typedef enum {
 	DSI_PANEL_OTA7290B,
 	DSI_PANEL_ST7701,
 	LVDS_PANEL_LCM185X56,
+	BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M,
+	BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M,
 	BT_PANEL_TP2803_BT656_1280x720_25FPS_72M,
 	BT_PANEL_NVP6021_BT1120_1920x1080_25FPS_72M,
 	I80_PANEL_ST7789V3_HW_MCU_240x320_60FPS,
@@ -66,11 +68,13 @@ typedef struct _inputPara_ {
 	bool                    lane_pn_swap[LANE_MAX_NUM];
 	bool					lane_id_flag;
 	bool					pn_swap_flag;
+	CVI_U8					dev_no;
 	PANEL_MODEL			panel_model;
 } inputPara;
 
 inputPara g_input_para = {
 	.panel_model = DSI_PANEL_HX8394_EVB,
+	.dev_no = 0,
 };
 
 static struct panel_desc_s g_panel_desc = {
@@ -119,6 +123,8 @@ static char *s_panel_model_type_arr[] = {
 	"OTA7290B",
 	"ST7701",
 	"LCM185X56",
+	"BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M",
+	"BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M",
 	"TP2803_BT656_1280x720_25FPS_72M",
 	"BT_PANEL_NVP6021_BT1120_1920x1080_25FPS_72M",
 	"ST7789V3_HW_MCU_RGB565_240x320_60FPS",
@@ -202,7 +208,7 @@ int dsi_init(int devno, const struct dsc_instr *cmds, int size)
 			.cmd = (void *)instr->data
 		};
 
-		ret = mipi_tx_send_cmd(fd, &cmd_info);
+		ret = CVI_MIPI_TX_SendCmd(fd, &cmd_info);
 		if (instr->delay)
 			usleep(instr->delay * 1000);
 
@@ -224,13 +230,13 @@ CVI_S32 SAMPLE_MIPI_TX_ENABLE(void)
 		return CVI_FAILURE;
 	}
 
-	ret = mipi_tx_disable(fd);
+	ret = CVI_MIPI_TX_Disable(fd);
 	if (ret != CVI_SUCCESS) {
 		printf("mipi_tx_disable fail!\n");
 		return CVI_FAILURE;
 	}
 
-	ret = mipi_tx_cfg(fd, (struct combo_dev_cfg_s *)g_panel_desc.stdsicfg.dev_cfg);
+	ret = CVI_MIPI_TX_Cfg(fd, (struct combo_dev_cfg_s *)g_panel_desc.stdsicfg.dev_cfg);
 	if (ret != CVI_SUCCESS) {
 		printf("mipi_tx_cfg fail!\n");
 		return CVI_FAILURE;
@@ -241,13 +247,13 @@ CVI_S32 SAMPLE_MIPI_TX_ENABLE(void)
 		return CVI_FAILURE;
 	}
 
-	ret = mipi_tx_set_hs_settle(fd, g_panel_desc.stdsicfg.hs_timing_cfg);
+	ret = CVI_MIPI_TX_SetHsSettle(fd, g_panel_desc.stdsicfg.hs_timing_cfg);
 	if (ret != CVI_SUCCESS) {
 		printf("mipi_tx_set_hs_settle fail!\n");
 		return CVI_FAILURE;
 	}
 
-	ret = mipi_tx_enable(fd);
+	ret = CVI_MIPI_TX_Enable(fd);
 	if (ret != CVI_SUCCESS) {
 		printf("mipi_tx_enable fail!\n");
 		return CVI_FAILURE;
@@ -356,7 +362,7 @@ void SAMPLE_DSI_CONTROLE(void)
 				data[len++] = tmp;
 			} while (len < cmd_info.cmd_size);
 			cmd_info.cmd = data;
-			mipi_tx_send_cmd(fd, &cmd_info);
+			CVI_MIPI_TX_SendCmd(fd, &cmd_info);
 		} else if (tmp == 1) {
 			struct get_cmd_info_s cmd_info;
 			CVI_U8 data[4] = { 0 };
@@ -374,18 +380,18 @@ void SAMPLE_DSI_CONTROLE(void)
 			cmd_info.data_param = tmp;
 
 			cmd_info.get_data = data;
-			mipi_tx_recv_cmd(fd, &cmd_info);
+			CVI_MIPI_TX_RecvCmd(fd, &cmd_info);
 			printf("data[0]: %#x [1]: %#x [2]: %#x [3]: %#x\n"
 				, cmd_info.get_data[0], cmd_info.get_data[1]
 				, cmd_info.get_data[2], cmd_info.get_data[3]);
 		} else if (tmp == 2) {
-			mipi_tx_disable(fd);
+			CVI_MIPI_TX_Disable(fd);
 		} else if (tmp == 3) {
-			mipi_tx_enable(fd);
+			CVI_MIPI_TX_Enable(fd);
 		} else if (tmp == 4) {
 			struct hs_settle_s hs_cfg;
 
-			mipi_tx_get_hs_settle(fd, &hs_cfg);
+			CVI_MIPI_TX_GetHsSettle(fd, &hs_cfg);
 			printf("prepare(%d) zero(%d) trail(%d)\n",
 				hs_cfg.prepare, hs_cfg.zero, hs_cfg.trail);
 		} else if (tmp == 5) {
@@ -403,7 +409,7 @@ void SAMPLE_DSI_CONTROLE(void)
 			scanf("%d", &tmp);
 			hs_cfg.trail = tmp;
 
-			mipi_tx_set_hs_settle(fd, &hs_cfg);
+			CVI_MIPI_TX_SetHsSettle(fd, &hs_cfg);
 		} else
 			break;
 	} while (1);
@@ -484,6 +490,13 @@ void SAMPLE_SET_PANEL_DESC(void)
 		g_panel_desc.stdsicfg.dsi_init_cmds = dsi_init_cmds_hx8399_1080x1920;
 		g_panel_desc.stdsicfg.dsi_init_cmds_size = ARRAY_SIZE(dsi_init_cmds_hx8399_1080x1920);
 		break;
+	case DSI_PANEL_EK79007:
+		g_panel_desc.panel_type = PANEL_MODE_DSI;
+		g_panel_desc.stdsicfg.dev_cfg = &dev_cfg_ek79007_600x1024;
+		g_panel_desc.stdsicfg.hs_timing_cfg = &hs_timing_cfg_ek79007_600x1024;
+		g_panel_desc.stdsicfg.dsi_init_cmds = dsi_init_cmds_ek79007_600x1024;
+		g_panel_desc.stdsicfg.dsi_init_cmds_size = ARRAY_SIZE(dsi_init_cmds_ek79007_600x1024);
+		break;
 	case DSI_PANEL_GM8775C:
 		g_panel_desc.panel_type = PANEL_MODE_DSI;
 		g_panel_desc.stdsicfg.dev_cfg = &dev_cfg_gm8775c;
@@ -550,6 +563,28 @@ void SAMPLE_SET_PANEL_DESC(void)
 		, .u16Vpw = 2, .u16Hpw = 20, .bIdv = 0, .bIhs = 0, .bIvs = 0};
 		g_panel_desc.stVoPubAttr.stSyncInfo = stLcm185x56_SyncInfo;
 		g_panel_desc.stVoPubAttr.stLvdsAttr = lvds_lcm185x56_cfg;
+		break;
+	case BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M:
+		g_panel_desc.panel_type = PANEL_MODE_BT;
+		g_panel_desc.stVoPubAttr.enIntfType = VO_INTF_BT656;
+		g_panel_desc.stVoPubAttr.enIntfSync = VO_OUTPUT_USER;
+		VO_SYNC_INFO_S stPt1000kbt656_SyncInfo = {.bSynm = 1, .bIop = 1, .u16FrameRate = 25
+		, .u16Vact = 720, .u16Vbb = 20, .u16Vfb = 5
+		, .u16Hact = 1280, .u16Hbb = 220, .u16Hfb = 440
+		, .u16Vpw = 5, .u16Hpw = 40, .bIdv = 0, .bIhs = 0, .bIvs = 0};
+		g_panel_desc.stVoPubAttr.stSyncInfo = stPt1000kbt656_SyncInfo;
+		g_panel_desc.stVoPubAttr.stBtAttr = stpt1000kbt656cfg;
+		break;
+	case BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M:
+		g_panel_desc.panel_type = PANEL_MODE_BT;
+		g_panel_desc.stVoPubAttr.enIntfType = VO_INTF_BT1120;
+		g_panel_desc.stVoPubAttr.enIntfSync = VO_OUTPUT_USER;
+		VO_SYNC_INFO_S stPt1000kbt1120_SyncInfo = {.bSynm = 1, .bIop = 1, .u16FrameRate = 25
+		, .u16Vact = 1080, .u16Vbb = 20, .u16Vfb = 20
+		, .u16Hact = 1920, .u16Hbb = 356, .u16Hfb = 356
+		, .u16Vpw = 5, .u16Hpw = 8, .bIdv = 0, .bIhs = 0, .bIvs = 0};
+		g_panel_desc.stVoPubAttr.stSyncInfo = stPt1000kbt1120_SyncInfo;
+		g_panel_desc.stVoPubAttr.stBtAttr = stpt1000kbt1120cfg;
 		break;
 	case BT_PANEL_TP2803_BT656_1280x720_25FPS_72M:
 		g_panel_desc.panel_type = PANEL_MODE_BT;
@@ -691,6 +726,35 @@ CVI_S32 SAMPLE_SET_PNSWAP(char *pPnswap)
 	return CVI_SUCCESS;
 }
 
+void SAMPLE_PANEL_I2C_SEND(void)
+{
+	CVI_S32 ret;
+
+	if (g_input_para.panel_model == BT_PANEL_PT1000K_BT656_1280x720_25FPS_74M) {
+		ret = panel_i2c_init(g_input_para.dev_no);
+		if (ret != CVI_SUCCESS) {
+			printf("panel_i2c_init fail");
+		}
+		for (CVI_U32 i = 0; i < ARRAY_SIZE(bt656_720p25_pt1000k_init_cmds); i++) {
+			ret = panel_write_register(g_input_para.dev_no, bt656_720p25_pt1000k_init_cmds[i].addr,
+				  bt656_720p25_pt1000k_init_cmds[i].data);
+			if (ret != CVI_SUCCESS)
+				printf("i2c_write fail addr[0x%x]\n", bt656_720p25_pt1000k_init_cmds[i].addr);
+		}
+	} else if(g_input_para.panel_model == BT_PANEL_PT1000K_BT1120_1920x1080_25FPS_74M) {
+		ret = panel_i2c_init(g_input_para.dev_no);
+		if (ret != CVI_SUCCESS) {
+			printf("panel_i2c_init fail");
+		}
+		for (CVI_U32 i = 0; i < ARRAY_SIZE(bt1120_1080p25_pt1000k_init_cmds); i++) {
+			ret = panel_write_register(g_input_para.dev_no, bt1120_1080p25_pt1000k_init_cmds[i].addr,
+				  bt1120_1080p25_pt1000k_init_cmds[i].data);
+			if (ret != CVI_SUCCESS)
+				printf("i2c_write fail addr[0x%x]\n", bt1120_1080p25_pt1000k_init_cmds[i].addr);
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc == 1) {
@@ -779,6 +843,9 @@ int main(int argc, char *argv[])
 			return ret;
 		}
 	}
+
+	if (g_panel_desc.panel_type == PANEL_MODE_BT)
+		SAMPLE_PANEL_I2C_SEND();
 
 EXIT1:
 	if (ret == CVI_SUCCESS)

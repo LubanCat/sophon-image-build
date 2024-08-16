@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_GM8775C_1080P_H_
 #define _MIPI_TX_PARAM_GM8775C_1080P_H_
 
-#include <linux/vo_mipi_tx.h>
 #include "linux/cvi_comm_mipi_tx.h"
 
 #define _BIST_COLOR             0

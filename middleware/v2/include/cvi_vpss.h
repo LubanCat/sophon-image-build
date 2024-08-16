@@ -294,16 +294,6 @@ CVI_S32 CVI_VPSS_GetChnFrame(VPSS_GRP VpssGrp, VPSS_CHN VpssChn, VIDEO_FRAME_INF
 CVI_S32 CVI_VPSS_ReleaseChnFrame(VPSS_GRP VpssGrp, VPSS_CHN VpssChn, const VIDEO_FRAME_INFO_S *pstVideoFrame);
 
 /**
- * @brief Trigger venc encode.
- *
- * @param VpssGrp(In), group ID.
- * @param VpssChn(In), channel ID.
- * @param u32FrameCnt(In), frame count.
- * @return CVI_S32 Return CVI_SUCCESS if succeed.
- */
-CVI_S32 CVI_VPSS_TriggerSnapFrame(VPSS_GRP VpssGrp, VPSS_CHN VpssChn, CVI_U32 u32FrameCnt);
-
-/**
  * @brief Set channel to fetch VB from a specified pool.
  *
  * @param VpssGrp(In), group ID.

@@ -9,7 +9,7 @@
 #ifndef _ISP_ALGO_YCONTRAST_H_
 #define _ISP_ALGO_YCONTRAST_H_
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_comm_isp.h"
 
 #ifdef __cplusplus

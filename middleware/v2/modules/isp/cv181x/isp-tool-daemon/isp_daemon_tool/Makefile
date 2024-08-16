@@ -108,6 +108,7 @@ package: $(TARGET)
 	@cp ../cfg_128M.json install/
 	@cp ../vc_param_64M.json install/
 	@cp ../vc_param_128M.json install/
+	@cp ../replay.json install/
 
 	@mkdir install/lib/ai
 ifeq "$(AI_SDK_PATH_EXIST)" "noexist"
@@ -148,6 +149,7 @@ install:
 	@cp -f install/cfg_128M.json $(DESTDIR)/usr/bin
 	@cp -f install/vc_param_64M.json $(DESTDIR)/usr/bin
 	@cp -f install/vc_param_128M.json $(DESTDIR)/usr/bin
+	@cp -f install/replay.json $(DESTDIR)/usr/bin
 
 	-@cp -f install/pqtool_definition.json $(DESTDIR)/usr/bin
 
@@ -161,13 +163,14 @@ uninstall:
 	-@rm -f $(DESTDIR)/usr/bin/vc_param_64M.json
 	-@rm -f $(DESTDIR)/usr/bin/vc_param_128M.json
 	-@rm -f $(DESTDIR)/usr/bin/pqtool_definition.json
+	-@rm -f $(DESTDIR)/usr/bin/replay.json
 
 sdk_release: package
 	-@rm -rf include src tmp
 	-@mv Makefile.sdk_release Makefile
 	-@rm -f Makefile.*
 
-	-@rm -f ../cfg_64M.json ../cfg_128M.json ../vc_param_64M.json ../vc_param_128M.json ../config.ini ../CviIspTool.sh ../README.md ../.gitignore
+	-@rm -f ../cfg_64M.json ../cfg_128M.json ../vc_param_64M.json ../vc_param_128M.json ../config.ini ../CviIspTool.sh ../README.md ../.gitignore ../replay.json
 	-@rm -rf ../test
 
 clean:

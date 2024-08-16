@@ -1,7 +1,7 @@
 #ifndef __CVI_AUDIO_DL_ADP_H__
 #define __CVI_AUDIO_DL_ADP_H__
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
 CVI_S32 CVI_Audio_Dlpath(CVI_CHAR *pChLibPath);
 

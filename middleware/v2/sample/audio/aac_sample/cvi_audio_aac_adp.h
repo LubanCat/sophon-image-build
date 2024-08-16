@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "cvi_comm_aio.h"
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #ifdef SUPPORT_EXTERNAL_AAC
 #include "cvi_audio.h"
 #include "cvi_comm_aenc.h"

@@ -17,7 +17,7 @@
 
 #include "sample_comm.h"
 
-#include "mipi_tx.h"
+#include "cvi_mipi_tx.h"
 
 #include "dsi_hx8394_evb.h"
 #include "i80_st7789v.h"

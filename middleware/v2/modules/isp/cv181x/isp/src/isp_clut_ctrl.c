@@ -249,7 +249,7 @@ static CVI_S32 isp_clut_ctrl_postprocess(VI_PIPE ViPipe)
 	}
 
 	struct cvi_vip_isp_post_cfg *post_addr = get_post_tuning_buf_addr(ViPipe);
-	CVI_U8 tun_idx = get_tuning_buf_idx(ViPipe);
+	CVI_U8 tun_idx = 0;//get_tuning_buf_idx(ViPipe);
 
 	struct cvi_vip_isp_clut_config *clut_cfg =
 		(struct cvi_vip_isp_clut_config *)&(post_addr->tun_cfg[tun_idx].clut_cfg);
@@ -343,7 +343,7 @@ static CVI_VOID lut_update_full(VI_PIPE ViPipe, void *ptRuntime, void *ptCfg)
 {
 	struct isp_clut_ctrl_runtime *runtime = (struct isp_clut_ctrl_runtime *)ptRuntime;
 	struct cvi_vip_isp_clut_config *clut_cfg = (struct cvi_vip_isp_clut_config *)ptCfg;
-	CVI_U8 tun_idx = get_tuning_buf_idx(ViPipe);
+	CVI_U8 tun_idx = 0;//get_tuning_buf_idx(ViPipe);
 
 	const ISP_CLUT_ATTR_S *clut_attr = NULL;
 	const ISP_CLUT_SATURATION_ATTR_S *clut_saturation_attr = NULL;
@@ -395,7 +395,7 @@ static CVI_S32 table_update_partial(VI_PIPE ViPipe, void *ptRuntime, void *ptCfg
 {
 	struct isp_clut_ctrl_runtime *runtime = (struct isp_clut_ctrl_runtime *)ptRuntime;
 	struct cvi_vip_isp_clut_config *clut_cfg = (struct cvi_vip_isp_clut_config *)ptCfg;
-	CVI_U8 tun_idx = get_tuning_buf_idx(ViPipe);
+	CVI_U8 tun_idx = 0;//get_tuning_buf_idx(ViPipe);
 
 	const ISP_CLUT_ATTR_S *clut_attr = NULL;
 	const ISP_CLUT_SATURATION_ATTR_S *clut_saturation_attr = NULL;
@@ -666,6 +666,15 @@ CVI_S32 isp_clut_ctrl_set_clut_attr(VI_PIPE ViPipe, const ISP_CLUT_ATTR_S *pstCL
 
 	isp_clut_ctrl_get_clut_attr(ViPipe, &p);
 	memcpy((CVI_VOID *) p, pstCLUTAttr, sizeof(*pstCLUTAttr));
+
+	if (runtime->bEnStatus != pstCLUTAttr->Enable) {
+		runtime->clut_partial_update.updateFailCnt[0] = 0;
+		runtime->clut_partial_update.updateFailCnt[1] = 0;
+		runtime->clut_partial_update.u8LastSyncIdx[0] = 0;
+		runtime->clut_partial_update.u8LastSyncIdx[1] = 0;
+		runtime->clut_partial_update.updateListLen = 0;
+		runtime->bEnStatus = pstCLUTAttr->Enable;
+	}
 
 	runtime->preprocess_table_updated = CVI_TRUE;
 	runtime->tun_table_updated_flage = 0;

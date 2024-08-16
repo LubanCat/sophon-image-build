@@ -457,6 +457,7 @@ CVI_S32 CVI_ISPD2_Message_HandleBinary(const char *pBufIn, CVI_U32 u32BufInSize,
 	TBinaryData			*ptBinaryData = &(ptDeviceInfo->tBinaryInData);
 	JSONObject			*pJsonDataResponse = NULL;
 	TJSONRpcContentOut	tContentOut;
+	CVI_S32				ViPipe, ViChn, VpssGrp, VpssChn;
 
 	pJsonDataResponse = ISPD2_json_object_new_object();
 
@@ -469,6 +470,16 @@ CVI_S32 CVI_ISPD2_Message_HandleBinary(const char *pBufIn, CVI_U32 u32BufInSize,
 		break;
 	case EBINARYDATA_RAW_DATA:
 		CVI_ISPD2_CBFunc_SendRawReplayData(ptDeviceInfo, &tContentOut, pJsonDataResponse);
+		break;
+	case EBINARYDATA_VI_LDC_BIN_DATA:
+		ViPipe = ptDeviceInfo->s32ViPipe;
+		ViChn = ptDeviceInfo->s32ViPipe;
+		CVI_ISPD2_CBFunc_VI_LDCBinData(ViPipe, ViChn, ptBinaryData, &tContentOut, pJsonDataResponse);
+		break;
+	case EBINARYDATA_VPSS_LDC_BIN_DATA:
+		VpssGrp = ptDeviceInfo->s32VpssGrp;
+		VpssChn = ptDeviceInfo->s32VpssChn;
+		CVI_ISPD2_CBFunc_VPSS_LDCBinData(VpssGrp, VpssChn, ptBinaryData, &tContentOut, pJsonDataResponse);
 		break;
 	default:
 		tContentOut.s32StatusCode = JSONRPC_CODE_METHOD_NOT_FOUND;

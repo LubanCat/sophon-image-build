@@ -1,4 +1,9 @@
 SHELL = /bin/bash
+
+ifeq ("$(CVIARCH)", "CV180X")
+all:
+clean:
+else
 ifeq ($(PARAM_FILE), )
 	PARAM_FILE:=../../Makefile.param
 	include $(PARAM_FILE)
@@ -53,3 +58,4 @@ clean:
 	@rm -f $(OBJS) $(DEPS) $(TARGET)
 
 -include $(DEPS)
+endif

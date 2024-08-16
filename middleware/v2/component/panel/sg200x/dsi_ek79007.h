@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_EK79007_H_
 #define _MIPI_TX_PARAM_EK79007_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 struct combo_dev_cfg_s dev_cfg_ek79007_600x1024 = {

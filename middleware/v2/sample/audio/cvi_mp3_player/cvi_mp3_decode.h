@@ -6,7 +6,7 @@
 #ifndef _CVI_MP3_DECODE_H_
 #define _CVI_MP3_DECODE_H_
 #include <stdio.h>
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 /* ------------------------------------------------------------------------
  * Debugging, printing and logging
  */

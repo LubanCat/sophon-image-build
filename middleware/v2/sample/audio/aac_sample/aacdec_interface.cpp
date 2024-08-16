@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "fdkaac/libAACdec/include/aacdecoder_lib.h"
 #include "fdkaac/libAACenc/include/aacenc_lib.h"
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 #include "cvi_aacdec.h"
 
 

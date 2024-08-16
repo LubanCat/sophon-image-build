@@ -21,7 +21,7 @@ extern "C"
 #endif
 #endif
 
-#include "cvi_type.h"
+#include <linux/cvi_type.h>
 
 	/********************************Macro Definition********************************/
 	/** \addtogroup      AACDEC */

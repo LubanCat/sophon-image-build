@@ -624,6 +624,13 @@ CVI_S32 CVI_GDC_LoadMesh(MESH_DUMP_ATTR_S *pMeshDumpAttr, const LDC_ATTR_S *pstL
 	}
 	rewind(fp);
 
+	// free last time memory
+	if (pmesh->vaddr && pmesh->paddr) {
+		CVI_SYS_IonFree(pmesh->paddr, pmesh->vaddr);
+		pmesh->vaddr = NULL;
+		pmesh->paddr = 0;
+	}
+
 	// acquire memory space for mesh.
 	if (CVI_SYS_IonAlloc_Cached(&phyMesh, &virMesh, "gdc_mesh", mesh_size) != CVI_SUCCESS) {
 		CVI_TRACE_GDC(CVI_DBG_ERR, "Can't acquire memory for gdc mesh.\n");
@@ -683,5 +690,126 @@ CVI_S32 CVI_GDC_LoadMesh(MESH_DUMP_ATTR_S *pMeshDumpAttr, const LDC_ATTR_S *pstL
 		return CVI_ERR_GDC_NOT_SUPPORT;
 	}
 	fclose(fp);
+	return CVI_SUCCESS;
+}
+
+CVI_S32 CVI_GDC_LoadMeshWithBuf(MESH_DUMP_ATTR_S *pMeshDumpAttr, const LDC_ATTR_S *pstLDCAttr, CVI_VOID *pBuf, CVI_U32 Len)
+{
+	MOD_CHECK_NULL_PTR(CVI_ID_GDC, pMeshDumpAttr);
+	MOD_CHECK_NULL_PTR(CVI_ID_GDC, pstLDCAttr);
+	MOD_CHECK_NULL_PTR(CVI_ID_GDC, pBuf);
+
+	CVI_U64 phyMesh;
+	CVI_VOID *virMesh;
+	CVI_U32 vpssGrp = 0, vpssChn = 0, viChn = 0;
+	SIZE_S in_size, out_size;
+	CVI_U32 mesh_1st_size, mesh_2nd_size, mesh_size;
+	CVI_U32 u32Width, u32Height;
+	CVI_S32 fd;
+	struct cvi_gdc_mesh *pmesh;
+	MOD_ID_E mod = pMeshDumpAttr->enModId;
+	CVI_S32 s32Ret;
+	struct vpss_chn_attr attr;
+
+	switch (mod) {
+	case CVI_ID_VI:
+		viChn = pMeshDumpAttr->viMeshAttr.chn;
+		pmesh = &g_vi_mesh[viChn];
+		u32Width = gViCtx->chnAttr[viChn].stSize.u32Width;
+		u32Height = gViCtx->chnAttr[viChn].stSize.u32Height;
+		in_size.u32Width = ALIGN(u32Width, DEFAULT_ALIGN);
+		in_size.u32Height = ALIGN(u32Height, DEFAULT_ALIGN);
+		break;
+	case CVI_ID_VPSS:
+		fd = get_vpss_fd();
+		attr.VpssGrp = vpssGrp = pMeshDumpAttr->vpssMeshAttr.grp;
+		attr.VpssChn = vpssChn = pMeshDumpAttr->vpssMeshAttr.chn;
+		pmesh = &mesh[vpssGrp][vpssChn];
+
+		s32Ret = vpss_get_chn_attr(fd, &attr);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_TRACE_GDC(CVI_DBG_ERR, "Grp(%d) Chn(%d) get chn attr fail\n", vpssGrp, vpssChn);
+			return s32Ret;
+		}
+		u32Width = attr.stChnAttr.u32Width;
+		u32Height = attr.stChnAttr.u32Height;
+		in_size.u32Width = ALIGN(u32Width, DEFAULT_ALIGN);
+		in_size.u32Height = ALIGN(u32Height, DEFAULT_ALIGN);
+		break;
+	default:
+		CVI_TRACE_GDC(CVI_DBG_ERR, "not supported\n");
+		return CVI_ERR_GDC_NOT_SUPPORT;
+	}
+
+	out_size.u32Width = in_size.u32Width;
+	out_size.u32Height = in_size.u32Height;
+
+	mesh_gen_get_size(in_size, out_size, &mesh_1st_size, &mesh_2nd_size);
+	mesh_size = mesh_1st_size + mesh_2nd_size;
+	if (mesh_size != Len) {
+		CVI_TRACE_GDC(CVI_DBG_ERR, "invalid param, Len[%d] not match with MOD[%d] meshsize[%d]\n", Len, mod, mesh_size);
+		return CVI_ERR_GDC_ILLEGAL_PARAM;
+	}
+
+	// free last time memory
+	if (pmesh->vaddr && pmesh->paddr) {
+		CVI_SYS_IonFree(pmesh->paddr, pmesh->vaddr);
+		pmesh->vaddr = NULL;
+		pmesh->paddr = 0;
+	}
+
+	// acquire memory space for mesh.
+	if (CVI_SYS_IonAlloc_Cached(&phyMesh, &virMesh, "gdc_mesh", mesh_size) != CVI_SUCCESS) {
+		CVI_TRACE_GDC(CVI_DBG_ERR, "Can't acquire memory for gdc mesh.\n");
+		return CVI_ERR_GDC_NOMEM;
+	}
+	memset(virMesh, 0 , mesh_size);
+	CVI_TRACE_GDC(CVI_DBG_DEBUG, "load mesh size:%d, mesh phy addr:%#"PRIx64", vir addr:%p.\n",
+		mesh_size, phyMesh, virMesh);
+	pmesh->paddr = phyMesh;
+	pmesh->vaddr = virMesh;
+
+	memcpy(virMesh, pBuf, Len);
+	CVI_SYS_IonFlushCache(phyMesh, virMesh, mesh_size);
+
+	switch (mod) {
+	case CVI_ID_VI:
+		g_vi_mesh[viChn].meshSize = mesh_size;
+		//vi_ctx.stLDCAttr[viChn].bEnable = CVI_TRUE;
+
+		fd = get_vi_fd();
+		struct vi_chn_ldc_cfg vi_cfg;
+
+		vi_cfg.ViChn = viChn;
+		vi_cfg.enRotation = ROTATION_0;
+		vi_cfg.stLDCAttr.stAttr = *pstLDCAttr;
+		vi_cfg.stLDCAttr.bEnable = CVI_TRUE;
+		vi_cfg.meshHandle = pmesh->paddr;
+		if (vi_sdk_set_chn_ldc(fd, &vi_cfg) != CVI_SUCCESS) {
+			CVI_TRACE_GDC(CVI_DBG_ERR, "VI Set Chn(%d) LDC fail\n", viChn);
+			return CVI_FAILURE;
+		}
+		break;
+	case CVI_ID_VPSS:
+		mesh[vpssGrp][vpssChn].meshSize = mesh_size;
+		//vpssCtx[vpssGrp].stChnCfgs[vpssChn].stLDCAttr.bEnable = CVI_TRUE;
+		fd = get_vpss_fd();
+		struct vpss_chn_ldc_cfg vpss_cfg;
+
+		vpss_cfg.VpssGrp = vpssGrp;
+		vpss_cfg.VpssChn = vpssChn;
+		vpss_cfg.enRotation = ROTATION_0;
+		vpss_cfg.stLDCAttr.stAttr = *pstLDCAttr;
+		vpss_cfg.stLDCAttr.bEnable = CVI_TRUE;
+		vpss_cfg.meshHandle = pmesh->paddr;
+		if (vpss_set_chn_ldc(fd, &vpss_cfg) != CVI_SUCCESS) {
+			CVI_TRACE_GDC(CVI_DBG_ERR, "VPSS Set Chn(%d) LDC fail\n", vpssChn);
+			return CVI_FAILURE;
+		}
+		break;
+	default:
+		CVI_TRACE_GDC(CVI_DBG_ERR, "not supported\n");
+		return CVI_ERR_GDC_NOT_SUPPORT;
+	}
 	return CVI_SUCCESS;
 }

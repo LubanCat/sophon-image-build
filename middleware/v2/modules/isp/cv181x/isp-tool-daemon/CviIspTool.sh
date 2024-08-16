@@ -34,7 +34,8 @@ getopts_get_optional_argument() {
 shift
 
 sed -i 's/"dev-num": 2/"dev-num": 1/g' $CFG_JSON_FILE
-while getopts "hgmi" OPTION; do
+sed -i 's/"replay-mode": true/"replay-mode": false/g' $CFG_JSON_FILE
+while getopts "hgsmir" OPTION; do
     case $OPTION in
         i)
             getopts_get_optional_argument $@
@@ -55,6 +56,13 @@ while getopts "hgmi" OPTION; do
             fi
             echo "use multi rtsp server"
             sed -i 's/"dev-num": 1/"dev-num": 2/g' $CFG_JSON_FILE
+            ;;
+        r)
+            if [ -z "$CVI_REPLAY_MODE" ]; then
+                export CVI_REPLAY_MODE=1
+            fi
+            echo "start replay mode"
+            sed -i 's/"replay-mode": false/"replay-mode": true/g' $CFG_JSON_FILE
             ;;
         h)
             echo "Usage:"

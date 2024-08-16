@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM_NT35521_H_
 #define _MIPI_TX_PARAM_NT35521_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 struct combo_dev_cfg_s dev_cfg_nt35521_800x1280 = {

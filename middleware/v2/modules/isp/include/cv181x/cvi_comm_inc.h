@@ -19,12 +19,7 @@ extern "C" {
 #include "stdint.h"
 #include <sys/time.h>
 
-#if defined(ARCH_CV183X) || defined(ARCH_CV182X)
-#include <cvi_common.h>
-#include <cvi_comm_vi.h>
-#include <cvi_comm_video.h>
-#include <cvi_defines.h>
-#elif defined(ARCH_RTOS_CV181X)
+#if defined(ARCH_RTOS_CV181X)
 #include <cvi_common.h>
 #include <cvi_comm_vi.h>
 #include <cvi_comm_video.h>

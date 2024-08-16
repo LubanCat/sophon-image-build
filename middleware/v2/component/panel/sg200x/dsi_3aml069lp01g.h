@@ -1,7 +1,6 @@
 #ifndef _MIPI_TX_PARAM__3AML069LP01G_H_
 #define _MIPI_TX_PARAM__3AML069LP01G_H_
 
-#include <linux/vo_mipi_tx.h>
 #include <linux/cvi_comm_mipi_tx.h>
 
 #define _3AML069LP01G_RX_VACT        1024
