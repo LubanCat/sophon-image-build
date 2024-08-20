@@ -25,6 +25,8 @@ if [ ! $VERSION ]; then
     VERSION="release"
 fi
 
+DATE=$(date +%Y%m%d)
+
 finish() {
     sudo umount $TARGET_ROOTFS_DIR/dev
     exit -1
@@ -33,7 +35,7 @@ trap finish ERR
 
 echo -e "\033[47;36m Extract image \033[0m"
 sudo rm -rf $TARGET_ROOTFS_DIR
-sudo tar -xpf ubuntu-base-$TARGET-$ARCH-*.tar.gz
+sudo tar -xpf ubuntu-base-$TARGET-$ARCH-$DATE.tar.gz
 
 #linux kernel deb
 if [ -e ../linux-headers* ]; then
@@ -144,7 +146,7 @@ mount -t proc proc /proc
 mount -t sysfs sys /sys
 
 if [ -e "/usr/lib64v0p7_xthead/lp64d/libc.so" ] ; then
-    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so ld-musl-riscv64v0p7_xthead.so.1
+    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v0p7_xthead.so.1
     ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v_xthead.so.1
 fi
 

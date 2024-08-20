@@ -9,7 +9,8 @@
 #include <dt-bindings/input/linux-event-codes.h>
 
 / {
-	
+	model = "Embedfire LubanCat-P1";
+
 	sd:cv-sd@4310000 {
         min-frequency = <400000>; // 400Khz
         //max-frequency = <50000000>; // 50Mhz
