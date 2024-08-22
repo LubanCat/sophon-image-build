@@ -7,7 +7,7 @@
 
 lib
 bin
-include
+include/isp/
 tags
 
 *_asan
