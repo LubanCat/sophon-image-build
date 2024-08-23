@@ -1039,6 +1039,60 @@ typedef struct _ISP_WB_INFO_S {
 	CVI_S16 s16Bv; /*R;*/
 } ISP_WB_INFO_S;
 
+//-----------------------------------------------------------------------------
+//  FOCUS Attr
+//-----------------------------------------------------------------------------
+typedef enum _AF_DIRECTION {
+	AF_DIR_NEAR,
+	AF_DIR_FAR,
+} AF_DIRECTION;
+
+typedef enum _AF_STATUS {
+	AF_NOT_INIT,
+	AF_INIT_POSITION,
+	AF_INIT,
+	AF_TRIGGER_FOCUS,
+	AF_DETECT_DIRECTION,
+	AF_SERACH_BEST_POS,
+	AF_LOCATE_BEST_POS,
+	AF_FOCUSED,
+	AF_REVERSE_DIRECTION, //for hw limit
+} AF_STATUS;
+
+typedef struct _ISP_FOCUS_ATTR_S {
+	CVI_U8 u8DebugMode;
+	CVI_U8 u8AFRunInterval;
+	CVI_BOOL bEnableChasingFocus;
+	CVI_BOOL bEnableReFocus;
+	CVI_BOOL bEnableMixHlc;
+	CVI_FLOAT fMaxDiffRatio;
+	CVI_FLOAT fDetectDiffRatio;
+	CVI_FLOAT fSearchDiffRatio;
+	CVI_FLOAT fLocalDiffRatio;
+	CVI_U8 u8InitStep;
+	CVI_U8 u8FindStep;
+	CVI_U8 u8LocateStep;
+	AF_DIRECTION eInitDir;
+	CVI_U16 u16MaxRotateCnt;
+} ISP_FOCUS_ATTR_S;
+
+//-----------------------------------------------------------------------------
+//  FOCUS Info
+//-----------------------------------------------------------------------------
+typedef struct _ISP_AF_Q_INFO_S {
+	AF_STATUS eStatus;      /*R;*/
+	CVI_U32 u32PreFv;       /*R;*/
+	CVI_U32 u32CurFv;       /*R;*/
+	CVI_U32 u32MaxFv;       /*R;*/
+	CVI_U32 u32Fv;          /*R;*/
+	AF_DIRECTION eZoomDir;  /*R;*/
+	CVI_U8 u8ZoomStep;      /*R;*/
+	CVI_U16 u16ZoomPos;     /*R;*/
+	AF_DIRECTION eFocusDir; /*R;*/
+	CVI_U8 u8FocusStep;     /*R;*/
+	CVI_U16 u16FocusPos;    /*R;*/
+} ISP_FOCUS_Q_INFO_S;
+
 typedef struct _ISP_DCF_CONST_INFO_S {
 	CVI_U8 au8ImageDescription[DCF_DRSCRIPTION_LENGTH]; /*Describes image*/
 	CVI_U8 au8Make[DCF_DRSCRIPTION_LENGTH]; /*Shows manufacturer of digital cameras*/

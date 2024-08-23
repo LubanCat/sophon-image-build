@@ -117,6 +117,8 @@ static CVI_S32 isp_bin_checkBinVersion(CVI_U8 *addr, CVI_U32 binSize);
 static CVI_S32 isp_get_paramstruct(VI_PIPE ViPipe, ISP_Parameter_Structures *pstParaBuf);
 static CVI_S32 isp_set_paramstruct(VI_PIPE ViPipe, ISP_Parameter_Structures *pstParaBuf);
 
+static ISP_BIN_BYPASS g_binBypassParams = {0};
+
 CVI_S32 header_bin_getBinSize(CVI_U32 *binSize)
 {
 	CVI_S32 ret = CVI_SUCCESS;
@@ -623,12 +625,19 @@ static CVI_S32 isp_set_paramstruct(VI_PIPE ViPipe, ISP_Parameter_Structures *pst
 		return CVI_FAILURE;
 	}
 
-	//Pub attr
-	ISP_PUB_ATTR_S stPubAttr;
+	ISP_BIN_BYPASS_U binBypass = {0};
 
-	CVI_ISP_GetPubAttr(ViPipe, &stPubAttr);
-	stPubAttr.f32FrameRate = pstParaBuf->pub_attr.f32FrameRate;
-	CVI_ISP_SetPubAttr(ViPipe, &stPubAttr);
+	CVI_S32 ret = isp_bin_getBinBypassParams(ViPipe, &binBypass);
+
+	// Pub attr
+	if (ret != CVI_SUCCESS || binBypass.bitBypassFrameRate != CVI_TRUE) {
+
+		ISP_PUB_ATTR_S stPubAttr;
+
+		CVI_ISP_GetPubAttr(ViPipe, &stPubAttr);
+		stPubAttr.f32FrameRate = pstParaBuf->pub_attr.f32FrameRate;
+		CVI_ISP_SetPubAttr(ViPipe, &stPubAttr);
+	}
 
 	// PRE_RAW
 	CVI_ISP_SetBlackLevelAttr(ViPipe, &pstParaBuf->blc);
@@ -770,6 +779,43 @@ static CVI_S32 isp_get_paramstruct(VI_PIPE ViPipe, ISP_Parameter_Structures *pst
 	return CVI_SUCCESS;
 }
 
+CVI_S32 isp_bin_setBinBypassParams(VI_PIPE ViPipe, ISP_BIN_BYPASS_U *ispBinBypass)
+{
+	CVI_S32 ret = CVI_SUCCESS;
+	ISP_BIN_BYPASS_U binBypassParam = {0};
+
+	if (((ViPipe) < 0) || ((ViPipe) >= SUPPORT_VI_MAX_PIPE_NUM)) {
+		CVI_TRACE_ISP_BIN(LOG_ERR, "ViPipe %d value error\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	if (ispBinBypass == NULL) {
+		return CVI_FAILURE;
+	}
+
+	memcpy(&binBypassParam, ispBinBypass, sizeof(ISP_BIN_BYPASS_U));
+	g_binBypassParams.ispBinBypass[ViPipe] = binBypassParam;
+
+	return ret;
+}
+
+CVI_S32 isp_bin_getBinBypassParams(VI_PIPE ViPipe, ISP_BIN_BYPASS_U *ispBinBypass)
+{
+	CVI_S32 ret = CVI_SUCCESS;
+
+	if (((ViPipe) < 0) || ((ViPipe) >= SUPPORT_VI_MAX_PIPE_NUM)) {
+		CVI_TRACE_ISP_BIN(LOG_ERR, "ViPipe %d value error\n", ViPipe);
+		return CVI_FAILURE;
+	}
+
+	if (ispBinBypass == NULL) {
+		return CVI_FAILURE;
+	}
+
+	memcpy(ispBinBypass, &g_binBypassParams.ispBinBypass[ViPipe], sizeof(ISP_BIN_BYPASS_U));
+
+	return ret;
+}
 
 /**************************************************************************
  *   Json related APIs.

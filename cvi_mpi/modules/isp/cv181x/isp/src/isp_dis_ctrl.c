@@ -9,7 +9,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_isp.h"
 #include "cvi_comm_isp.h"
 

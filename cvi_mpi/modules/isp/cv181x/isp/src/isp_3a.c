@@ -384,7 +384,7 @@ static CVI_S32 isp_3aLib_updateAFAlgoInfo(VI_PIPE ViPipe)
 
 	ret = isp_sts_ctrl_get_af_sts(ViPipe, &(pstAFAlgoInfo->pstAfStat));
 	if (ret != CVI_SUCCESS) {
-		ISP_LOG_ERR("awb le sts not ready\n");
+		ISP_LOG_ERR("af le sts not ready\n");
 		ret = CVI_FAILURE;
 	}
 

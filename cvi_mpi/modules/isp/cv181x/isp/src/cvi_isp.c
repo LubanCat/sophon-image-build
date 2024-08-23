@@ -23,13 +23,14 @@
 
 #ifndef ARCH_RTOS_CV181X
 #include "isp_version.h"
-//#include "cvi_base.h"
+//#include "cvi_sys_base.h"
 #endif
 
 #include "clog.h"
 #include "cvi_isp.h"
 #include "cvi_ae.h"
 #include "cvi_awb.h"
+#include "cvi_af.h"
 #include "cvi_comm_isp.h"
 #include "isp_main_local.h"
 #include "isp_defines.h"

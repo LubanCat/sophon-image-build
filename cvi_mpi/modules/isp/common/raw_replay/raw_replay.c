@@ -15,7 +15,7 @@
 
 #include "cvi_ae.h"
 #include "cvi_awb.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 #include "../sample/common/sample_comm.h"
 #include "3A_internal.h"

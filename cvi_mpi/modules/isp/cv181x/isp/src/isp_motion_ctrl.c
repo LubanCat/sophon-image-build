@@ -7,7 +7,7 @@
  */
 
 #include "cvi_sys.h"
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 #include "isp_debug.h"
 #include "isp_defines.h"

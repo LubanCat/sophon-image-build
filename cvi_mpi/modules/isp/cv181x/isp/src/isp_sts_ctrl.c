@@ -676,7 +676,8 @@ static CVI_S32 isp_sts_ctrl_unpack_af_sts(VI_PIPE ViPipe, CVI_VOID *sts_in, CVI_
 				(*(pAfData + 4) << 16)
 				+ *(pAfData + 3);
 			af_sts->stFEAFStat.stZoneMetrics[row][col].u64h0 =
-				(*(pAfData + 6) << 12)
+				((*(pAfData + 7) & 0x000F) << 28)
+				+ (*(pAfData + 6) << 12)
 				+ ((*(pAfData + 5) & 0xFFF0) >> 4);
 			pAfData += (AF_DATA_UNIT_SIZE / sizeof(CVI_U16));
 		}

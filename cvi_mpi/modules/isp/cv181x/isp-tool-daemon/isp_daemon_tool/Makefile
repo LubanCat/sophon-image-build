@@ -50,6 +50,11 @@ LIBS += -lraw_dump
 LIBS += -lcvi_dnvqe -lcvi_ssp2
 
 LOCAL_CFLAGS = $(DEFS) $(INCS) -DSDK_VER=$(SDK_VER)
+ifeq ($(CHIP_ARCH), CV181X)
+	LOCAL_CFLAGS += -D__CV181X__
+else ifeq ($(CHIP_ARCH), CV180X)
+	LOCAL_CFLAGS += -D__CV180X__
+endif
 LOCAL_CPPFLAGS = -fno-use-cxa-atexit
 ifeq ($(SDK_VER), uclibc)
 LOCAL_LDFLAGS = $(LIBS) -Wl,-rpath-link=$(CVI_RTSP_LIB_PATH) -L$(CVI_ISPD2_PATH) -L$(CVI_RTSP_LIB_PATH) -lpthread

@@ -20,7 +20,7 @@ OUTPUT_TEMP="pqtool_definition_temp.json"
 #config path by chip id
 if [ $CHIP_ID == "cv181x" ]
 then
-    OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../../osdrv/interdrv/v2/include/chip/cv181x/uapi/linux
+    OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../osdrv/interdrv/include/chip/cv181x/uapi/linux
     OSDRV_INCLUDE_LINUX_PATH=$OSDRV_INCLUDE_PATH/../../../../common/uapi/linux
     MW_INCLUDE_PATH=${CUR_PATH}/../../../../../v2/include
     ISP_INCLUDE_PATH=${CUR_PATH}/../../include/$CHIP_ID
@@ -28,7 +28,7 @@ then
     OUTPUT_PATH=${CUR_PATH}/../../$CHIP_ID/isp-daemon2/src/
 elif [ $CHIP_ID == "cv180x" ]
 then
-    OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../../osdrv/interdrv/v2/include/chip/cv180x/uapi/linux
+    OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../osdrv/interdrv/include/chip/cv180x/uapi/linux
     OSDRV_INCLUDE_LINUX_PATH=$OSDRV_INCLUDE_PATH/../../../../common/uapi/linux
     MW_INCLUDE_PATH=${CUR_PATH}/../../../../../v2/include
     ISP_INCLUDE_PATH=${CUR_PATH}/../../include/$CHIP_ID
@@ -44,13 +44,16 @@ fi
 HEADERLIST="$ISP_INCLUDE_PATH/cvi_comm_isp.h"
 HEADERLIST+=" $ISP_INCLUDE_PATH/cvi_comm_3a.h"
 HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_comm_video.h"
+HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_comm_vi.h"
+HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_comm_vpss.h"
 HEADERLIST+=" $MW_INCLUDE_PATH/cvi_comm_sns.h"
 
-if [ $CHIP_ID == "cv181x" ] || [ $CHIP_ID == "cv180x" ]
+if [ $CHIP_ID == "cv181x" ]
 then
-    HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_comm_vi.h"
-    HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_comm_vpss.h"
-    HEADERLIST+=" $OSDRV_INCLUDE_PATH/cvi_defines.h"
+    HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_cv181x_defines.h"
+elif [ $CHIP_ID == "cv180x" ]
+then
+    HEADERLIST+=" $OSDRV_INCLUDE_LINUX_PATH/cvi_cv180x_defines.h"
 fi
 LEVELJSON=$CHIP_ID/level.json
 LAYOUTJSON=$CHIP_ID/layout.json

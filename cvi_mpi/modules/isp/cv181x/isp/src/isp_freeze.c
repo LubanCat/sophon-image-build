@@ -6,7 +6,7 @@
  *
  */
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 #include "cvi_comm_isp.h"
 
 #include "isp_freeze.h"

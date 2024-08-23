@@ -1,4 +1,4 @@
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 #include "isp_control.h"
 #include "isp_debug.h"

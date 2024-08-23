@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "stdint.h"
 
-#include "cvi_base.h"
+#include "cvi_sys_base.h"
 
 #include "isp_sts_ctrl.h"
 #include "isp_feature_ctrl.h"

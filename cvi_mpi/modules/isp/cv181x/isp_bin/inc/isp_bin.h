@@ -43,6 +43,9 @@ CVI_S32 isp_bin_setBinParambuf_p1(CVI_U8 *buffer);
 CVI_S32 isp_bin_setBinParambuf_p2(CVI_U8 *buffer);
 CVI_S32 isp_bin_setBinParambuf_p3(CVI_U8 *buffer);
 
+CVI_S32 isp_bin_setBinBypassParams(VI_PIPE ViPipe, ISP_BIN_BYPASS_U *ispBinBypass);
+CVI_S32 isp_bin_getBinBypassParams(VI_PIPE ViPipe, ISP_BIN_BYPASS_U *ispBinBypass);
+
 #ifdef __cplusplus
 #if __cplusplus
 }

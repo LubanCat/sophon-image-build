@@ -9,7 +9,7 @@ SDIR = $(PWD)/src
 INCS = -I$(MW_INC) -I$(ISP_INC) -I$(KERNEL_INC) -I$(SYS_INC) -I$(VI_INC) -I$(VPSS_INC) -I$(VO_INC) \
 	   -I$(GDC_INC) -I$(RGN_INC) -Iinc -Isrc -I../isp_algo/inc
 INCS += -I../../common/clog
-INCS += -I$(TOP_DIR)/osdrv/interdrv/v2/rtos_cmdqu
+INCS += -I$(TOP_DIR)/osdrv/interdrv/rtos_cmdqu
 
 SRCS = $(wildcard $(SDIR)/*.c)
 SRCS += $(wildcard $(SDIR)/../../../common/clog/*.c)
@@ -142,7 +142,7 @@ sdk_release: update_isp_version
 	-@mv Makefile.sdk_release Makefile
 
 cppcheck:
-	@cppcheck --enable=all --quiet --template='{file},{line},{severity},{id}:{message}' -I ../../include/$(shell echo $(MW_VER)) -I ./inc -I ./src algo/ src/ 2>cppcheck_output.txt
+	@cppcheck --enable=all --quiet --template='{file},{line},{severity},{id}:{message}' -I ../../include -I ./inc -I ./src algo/ src/ 2>cppcheck_output.txt
 	@python3 $(MW_PATH)/tool/cppcheckparser/cppcheckparser.py --input cppcheck_output.txt --output cppcheck_output.xlsx
 
 -include $(DEPS)
