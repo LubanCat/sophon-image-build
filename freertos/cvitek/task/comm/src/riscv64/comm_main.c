@@ -20,6 +20,9 @@
 #include "comm.h"
 #include "cvi_spinlock.h"
 
+/* lubancat led test */
+#include "lubancat_led_test.h"
+
 //#define __DEBUG__
 
 #ifdef __DEBUG__
@@ -267,6 +270,20 @@ void prvCmdQuRunTask(void *pvParameters)
 					// all isr of ip is disabled, and send msg back to linux
 					rtos_cmdq.ip_id = IP_SYSTEM;
 				}
+							case SYS_CMD_LUBANCAT_LED:
+				rtos_cmdq.cmd_id = SYS_CMD_LUBANCAT_LED;
+				printf("recv cmd(%d) from C906B, param_ptr [0x%x]\n", rtos_cmdq.cmd_id, rtos_cmdq.param_ptr);
+				if (rtos_cmdq.param_ptr == LUBANCAT_LED_ON) {
+					lubancat_led_control(0);
+				} else {
+					lubancat_led_control(1);
+				}
+				rtos_cmdq.param_ptr = LUBANCAT_LED_DONE;
+				rtos_cmdq.resv.valid.rtos_valid = 1;
+				rtos_cmdq.resv.valid.linux_valid = 0;
+				printf("recv cmd(%d) from C906B...send [0x%x] to C906B\n", rtos_cmdq.cmd_id, rtos_cmdq.param_ptr);
+				goto send_label;
+				break;
 			case SYS_CMD_INFO_LINUX:
 			default:
 send_label:
