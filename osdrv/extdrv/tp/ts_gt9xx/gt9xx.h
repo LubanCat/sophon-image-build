@@ -50,9 +50,10 @@
 #endif
 
 //***************************PART1:ON/OFF define*******************************
-#define GTP_CUSTOM_CFG        1	   
+#define GTP_CONFIG_OF
+#define GTP_CUSTOM_CFG        0	   
 #define GTP_CHANGE_X2Y        0	   //swap x y
-#define GTP_DRIVER_SEND_CFG   1	   //driver send config
+#define GTP_DRIVER_SEND_CFG   0	   //driver send config
 #define GTP_HAVE_TOUCH_KEY    0
 #define GTP_POWER_CTRL_SLEEP  0    //power off when suspend
 #define GTP_ICS_SLOT_REPORT   0    // slot protocol 

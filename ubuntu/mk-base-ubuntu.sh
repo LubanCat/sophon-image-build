@@ -101,6 +101,13 @@ echo lubancat > /etc/hostname
 # set localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+# group
+groupadd -f --system cvi
+groupadd -f --system gpio
+adduser cat cvi
+adduser cat gpio
+adduser cat i2c
+
 # workaround 90s delay
 services=(NetworkManager systemd-networkd)
 for service in ${services[@]}; do

@@ -1,0 +1,23 @@
+# /etc/udev/rules.d/10-cvi.rules
+# 
+#
+KERNEL=="cvi-base", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-dwa", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-sys", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-fast-image", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-vpss", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-rgn", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-rtos-cmdqu", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-mipi-tx", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-mipi-rx", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvitekaadc", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+KERNEL=="cvitekadac", SUBSYSTEM=="misc", MODE="0660", GROUP="cvi"
+
+KERNEL=="cvi-vi", SUBSYSTEM=="cvi-vi", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-vo", SUBSYSTEM=="cvi-vo", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-saradc0", SUBSYSTEM=="cvi-saradc", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-ive", SUBSYSTEM=="cvi-ive", MODE="0660", GROUP="cvi"
+KERNEL=="cvi-tpu0", SUBSYSTEM=="cvi-tpu", MODE="0660", GROUP="cvi"
+KERNEL=="cvi_vc_dec*", SUBSYSTEM=="cvi_vc_drv", MODE="0660", GROUP="cvi"
+KERNEL=="cvi_vc_enc*", SUBSYSTEM=="cvi_vc_drv", MODE="0660", GROUP="cvi"
+

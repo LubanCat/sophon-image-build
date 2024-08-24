@@ -1,0 +1,3 @@
+# /etc/udev/rules.d/90-gpio.rules
+#
+SUBSYSTEM=="gpio", KERNEL=="gpiochip*", GROUP:="gpio", MODE:="0660"
