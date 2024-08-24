@@ -13,6 +13,12 @@ class MemoryMap:
     DRAM_SIZE = 512 * SIZE_1M
 
     # ==============
+    # 8051
+    # ==============
+    CHIP8051_SIZE = 512 * SIZE_1K
+    CHIP8051_ADDR = DRAM_BASE + DRAM_SIZE - CHIP8051_SIZE
+
+    # ==============
     # C906L FreeRTOS
     # ==============
     FREERTOS_SIZE = 768 * SIZE_1K
