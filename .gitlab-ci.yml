@@ -1,0 +1,60 @@
+stages: 
+  - install_tool
+  - build_image
+
+install_tool_job:
+  tags:
+    - ENABLE
+  stage: install_tool
+
+  script:
+    - if [ ! -d "host-tools/" ];then
+    - wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
+    - tar xf host-tools.tar.gz && rm host-tools.tar.gz
+    - fi
+
+build_image_job:
+  tags:
+    - ENABLE
+  stage: build_image
+
+  only:
+    - master
+
+  script:
+    - now="`date +%Y%m%d`"
+    - echo "$PASSWORD"  | source build/cvisetup.sh
+
+    # 编译sg2000_lubancat_riscv_ubuntu_sd镜像
+    - defconfig sg2000_lubancat_riscv_ubuntu_sd
+    - build_all
+
+    # 编译sg2000_lubancat_riscv_ubuntu_emmc镜像
+    - defconfig sg2000_lubancat_riscv_ubuntu_emmc
+    - build_all
+
+    # 编译sg2000_lubancat_arm64_ubuntu_sd镜像 
+    - clean_all
+    - defconfig sg2000_lubancat_arm64_ubuntu_sd
+    - build_all
+
+    # 编译sg2000_lubancat_arm64_ubuntu_emmc镜像
+    - defconfig sg2000_lubancat_arm64_ubuntu_emmc
+    - build_all
+
+    # 部署
+    - mkdir $NAS_URL/$now/Ubuntu
+    - mv install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img $NAS_URL/$now/Ubuntu
+    - mv install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip $NAS_URL/$now/Ubuntu
+    - mv install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img $NAS_URL/$now/Ubuntu
+    - mv install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip $NAS_URL/$now/Ubuntu
+
+    # 清理
+    - sudo rm build/output/
+    - sudo rm install/
+    - sudo rm ubuntu-base-*.tar.gz
+    - sudo rm ubuntu/ubuntu-rootfs.ext4
+
+  when: delayed
+  start_in: 180 minutes
+
