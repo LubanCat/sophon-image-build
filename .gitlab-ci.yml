@@ -19,7 +19,7 @@ build_image_job:
   stage: build_image
 
   only:
-    - master
+    - sg200x
 
   script:
     - now="`date +%Y%m%d`"
