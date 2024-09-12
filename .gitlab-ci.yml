@@ -8,10 +8,11 @@ install_tool_job:
   stage: install_tool
 
   script:
-    - if [ ! -d "host-tools/" ];then
-    - wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
-    - tar xf host-tools.tar.gz && rm host-tools.tar.gz
-    - fi
+    - |
+      if [ ! -d "host-tools/" ];then
+      wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
+      tar xf host-tools.tar.gz && rm host-tools.tar.gz
+      fi
 
 build_image_job:
   tags:
@@ -22,8 +23,12 @@ build_image_job:
     - sg200x
 
   script:
+    - export
     - now="`date +%Y%m%d`"
-    - echo "$PASSWORD"  | source build/cvisetup.sh
+    - |
+      source build/cvisetup.sh <<EOF
+       "${PASSWORD}"
+      EOF
 
     # 编译sg2000_lubancat_riscv_ubuntu_sd镜像
     - defconfig sg2000_lubancat_riscv_ubuntu_sd
@@ -43,11 +48,11 @@ build_image_job:
     - build_all
 
     # 部署
-    - mkdir $NAS_URL/$now/Ubuntu
-    - mv install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img $NAS_URL/$now/Ubuntu
-    - mv install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip $NAS_URL/$now/Ubuntu
-    - mv install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img $NAS_URL/$now/Ubuntu
-    - mv install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip $NAS_URL/$now/Ubuntu
+    - mkdir ${NAS_URL}/${now}/Ubuntu
+    - mv install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+    - mv install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
+    - mv install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+    - mv install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
 
     # 清理
     - sudo rm build/output/
