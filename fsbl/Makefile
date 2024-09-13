@@ -46,6 +46,19 @@ PRINTF_TIMESTAMP := 0
 
 NANDBOOT_V2 := 1
 
+
+ifeq ($(STORAGE),spinor)
+CFLAGS += -DBOOT_SPINOR
+endif
+
+ifeq ($(STORAGE),emmc)
+CFLAGS += -DBOOT_EMMC
+endif
+
+ifeq ($(STORAGE),spinand)
+CFLAGS += -DBOOT_SPINAND
+endif
+
 # Verbose flag
 ifeq (${V},0)
         Q:=@
@@ -193,7 +206,9 @@ endif
 
 export BUILD_PLAT NM
 
+
 all: fip bl2 blmacros
+
 
 include ${MAKE_HELPERS_DIRECTORY}fip.mk
 
