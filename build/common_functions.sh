@@ -32,11 +32,12 @@ function remove_unused_files()
 function create_ramdisk_folder
 {(
   CHIP_ARCH_LOWER=$(echo "${CHIP_ARCH}" | tr A-Z a-z)
+  CVI_ARCH_LOWER=$(echo "${CVIARCH}" | tr A-Z a-z)
   CUST_FOLDER_NAME="$PROJECT_FULLNAME"
 
   CHIP_FOLDER_PATH="$RAMDISK_PATH/rootfs/overlay/$CHIP"
   CUST_FOLDER_PATH="$RAMDISK_PATH/rootfs/overlay/$CUST_FOLDER_NAME"
-  SDK_VER_FOLDER_PATH="$RAMDISK_PATH/rootfs/overlay/${SDK_VER}"
+  SDK_VER_FOLDER_PATH="$RAMDISK_PATH/rootfs/overlay/${CVI_ARCH_LOWE}_${SDK_VER}"
 
   pushd "$BUILD_PATH"
   export RAMDISK_OUTPUT_BASE CHIP_FOLDER_PATH CUST_FOLDER_PATH SDK_VER_FOLDER_PATH

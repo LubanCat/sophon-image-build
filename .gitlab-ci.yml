@@ -12,10 +12,11 @@ build_image:
   script:
     - export
     # install tools
+    # wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
+    # tar xf host-tools.tar.gz && rm host-tools.tar.gz
     - |
       if [ ! -d "host-tools/" ];then
-      wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
-      tar xf host-tools.tar.gz && rm host-tools.tar.gz
+      git clone ${TOOL_GIT_URL}
       fi
 
     # build 
@@ -57,3 +58,4 @@ build_image:
 
   when: delayed
   start_in: 180 minutes
+
