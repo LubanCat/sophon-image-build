@@ -1,20 +1,7 @@
 stages: 
-  - install_tool
   - build_image
 
-install_tool_job:
-  tags:
-    - ENABLE
-  stage: install_tool
-
-  script:
-    - |
-      if [ ! -d "host-tools/" ];then
-      wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
-      tar xf host-tools.tar.gz && rm host-tools.tar.gz
-      fi
-
-build_image_job:
+build_image:
   tags:
     - ENABLE
   stage: build_image
@@ -24,6 +11,14 @@ build_image_job:
 
   script:
     - export
+    # install tools
+    - |
+      if [ ! -d "host-tools/" ];then
+      wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
+      tar xf host-tools.tar.gz && rm host-tools.tar.gz
+      fi
+
+    # build 
     - now="`date +%Y%m%d`"
     - |
       source build/cvisetup.sh <<EOF
@@ -62,4 +57,3 @@ build_image_job:
 
   when: delayed
   start_in: 180 minutes
-
