@@ -15,6 +15,7 @@
 #include <ddr_pkg_info.h>
 #include <regconfig.h>
 #include <phy_pll_init.h>
+#include <platform_def.h>
 
 #define opdelay(_x) udelay((_x) / 1000)
 
@@ -5917,8 +5918,10 @@ void cvx16_ddr_phyd_restore(uint32_t sram_base_addr)
 		addr = psave_phy_regs[i].addr;
 		val = psave_phy_regs[i].val;
 		i++;
-		if ((addr < (0x0 + PHYD_BASE_ADDR)) || (addr > (0xb54 + PHYD_BASE_ADDR)))
-			break;
+		if (addr != REG_GP_REG3) {
+			if ((addr < (0x0 + PHYD_BASE_ADDR)) || (addr > (0xb54 + PHYD_BASE_ADDR)))
+				break;
+		}
 		switch (addr) {
 		case (0x118 + PHYD_BASE_ADDR):
 			//reset param_phyd_clkctrl_init_complete

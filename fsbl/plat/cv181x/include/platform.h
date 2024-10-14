@@ -116,13 +116,13 @@ void switch_rtc_mode_1st_stage(void);
 void switch_rtc_mode_2nd_stage(void);
 void set_rtc_en_registers(void);
 
-void sys_pll_init(enum CHIP_CLK_MODE mode);
+void sys_pll_init(void);
 void sys_switch_all_to_pll(void);
 
 void lock_efuse_chipsn(void);
 int load_ddr(void);
-int load_rest(enum CHIP_CLK_MODE mode);
-void jump_to_warmboot_entry(enum CHIP_CLK_MODE mode);
+int load_rest(void);
+void jump_to_warmboot_entry(void);
 
 #endif /* __ASSEMBLY__ */
 
