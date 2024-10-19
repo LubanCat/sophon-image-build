@@ -10,8 +10,16 @@ build_image:
     - sg200x
 
   script:
-    - export
+    # - export
+    # 
     # install tools
+
+    # sudo apt update
+    # sudo apt install -y pkg-config build-essential ninja-build automake autoconf libtool wget curl git gcc libssl-dev bc \ 
+    #  slib squashfs-tools android-sdk-libsparse-utils jq python3-distutils scons parallel tree python3-dev python3-pip \
+    #  device-tree-compiler ssh cpio fakeroot libncurses5 flex bison libncurses5-dev genext2fs rsync unzip dosfstools \
+    #  mtools tcl openssh-client cmake expect
+
     # wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
     # tar xf host-tools.tar.gz && rm host-tools.tar.gz
     - |
@@ -19,7 +27,7 @@ build_image:
       git clone ${TOOL_GIT_URL}
       fi
 
-    # build 
+    # build
     - now="`date +%Y%m%d`"
     - |
       source build/cvisetup.sh <<EOF
@@ -35,7 +43,6 @@ build_image:
     - build_all
 
     # 编译sg2000_lubancat_arm64_ubuntu_sd镜像 
-    - clean_all
     - defconfig sg2000_lubancat_arm64_ubuntu_sd
     - build_all
 
@@ -44,18 +51,11 @@ build_image:
     - build_all
 
     # 部署
-    - mkdir ${NAS_URL}/${now}/Ubuntu
-    - mv install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
-    - mv install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
-    - mv install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
-    - mv install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
-
-    # 清理
-    - sudo rm build/output/
-    - sudo rm install/
-    - sudo rm ubuntu-base-*.tar.gz
-    - sudo rm ubuntu/ubuntu-rootfs.ext4
+    - mkdir -p ${NAS_URL}/${now}/Ubuntu
+    - cp install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+    - cp install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
+    - cp install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+    - cp install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
 
   when: delayed
   start_in: 180 minutes
-
