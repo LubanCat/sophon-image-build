@@ -23,7 +23,7 @@
 
 static void gc4653_slave_linear_1440p30_init(VI_PIPE ViPipe);
 
-CVI_U8 gc4653_slave_i2c_addr = 0x10;
+CVI_U8 gc4653_slave_i2c_addr = 0x29; //0x10
 const CVI_U32 gc4653_slave_addr_byte = 2;
 const CVI_U32 gc4653_slave_data_byte = 1;
 static int g_fd[VI_MAX_PIPE_NUM] = {[0 ... (VI_MAX_PIPE_NUM - 1)] = -1};

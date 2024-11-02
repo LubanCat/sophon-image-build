@@ -42,7 +42,8 @@ build_image:
     - defconfig sg2000_lubancat_riscv_ubuntu_emmc
     - build_all
 
-    # 编译sg2000_lubancat_arm64_ubuntu_sd镜像 
+    # 编译sg2000_lubancat_arm64_ubuntu_sd镜像
+    - clean_all
     - defconfig sg2000_lubancat_arm64_ubuntu_sd
     - build_all
 
