@@ -20,28 +20,28 @@ endif
 
 ifeq ($(SDK_VER), 32bit)
   export CROSS_COMPILE = $(CROSS_COMPILE_32)
-  SYSROOT := $(ROOT_DIR)/../../ramdisk/sysroot/sysroot-glibc-linaro-2.23-2017.05-arm-linux-gnueabihf/
+  SYSROOT := $(ROOT_DIR)/../ramdisk/sysroot/sysroot-glibc-linaro-2.23-2017.05-arm-linux-gnueabihf/
   KERNEL_INC := $(KERNEL_DIR)/arm/usr/include
   OPT_LEVEL := -O3
 else ifeq ($(SDK_VER), 64bit)
   export CROSS_COMPILE = $(CROSS_COMPILE_64)
-  SYSROOT := $(ROOT_DIR)/../../ramdisk/sysroot/sysroot-glibc-linaro-2.23-2017.05-aarch64-linux-gnu/
+  SYSROOT := $(ROOT_DIR)/../ramdisk/sysroot/sysroot-glibc-linaro-2.23-2017.05-aarch64-linux-gnu/
   KERNEL_INC := $(KERNEL_DIR)/arm64/usr/include
   OPT_LEVEL := -O3
 else ifeq ($(SDK_VER), uclibc)
   export CROSS_COMPILE = $(CROSS_COMPILE_UCLIBC)
-  SYSROOT := $(ROOT_DIR)/../../ramdisk/sysroot/sysroot-uclibc/
+  SYSROOT := $(ROOT_DIR)/../ramdisk/sysroot/sysroot-uclibc/
   KERNEL_INC := $(KERNEL_DIR)/arm/usr/include
   OPT_LEVEL := -Os
 else ifeq ($(SDK_VER), glibc_riscv64)
   export CROSS_COMPILE = $(CROSS_COMPILE_GLIBC_RISCV64)
-  SYSROOT := $(ROOT_DIR)/../../host-tools/gcc/riscv64-linux-x86_64/sysroot
+  SYSROOT := $(ROOT_DIR)/../host-tools/gcc/riscv64-linux-x86_64/sysroot
   KERNEL_INC := $(KERNEL_DIR)/riscv/usr/include
   OPT_LEVEL := -Os
   OPT_LEVEL += -mcpu=c906fdv -march=rv64imafdcv0p7xthead -mcmodel=medany -mabi=lp64d
 else ifeq ($(SDK_VER), musl_riscv64)
   export CROSS_COMPILE = $(CROSS_COMPILE_MUSL_RISCV64)
-  SYSROOT := $(ROOT_DIR)/../../host-tools/gcc/riscv64-linux-musl-x86_64/sysroot
+  SYSROOT := $(ROOT_DIR)/../host-tools/gcc/riscv64-linux-musl-x86_64/sysroot
   KERNEL_INC := $(KERNEL_DIR)/riscv/usr/include
   OPT_LEVEL := -Os
   OPT_LEVEL += -mcpu=c906fdv -march=rv64imafdcv0p7xthead -mcmodel=medany -mabi=lp64d

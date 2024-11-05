@@ -22,7 +22,7 @@ if [ $CHIP_ID == "cv181x" ]
 then
     OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../osdrv/interdrv/include/chip/cv181x/uapi/linux
     OSDRV_INCLUDE_LINUX_PATH=$OSDRV_INCLUDE_PATH/../../../../common/uapi/linux
-    MW_INCLUDE_PATH=${CUR_PATH}/../../../../../v2/include
+    MW_INCLUDE_PATH=${CUR_PATH}/../../../../include
     ISP_INCLUDE_PATH=${CUR_PATH}/../../include/$CHIP_ID
     RPCJSON_PATH=${CUR_PATH}/../../$CHIP_ID/isp-daemon2
     OUTPUT_PATH=${CUR_PATH}/../../$CHIP_ID/isp-daemon2/src/
@@ -30,7 +30,7 @@ elif [ $CHIP_ID == "cv180x" ]
 then
     OSDRV_INCLUDE_PATH=${CUR_PATH}/../../../../../osdrv/interdrv/include/chip/cv180x/uapi/linux
     OSDRV_INCLUDE_LINUX_PATH=$OSDRV_INCLUDE_PATH/../../../../common/uapi/linux
-    MW_INCLUDE_PATH=${CUR_PATH}/../../../../../v2/include
+    MW_INCLUDE_PATH=${CUR_PATH}/../../../../include
     ISP_INCLUDE_PATH=${CUR_PATH}/../../include/$CHIP_ID
     RPCJSON_PATH=${CUR_PATH}/../../$CHIP_ID/isp-daemon2
     OUTPUT_PATH=${CUR_PATH}/../../$CHIP_ID/isp-daemon2/src/
