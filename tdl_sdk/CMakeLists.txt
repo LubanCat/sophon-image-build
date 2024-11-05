@@ -20,7 +20,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-if("${CVI_PLATFORM}" STREQUAL "CV181X")
+if(("${CVI_PLATFORM}" STREQUAL "CV181X") OR ("${CVI_PLATFORM}" STREQUAL "SG200X"))
   add_definitions(-DCV181X)
   add_definitions(-D__CV181X__)
 elseif("${CVI_PLATFORM}" STREQUAL "CV180X")
