@@ -17,7 +17,7 @@ function _build_default_env()
   COMPRESSOR=${COMPRESSOR:-xz}
   COMPRESSOR_UBOOT=${COMPRESSOR_UBOOT:-lzma} # or none to disable
   MULTI_PROCESS_SUPPORT=${MULTI_PROCESS_SUPPORT:-0}
-  TPU_REL=${TPU_REL:-1} # TPU release build
+  TPU_REL=${TPU_REL:-0} # TPU release build
   SENSOR=${SENSOR:-sony_imx327}
 }
 
@@ -282,6 +282,23 @@ function clean_tpu_sdk()
   rm -f "$SYSTEM_OUT_DIR"/lib/libopencv_*
 }
 
+function build_cvi_rtsp()
+{
+  pushd "$CVI_RTSP_PATH"
+  CROSS_COMPILE=${CROSS_COMPILE} SDK_VER=${SDK_VER} ./build.sh
+  # copy so
+  cp -a src/libcvi_rtsp.so  "$SYSTEM_OUT_DIR"/lib/
+  popd
+}
+
+function clean_cvi_rtsp()
+{
+  pushd "$CVI_RTSP_PATH"
+  make clean
+  rm -rf prebuilt/
+  popd
+}
+
 function build_sdk()
 {
   if [[ -z $1 ]]; then
@@ -395,20 +412,19 @@ function clean_ivs_sdk()
 
 function build_ai_sdk()
 {
-  pushd ${AI_SDK_PATH}
-  mkdir -p ${AI_SDK_INSTALL_PATH}
-  cp -rf ${SDK_VER}/* ${AI_SDK_INSTALL_PATH}/
-  popd
+  build_cvi_rtsp || return "$?"
+  build_sdk ai || return "$?"
 }
 
 function clean_ai_sdk()
 {
-	rm -rf ${AI_SDK_INSTALL_PATH}
+    clean_cvi_rtsp
+    clean_sdk ai
 }
 
 function build_cnv_sdk()
 {
-  build_sdk cnv
+  build_sdk cnv || return "$?"
 }
 
 function clean_cnv_sdk()
@@ -615,6 +631,9 @@ function build_all()
   build_middleware || return $?
   if [ "$TPU_REL" = 1 ]; then
     build_tpu_sdk || return $?
+    build_ive_sdk || return $?
+    build_ivs_sdk || return $?
+    build_ai_sdk  || return $?
   fi
   pack_cfg || return $?
   pack_rootfs || return $?
@@ -757,7 +776,7 @@ function cvi_setup_env()
   OSS_PATH="$TOP_DIR"/oss
   OPENCV_PATH="$TOP_DIR"/opencv
   APPS_PATH="$TOP_DIR"/apps
-  MW_PATH="$TOP_DIR"/middleware/"$MW_VER"
+  MW_PATH="$TOP_DIR"/cvi_mpi
   PQTOOL_SERVER_PATH="$MW_PATH"/modules/isp/"${CHIP_ARCH,,}"/isp-tool-daemon/isp_daemon_tool
   ISP_TUNING_PATH="$TOP_DIR"/isp_tuning
   TPU_SDK_PATH="$TOP_DIR"/cviruntime
@@ -766,7 +785,7 @@ function cvi_setup_env()
   CNV_SDK_PATH="$TOP_DIR"/cnv
   ACCESSGUARD_PATH="$TOP_DIR"/access-guard-turnkey
   IPC_APP_PATH="$TOP_DIR"/framework/applications/ipc
-  AI_SDK_PATH="$TOP_DIR"/cviai
+  AI_SDK_PATH="$TOP_DIR"/tdl_sdk
   CVI_PIPELINE_PATH="$TOP_DIR"/cvi_pipeline
   OPENSBI_PATH="$TOP_DIR"/opensbi
   TOOLS_PATH="$BUILD_PATH"/tools
@@ -778,6 +797,7 @@ function cvi_setup_env()
   ROOTFSTOOL_PATH="$COMMON_TOOLS_PATH"/rootfs_tool
   SPINANDTOOL_PATH="$COMMON_TOOLS_PATH"/spinand_tool
   BOOTLOGO_PATH="$COMMON_TOOLS_PATH"/bootlogo/logo.jpg
+  CVI_RTSP_PATH="$TOP_DIR"/cvi_rtsp
 
   # subfolder path for buidling, chosen accroding to .gitignore rules
   UBOOT_OUTPUT_FOLDER=build/"$PROJECT_FULLNAME"

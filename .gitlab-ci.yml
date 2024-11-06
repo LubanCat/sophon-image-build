@@ -33,6 +33,9 @@ build_image:
       source build/cvisetup.sh <<EOF
        "${PASSWORD}"
       EOF
+    
+    # tpu,tdl
+    - export TPU_REL=1
 
     # 编译sg2000_lubancat_riscv_ubuntu_sd镜像
     - defconfig sg2000_lubancat_riscv_ubuntu_sd
