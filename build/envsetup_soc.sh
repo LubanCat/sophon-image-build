@@ -282,6 +282,23 @@ function clean_tpu_sdk()
   rm -f "$SYSTEM_OUT_DIR"/lib/libopencv_*
 }
 
+function build_cvi_rtsp()
+{
+  pushd "$CVI_RTSP_PATH"
+  CROSS_COMPILE=${CROSS_COMPILE} SDK_VER=${SDK_VER} ./build.sh
+  # copy so
+  cp -a src/libcvi_rtsp.so  "$SYSTEM_OUT_DIR"/lib/
+  popd
+}
+
+function clean_cvi_rtsp()
+{
+  pushd "$CVI_RTSP_PATH"
+  make clean
+  rm -rf prebuilt/
+  popd
+}
+
 function build_sdk()
 {
   if [[ -z $1 ]]; then
@@ -395,11 +412,13 @@ function clean_ivs_sdk()
 
 function build_ai_sdk()
 {
+  build_cvi_rtsp || return "$?"
   build_sdk ai || return "$?"
 }
 
 function clean_ai_sdk()
 {
+    clean_cvi_rtsp
     clean_sdk ai
 }
 
@@ -778,6 +797,7 @@ function cvi_setup_env()
   ROOTFSTOOL_PATH="$COMMON_TOOLS_PATH"/rootfs_tool
   SPINANDTOOL_PATH="$COMMON_TOOLS_PATH"/spinand_tool
   BOOTLOGO_PATH="$COMMON_TOOLS_PATH"/bootlogo/logo.jpg
+  CVI_RTSP_PATH="$TOP_DIR"/cvi_rtsp
 
   # subfolder path for buidling, chosen accroding to .gitignore rules
   UBOOT_OUTPUT_FOLDER=build/"$PROJECT_FULLNAME"

@@ -14,7 +14,7 @@ if [[ "$CHIP_ARCH" == "CV183X" ]]; then
     USE_TPU_IVE=ON
 elif [[ "$CHIP_ARCH" == "CV182X" ]]; then
     USE_TPU_IVE=ON
-elif [[ "$CHIP_ARCH" == "CV181X" ]] || [[ "$CHIP_ARCH" == "SG200X" ]]; then
+elif [[ "$CHIP_ARCH" == "CV181X" ]]; then
     USE_TPU_IVE=OFF
 elif [[ "$CHIP_ARCH" == "CV180X" ]]; then
     USE_TPU_IVE=ON

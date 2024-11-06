@@ -1,4 +1,3 @@
-
 # Get the architecture-specific part based on the toolchain file
 if ("${CMAKE_TOOLCHAIN_FILE}" MATCHES "toolchain-uclibc-linux.cmake")
   set(ARCHITECTURE "uclibc")

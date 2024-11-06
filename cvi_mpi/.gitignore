@@ -38,6 +38,8 @@ sample/sensor_test/sensor_test
 sample/tp2863_tp2803/sample_test_tp2863_tp2803
 sample/sample_panel/sample_panel
 sample/sample_panel/lt9611/lt9611
+sample/rtk_hciattach/rtk_hciattach
+sample/ive/ive_stress
 
 modules/venc/vc/jpeg/driver/bm_jpg_test
 modules/venc/vc/jpeg/driver/bmjpuapi/bmjpegdec
