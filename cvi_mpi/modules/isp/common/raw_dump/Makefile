@@ -1,42 +1,33 @@
 SHELL = /bin/bash
 ifeq ($(PARAM_FILE), )
-	PARAM_FILE:=../../../../Makefile.param
+	PARAM_FILE:=../../../../mpi_param.mk
 	include $(PARAM_FILE)
 endif
 
 isp_chip_name := $(shell echo $(CVIARCH) | tr A-Z a-z)
-ISP_BASE_PATH = $(PWD)/../../$(isp_chip_name)
+ISP_BASE_PATH = $(CURDIR)/../../$(isp_chip_name)
+#
+SDIR := $(CURDIR)/src
+SRCS_C := $(SDIR)/raw_dump.c
+SRCS_C += $(SDIR)/remote.c
+#
+ODIR    := $(CURDIR)/obj
+OBJS	:= $(SRCS_C:$(SDIR)/%.c=$(ODIR)/%.$(TARGET_MACHINE).$(CHIP_ARCH_L).o)
+DEPS	:= $(SRCS_C:$(SDIR)/%.c=$(ODIR)/%.$(TARGET_MACHINE).$(CHIP_ARCH_L).d)
+#
+INCS = -I$(MW_INC) -I$(ISP_INC) -I$(SYS_INC) -I./inc -I./src -I../../algo
 
-SDIR = $(PWD)/src
-SRCS = $(wildcard $(SDIR)/*.c)
-
-INCS = -I$(MW_INC) -I$(ISP_INC) -I$(KERNEL_INC) -I$(SYS_INC) -I./inc -I./src -I../../algo
-
-OBJS = $(SRCS:.c=.o)
-DEPS = $(SRCS:.c=.d)
 TARGET_A = $(MW_LIB)/libraw_dump.a
 TARGET_SO = $(MW_LIB)/libraw_dump.so
 
 LOCAL_CFLAGS = $(INCS)
-RELEASE_FOLDER = $(PWD)/bin
+RELEASE_FOLDER = $(CURDIR)/bin
 
 # SOC Architecture
-ifeq ($(CHIP_ARCH), CV183X)
-	LOCAL_CFLAGS += -I$(ISP_BASE_PATH)/include
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV183X
-	DEFS += -DCHIP_ARCH_CV183X
-else ifeq ($(CHIP_ARCH), CV182X)
+ifeq ($(CHIP_ARCH),$(filter $(CHIP_ARCH),CV181X SG200X))
 	LOCAL_CFLAGS += -I$(ISP_BASE_PATH)/isp/inc
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV182X
-	DEFS += -DCHIP_ARCH_CV182X
-else ifeq ($(CHIP_ARCH),$(filter $(CHIP_ARCH),CV181X SG200X))
-	LOCAL_CFLAGS += -I$(ISP_BASE_PATH)/isp/inc
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV181X
-	DEFS += -DCHIP_ARCH_CV181X
 else ifeq ($(CHIP_ARCH), CV180X)
 	LOCAL_CFLAGS += -I$(ISP_BASE_PATH)/isp/inc
-	LOCAL_CFLAGS += -DCHIP_ARCH_CV180X
-	DEFS += -DCHIP_ARCH_CV180X
 else
 	$(error Un-support SOC Architecture)
 endif
@@ -48,7 +39,8 @@ else
 all: $(TARGET_A) $(TARGET_SO)
 endif
 
-$(SDIR)/%.o: $(SDIR)/%.c
+$(ODIR)/%.$(TARGET_MACHINE).$(CHIP_ARCH_L).o : $(SDIR)/%.c
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(LOCAL_CFLAGS) -c $< -o $@
 	@echo [$(notdir $(CC))] $(notdir $@)
 
@@ -71,9 +63,15 @@ sdk_release: $(TARGET_A) $(TARGET_SO)
 	-@mv Makefile.sdk_release Makefile
 
 clean:
-	@rm -f $(OBJS) $(DEPS) $(TARGET_A) $(TARGET_SO)
-
-cleanall: clean
+	@rm -f $(TARGET_A) $(TARGET_SO)
 	@rm -rf $(RELEASE_FOLDER)
+
+clean_all: clean
+	@if [ -d "$(SDIR)" ]; then \
+		echo "rm -rf $(ODIR)"; \
+		rm -rf $(ODIR); \
+	fi
+
+cleanall: clean_all
 
 -include $(DEPS)
