@@ -11,9 +11,10 @@ build_image:
 
   script:
     # - export
-    # 
-    # install tools
+    # git apply patch
+    - git apply .gitlab/0000-update-github-url.patch
 
+    # install tools
     # sudo apt update
     # sudo apt install -y pkg-config build-essential ninja-build automake autoconf libtool wget curl git gcc libssl-dev bc \ 
     #  slib squashfs-tools android-sdk-libsparse-utils jq python3-distutils scons parallel tree python3-dev python3-pip \

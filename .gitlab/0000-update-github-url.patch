@@ -1,0 +1,57 @@
+From 10621b4f54ce0b9d55007745d4469b14c644b470 Mon Sep 17 00:00:00 2001
+From: li <zgwinli555@163.com>
+Date: Tue, 19 Nov 2024 09:38:34 +0000
+Subject: [PATCH] update github url
+
+---
+ tdl_sdk/cmake/opencv.cmake     | 2 +-
+ tdl_sdk/cmake/thirdparty.cmake | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tdl_sdk/cmake/opencv.cmake b/tdl_sdk/cmake/opencv.cmake
+index 1719b619a..5ee70ec15 100644
+--- a/tdl_sdk/cmake/opencv.cmake
++++ b/tdl_sdk/cmake/opencv.cmake
+@@ -21,7 +21,7 @@ if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/opencv-src")
+ 
+   FetchContent_Declare(
+     opencv
+-    GIT_REPOSITORY https://github.com/sophgo/cvi_opencv.git
++    GIT_REPOSITORY git@github.com:sophgo/cvi_opencv.git
+     GIT_TAG origin/${ARCHITECTURE}
+   )
+   FetchContent_MakeAvailable(opencv)
+diff --git a/tdl_sdk/cmake/thirdparty.cmake b/tdl_sdk/cmake/thirdparty.cmake
+index f5df0006b..21ca0a6d6 100644
+--- a/tdl_sdk/cmake/thirdparty.cmake
++++ b/tdl_sdk/cmake/thirdparty.cmake
+@@ -16,7 +16,7 @@ set(INSTALL_GTEST OFF CACHE BOOL "Install GMOCK")
+ if (NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/googletest-src")
+ FetchContent_Declare(
+   googletest
+-  GIT_REPOSITORY https://github.com/google/googletest.git
++  GIT_REPOSITORY git@github.com:google/googletest.git
+   GIT_TAG  e2239ee6043f73722e7aa812a459f54a28552929 # release-1.11.0
+ )
+ FetchContent_MakeAvailable(googletest)
+@@ -39,7 +39,7 @@ if (BUILD_WEB_VIEW)
+   if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/sophapp-src")
+     FetchContent_Declare(
+       sophapp
+-      GIT_REPOSITORY https://github.com/sophgo/sophapp.git
++      GIT_REPOSITORY git@github.com:sophgo/sophapp.git
+       GIT_TAG origin/ipcamera
+     )
+     FetchContent_MakeAvailable(sophapp)
+@@ -51,7 +51,7 @@ endif()
+ if(NOT IS_DIRECTORY "${BUILD_DOWNLOAD_DIR}/stb-src")
+ FetchContent_Declare(
+   stb
+-  GIT_REPOSITORY https://github.com/nothings/stb.git
++  GIT_REPOSITORY git@github.com:nothings/stb.git
+   GIT_TAG origin/master
+ )
+   FetchContent_MakeAvailable(stb)
+-- 
+2.25.1
+
