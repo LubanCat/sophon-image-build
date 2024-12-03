@@ -24,7 +24,7 @@ OBJCOPY := $(CROSS_COMPILE)objcopy
 #
 # riscv64-unknown-linux-musl, riscv64-unknown-linux-gnu, aarch64-linux-gnu, arm-linux-gnueabihf
 export TARGET_MACHINE	:= $(shell ${CC} -dumpmachine)
-export CHIP_ARCH_L	:= $(shell echo $(CHIP_ARCH) | tr A-Z a-z)
+export CHIP_ARCH_L	:= $(shell echo $(CVIARCH) | tr A-Z a-z)
 ##
 ## INCLUDE PATH ##
 SYS_INC = $(MW_PATH)/modules/sys/include
@@ -141,10 +141,10 @@ SAMPLE_STATIC = 0
 SELF_TEST_STATIC = 0
 endif
 
-ifeq ("$(CHIP_ARCH)", "CV181X")
+ifeq ("$(CVIARCH)", "CV181X")
 CFLAGS += -D__CV181X__
 CXXFLAGS += -D__CV181X__
-else ifeq ("$(CHIP_ARCH)", "CV180X")
+else ifeq ("$(CVIARCH)", "CV180X")
 CFLAGS += -D__CV180X__
 CXXFLAGS += -D__CV180X__
 else

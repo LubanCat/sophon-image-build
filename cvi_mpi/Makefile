@@ -48,12 +48,12 @@ ifneq ($(FLASH_SIZE_SHRINK),y)
 	@cp -f sample/venc/sample_venc $(DESTDIR)/usr/bin
 	@cp -f sample/venc/sample_vcodec $(DESTDIR)/usr/bin
 	@cp -f sample/vdec/sample_vdec $(DESTDIR)/usr/bin
-	@cp -f sample/sensor_test/sensor_test $(DESTDIR)/usr/bin
-	@cp -f sample/rtk_hciattach/rtk_hciattach $(DESTDIR)/usr/bin
+	@cp -f sample/sensor_test/sample_sensor_test $(DESTDIR)/usr/bin
+	# @cp -f sample/rtk_hciattach/rtk_hciattach $(DESTDIR)/usr/bin
 	@cp -f sample/vio/sample_vio $(DESTDIR)/usr/bin
 
-	@cp -f self_test/cvi_test/cvi_test $(DESTDIR)/usr/bin
-	@cp -f self_test/cvi_test/sensor_cfg.ini $(DESTDIR)/usr/bin
+	# @cp -f self_test/cvi_test/cvi_test $(DESTDIR)/usr/bin
+	# @cp -f self_test/cvi_test/sensor_cfg.ini $(DESTDIR)/usr/bin
 endif
 
 ifneq ($(FLASH_SIZE_SHRINK),y)

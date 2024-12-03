@@ -10,7 +10,7 @@ prepare :
 	@cp -pf $(KERNEL_PATH)/drivers/staging/android/uapi/ion.h include/linux/
 	@cp -pf $(KERNEL_PATH)/drivers/staging/android/uapi/ion_cvitek.h include/linux/
 	@cp -rpf modules/isp/include/* include/isp
-ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X CV180X))
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), SG200X CV181X CV180X))
 	@cp -rpf modules/isp/cv181x/isp-daemon2/inc/cvi_ispd2.h include/isp/cv181x/
 endif
 

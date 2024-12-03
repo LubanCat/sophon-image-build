@@ -21,7 +21,7 @@ DEPS	:= $(SRCS_C:.c=.d)
 # 3rdparty lib
 TRD_INCLUDE_PATH = $(CURDIR)/prebuilt/include
 #
-ifneq ($(findstring $(CHIP_ARCH), CV181X CV180X),)
+ifneq ($(findstring $(CHIP_ARCH), SG200X CV181X CV180X),)
 ISP_BIN_DIR = $(MW_PATH)/modules/isp/$(shell echo $(CVIARCH) | tr A-Z a-z)/isp_bin/inc
 else
 $(error UNKNOWN chip architecture - $(CHIP_ARCH))

@@ -1,4 +1,4 @@
-ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X))
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), SG200X CV181X))
 	SUBDIRS := common sensor_test venc vdecvo vio sample_panel sample_ir_auto region audio ive vdec
 else ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV180X))
 	SUBDIRS := common sensor_test venc sample_ir_auto region audio vdec

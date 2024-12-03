@@ -10,7 +10,7 @@ all:
 	@cd $(ISP_3A_DIR); $(MAKE) all;
 	@cd isp; $(MAKE) all;
 	@cd isp_bin; $(MAKE) all;
-	@cd $(ISP_COMMON_DIR)/toolJsonGenerator; ./generate_toolJson.sh $(shell echo $(CHIP_ARCH) | tr A-Z a-z)
+	@cd $(ISP_COMMON_DIR)/toolJsonGenerator; ./generate_toolJson.sh $(shell echo $(CVIARCH) | tr A-Z a-z)
 	@cd isp-daemon2; $(MAKE) -j4; $(MAKE) install;
 	@cd $(ISP_COMMON_DIR)/raw_replay; $(MAKE) all;
 	@cd $(ISP_COMMON_DIR)/raw_dump; $(MAKE) all;
