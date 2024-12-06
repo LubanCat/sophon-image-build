@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <delay_timer.h>
 #include "mmio.h"
-#include "reg_soc.h"
+// #include "reg_soc.h"
 #include "phy_pll_init.h"
 #include "ddr_sys.h"
 #include "ddr_suspend.h"

@@ -147,7 +147,7 @@ ifeq (,$(wildcard ${PM_SRAM_BIN_PATH}))
 	ifeq (${CHIP_ARCH},CV180X)
 		PM_SRAM_BIN_PATH=${OPENSBI_PATH}/pm_default_cv180x.bin
 	endif
-	ifeq (${CHIP_ARCH},CV181X)
+	ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X SG200X))
 		PM_SRAM_BIN_PATH=${OPENSBI_PATH}/pm_default_cv181x.bin
 	endif
 else
@@ -230,7 +230,7 @@ CFLAGS		+=	-DPM_SRAM_BIN_PATH=$(PM_SRAM_BIN_PATH)
 ifeq ($(CHIP_ARCH),CV180X)
 CFLAGS		+=	-DCONFIG_CV180X
 endif
-ifeq (${CHIP_ARCH},CV181X)
+ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV181X SG200X))
 CFLAGS		+=	-DCONFIG_CV181X
 endif
 
