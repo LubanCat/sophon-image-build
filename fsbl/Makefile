@@ -46,6 +46,19 @@ PRINTF_TIMESTAMP := 0
 
 NANDBOOT_V2 := 1
 
+
+ifeq ($(STORAGE),spinor)
+CFLAGS += -DBOOT_SPINOR
+endif
+
+ifeq ($(STORAGE),emmc)
+CFLAGS += -DBOOT_EMMC
+endif
+
+ifeq ($(STORAGE),spinand)
+CFLAGS += -DBOOT_SPINAND
+endif
+
 # Verbose flag
 ifeq (${V},0)
         Q:=@
@@ -181,6 +194,10 @@ endif
 $(eval $(call add_define,FSBL_SECURE_BOOT_SUPPORT))
 $(eval $(call add_define, USB_DL_BY_FSBL))
 
+ifeq ($(SUSPEND),y)
+$(eval $(call add_define,CONFIG_SUSPEND))
+endif
+
 ################################################################################
 # Build targets
 ################################################################################
@@ -189,7 +206,9 @@ $(eval $(call add_define, USB_DL_BY_FSBL))
 
 export BUILD_PLAT NM
 
+
 all: fip bl2 blmacros
+
 
 include ${MAKE_HELPERS_DIRECTORY}fip.mk
 

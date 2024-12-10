@@ -126,18 +126,6 @@ CVI_S32 CVI_AF_SetFocusSpeed(VI_PIPE ViPipe, ISP_AF_MOTOR_SPEED_E eSpeed);
  * return: Function run success or not
  */
 CVI_S32 CVI_AF_SetFocus(VI_PIPE ViPipe, CVI_BOOL direct, CVI_U8 step);
-/* CVI_AF_SetZoomAndFocus:
- *    set both zoom motor and focus motor rotational speed
- * [in]
- *    sID: get it by ViPipe
- *	  eDir: rotational direction
- *    zoomStep: rotational step
- *    focusStep: rotational step
- * [out]
- *    void
- * return: Function run success or not
- */
-CVI_S32 CVI_AF_SetZoomAndFocus(VI_PIPE ViPipe, CVI_BOOL direct, CVI_U8 zoomStep, CVI_U8 focusStep);
 /* CVI_AF_SetAttr:
  *    set af algo control param
  * [in]
