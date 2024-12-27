@@ -163,12 +163,9 @@ static CVI_U8 data_hx8399_15[] = {
 	0x58, 0x64, 0x77
 };
 static CVI_U8 data_hx8399_16[] = {
-	0xcc, 0x08
-};
-static CVI_U8 data_hx8399_17[] = {
 	0x11, 0x00
 };
-static CVI_U8 data_hx8399_18[] = {
+static CVI_U8 data_hx8399_17[] = {
 	0x29, 0x00
 };
 
@@ -190,9 +187,8 @@ const struct dsc_instr dsi_init_cmds_hx8399_1080x1920[] = {
 	{.delay = 0, .data_type = 0x15, .size = 2, .data = data_hx8399_13 },
 	{.delay = 0, .data_type = 0x29, .size = 3, .data = data_hx8399_14 },
 	{.delay = 5, .data_type = 0x29, .size = 55, .data = data_hx8399_15 },
-	{.delay = 5, .data_type = 0x15, .size = 2, .data = data_hx8399_16 },
+	{.delay = 200, .data_type = 0x05, .size = 1, .data = data_hx8399_16 },
 	{.delay = 200, .data_type = 0x05, .size = 1, .data = data_hx8399_17 },
-	{.delay = 200, .data_type = 0x05, .size = 1, .data = data_hx8399_18 },
 };
 
 #else
