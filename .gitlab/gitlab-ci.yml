@@ -12,7 +12,7 @@ build_image:
   script:
     # - export
     # git apply patch
-    # - git apply .gitlab/0000-update-github-url.patch
+    - git apply .gitlab/0000-update-github-url.patch
 
     # install tools
     # sudo apt update
