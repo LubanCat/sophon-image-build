@@ -32,7 +32,7 @@ build_all
 |                  |   URL                                  | Branch         |    Commit      |
 |:----------------:|:---------------------------------------|:---------------|:---------------|
 | linux_5.10       | https://github.com/sophgo/linux_5.10          | sg200x-dev     | 6fe9639  |
-| cvi_mpi          | https://github.com/sophgo/cvi_mpi.git         | sg200x-dev     | 8c594a0 |
+| cvi_mpi          | https://github.com/sophgo/cvi_mpi.git         | sg200x-dev     | 1f41e2f |
 | SensorSupportList| https://github.com/sophgo/SensorSupportList.git | sg200x-dev   | 257c696 |
 | cvi_rtsp	       | https://github.com/sophgo/cvi_rtsp.git	       | master         | 6d4a2fe   |
 | tdl_sdk          | https://github.com/sophgo/tdl_sdk/tree/master | master         | 8a044e2   |
