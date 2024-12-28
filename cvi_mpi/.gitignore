@@ -94,6 +94,5 @@ sample/ive/sample_thresh_U16
 sample/ive/sample_xor
 
 # No need to ignore 
-!/modules/audio/SSP_Algorithm_20220128/obj/*
 
 
