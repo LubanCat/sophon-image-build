@@ -12,6 +12,10 @@
 #include "cvi_sns_ctrl.h"
 #include "sc2336_cmos_ex.h"
 
+#define SC2336_CHIP_ID_HI_ADDR		0x3107
+#define SC2336_CHIP_ID_LO_ADDR		0x3108
+#define SC2336_CHIP_ID				0xcb3a
+
 static void sc2336_linear_1080p30_init(VI_PIPE ViPipe);
 
 const CVI_U8 sc2336_i2c_addr = 0x30;        /* I2C Address of SC2336 */
@@ -174,10 +178,6 @@ void sc2336_default_reg_init(VI_PIPE ViPipe)
 				g_pastSC2336[ViPipe]->astSyncInfo[0].snsCfg.astI2cData[i].u32Data);
 	}
 }
-
-#define SC2336_CHIP_ID_HI_ADDR		0x3107
-#define SC2336_CHIP_ID_LO_ADDR		0x3108
-#define SC2336_CHIP_ID			0xcb3a
 
 void sc2336_mirror_flip(VI_PIPE ViPipe, ISP_SNS_MIRRORFLIP_TYPE_E eSnsMirrorFlip)
 {
