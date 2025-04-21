@@ -109,6 +109,8 @@
 			status = "okay";
 			goodix,irq-gpio = <&portb 22 GPIO_ACTIVE_HIGH>;
 			goodix,rst-gpio = <&portb 12 GPIO_ACTIVE_LOW>;
+			touchscreen-inverted-x = <1>;
+			touchscreen-inverted-y = <1>;
 		};
 };
 
