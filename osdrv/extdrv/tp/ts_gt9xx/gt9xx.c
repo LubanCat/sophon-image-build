@@ -31,6 +31,8 @@ static struct workqueue_struct *goodix_wq;
 struct i2c_client * i2c_connect_client = NULL;
 int gtp_rst_gpio;
 int gtp_int_gpio;
+static bool touchscreen_inverted_x;
+static bool touchscreen_inverted_y;
 u8 config[GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH]
                 = {GTP_REG_CONFIG_DATA >> 8, GTP_REG_CONFIG_DATA & 0xff};
 
@@ -853,6 +855,14 @@ static void goodix_ts_work_func(struct work_struct *work)
                 input_y  = coor_data[pos + 3] | (coor_data[pos + 4] << 8);
                 input_w  = coor_data[pos + 5] | (coor_data[pos + 6] << 8);
 
+                /* xy轴反转 */
+                if (touchscreen_inverted_x) {
+                    input_x = ts->abs_x_max - input_x;
+                }
+                if (touchscreen_inverted_y) {
+                    input_y = ts->abs_y_max - input_y;
+                }
+
                 gtp_pen_down(input_x, input_y, input_w, 0);
                 pre_pen = 1;
                 pre_touch = 0;
@@ -879,6 +889,14 @@ static void goodix_ts_work_func(struct work_struct *work)
                 input_y  = coor_data[pos + 3] | (coor_data[pos + 4] << 8);
                 input_w  = coor_data[pos + 5] | (coor_data[pos + 6] << 8);
 
+                /* xy轴反转 */
+                if (touchscreen_inverted_x) {
+                    input_x = ts->abs_x_max - input_x;
+                }
+                if (touchscreen_inverted_y) {
+                    input_y = ts->abs_y_max - input_y;
+                }
+                
                 gtp_touch_down(ts, id, input_x, input_y, input_w);
                 pre_touch |= 0x01 << i;
 
@@ -909,6 +927,14 @@ static void goodix_ts_work_func(struct work_struct *work)
             input_x  = coor_data[1] | (coor_data[2] << 8);
             input_y  = coor_data[3] | (coor_data[4] << 8);
             input_w  = coor_data[5] | (coor_data[6] << 8);
+
+            /* xy轴反转 */
+            if (touchscreen_inverted_x) {
+                input_x = ts->abs_x_max - input_x;
+            }
+            if (touchscreen_inverted_y) {
+                input_y = ts->abs_y_max - input_y;
+            }
 
         #if GTP_WITH_PEN
             id = coor_data[0];
@@ -2293,7 +2319,8 @@ static void gtp_parse_dt(struct device *dev)
 
 	gtp_int_gpio = of_get_named_gpio(np, "goodix,irq-gpio", 0);
 	gtp_rst_gpio = of_get_named_gpio(np, "goodix,rst-gpio", 0);
-
+	touchscreen_inverted_x = of_property_read_bool(np, "touchscreen-inverted-x");
+	touchscreen_inverted_y = of_property_read_bool(np, "touchscreen-inverted-y");
 }
 
 /**
