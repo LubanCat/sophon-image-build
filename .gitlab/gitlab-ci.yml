@@ -57,9 +57,15 @@ build_image:
 
     # 部署
     - mkdir -p ${NAS_URL}/${now}/Ubuntu
-    - cp install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+
+    - xz -z install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img
+    - cp install/soc_sg2000_lubancat_riscv_ubuntu_sd/images/*.img.xz ${NAS_URL}/${now}/Ubuntu
+  
     - cp install/soc_sg2000_lubancat_riscv_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
-    - cp install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img ${NAS_URL}/${now}/Ubuntu
+
+    - xz -z install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img
+    - cp install/soc_sg2000_lubancat_arm64_ubuntu_sd/images/*.img.xz ${NAS_URL}/${now}/Ubuntu
+
     - cp install/soc_sg2000_lubancat_arm64_ubuntu_emmc/*.zip ${NAS_URL}/${now}/Ubuntu
 
   when: delayed
