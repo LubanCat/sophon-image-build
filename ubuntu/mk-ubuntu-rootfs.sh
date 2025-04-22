@@ -144,6 +144,7 @@ mount -t sysfs sys /sys
 if [ -e "/usr/lib64v0p7_xthead/lp64d/libc.so" ] ; then
     ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v0p7_xthead.so.1
     ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64v_xthead.so.1
+    ln -sf /usr/lib64v0p7_xthead/lp64d/libc.so /lib/ld-musl-riscv64xthead.so.1
 fi
 
 if [ $MIRROR ]; then
