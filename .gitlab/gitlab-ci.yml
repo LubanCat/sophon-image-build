@@ -46,8 +46,11 @@ build_image:
     - defconfig sg2000_lubancat_riscv_ubuntu_emmc
     - build_all
 
-    # 编译sg2000_lubancat_arm64_ubuntu_sd镜像
+    # clean
     - clean_all
+    - rm ubuntu/ubuntu-rootfs.ext4
+
+    # 编译sg2000_lubancat_arm64_ubuntu_sd镜像
     - defconfig sg2000_lubancat_arm64_ubuntu_sd
     - build_all
 
