@@ -15,11 +15,16 @@ git clone https://github.com/sophgo/host-tools --depth=1
 ```
 source build/cvisetup.sh
 
-# riscv ubuntu emmc
+# build riscv ubuntu emmc
 defconfig sg2000_lubancat_riscv_ubuntu_emmc
 build_all
 
-# arm64 ubuntu sd
+
+# clean_all
+# rm ubuntu/ubuntu-rootfs.ext4
+
+
+# build arm64 ubuntu sd
 defconfig sg2000_lubancat_arm64_ubuntu_sd
 build_all
 ........
@@ -47,3 +52,6 @@ build_all
 | fsbl             | https://github.com/sophgo/fsbl     | sg200x-dev  | 15a84c5 |
 | opensbi          | https://github.com/sophgo/opensbi  | sg200x-dev  | fffb475 |
 | u-boot-2021.10   | https://github.com/sophgo/u-boot-2021.10   | sg200x-dev | 4a21b6b |
+| oss              | https://github.com/sophgo/oss.git          | master        | 53c237e   |
+
+
