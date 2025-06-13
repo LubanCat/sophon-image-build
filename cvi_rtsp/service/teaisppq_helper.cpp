@@ -1,8 +1,8 @@
 #include "ctx.h"
 #include "vpss_helper.h"
 #include <dlfcn.h>
-#include <sys/prctl.h>
 #include <sys/stat.h>
+#include <sys/prctl.h>
 #include <unistd.h>
 #include "cvi_isp.h"
 #include <string>
@@ -95,7 +95,6 @@ static void set_teaisppq_scene(SERVICE_CTX_ENTITY *ent, cvtdl_class_meta_t &cls_
 	}
 
 	float score = cls_meta.score[0];
-
 	scene_info.scene_score = score * 100;
 
 	CVI_TEAISP_PQ_SetSceneInfo(ent->ViPipe, &scene_info);
@@ -112,15 +111,26 @@ int run_teaisppq_vi(SERVICE_CTX_ENTITY *ent)
 	PQ_PARAMETER_S pq_param;
 	cvtdl_isp_meta_t isp_pq;
 
-	pq_param.awb_bgain = pq_param.awb_ggain = pq_param.awb_rgain = 1024;
-
-	get_vi_raw(pipe, stVideoFrame, &frmNum);
+	if (0x00 != get_vi_raw(pipe, stVideoFrame, &frmNum)) {
+		printf("[TEAISP.pq] get vi raw failed...\n");
+		return -1;
+	}
 
 	get_pq_parameter(ent->ViPipe, &pq_param);
 
-	isp_pq.rgain = pq_param.awb_rgain;
-	isp_pq.contant_1024 = pq_param.awb_ggain;
-	isp_pq.bgain = pq_param.awb_bgain;
+	isp_pq.awb[0] = pq_param.awb_rgain;
+	isp_pq.awb[1] = pq_param.awb_ggain;
+	isp_pq.awb[2] = pq_param.awb_bgain;
+
+	for (int i = 0; i < 9; i++) {
+		isp_pq.ccm[i] = pq_param.stInnerStateInfo.ccm[i];
+	}
+
+	isp_pq.blc = pq_param.stInnerStateInfo.blcOffsetR;
+	isp_pq.blc += pq_param.stInnerStateInfo.blcOffsetGr;
+	isp_pq.blc += pq_param.stInnerStateInfo.blcOffsetGb;
+	isp_pq.blc += pq_param.stInnerStateInfo.blcOffsetB;
+	isp_pq.blc /= 4;
 
 	// inference
 	// TODO: force set the 1, ignore the se frame
@@ -131,9 +141,9 @@ int run_teaisppq_vi(SERVICE_CTX_ENTITY *ent)
 		ent->ai_set_skip_vpss_preprocess(ent->teaisppq_handle, CVI_TDL_SUPPORTED_MODEL_ISP_IMAGE_CLASSIFICATION, true);
 
 		auto start_time = std::chrono::high_resolution_clock::now();
-
+		stVideoFrame[i].stVFrame.u32Width *= 1.5;
 		ret = ent->ai_img_cls(ent->teaisppq_handle, stVideoFrame + i, &cls_meta, &isp_pq);
-
+		stVideoFrame[i].stVFrame.u32Width /= 1.5;
 		auto end_time = std::chrono::high_resolution_clock::now();
 		auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 		//std::cout << "inference time: " << duration_ms.count() << " ms" << std::endl;
@@ -163,9 +173,9 @@ int run_teaisppq_vi(SERVICE_CTX_ENTITY *ent)
 				ret_name += "-";
 			}
 		}
-		ret_name += "-rg" + std::to_string(isp_pq.rgain);
-		ret_name += "-gg" + std::to_string(isp_pq.contant_1024);
-		ret_name += "-bg" + std::to_string(isp_pq.bgain);
+		ret_name += "-rg" + std::to_string(isp_pq.awb[0]);
+		ret_name += "-gg" + std::to_string(isp_pq.awb[1]);
+		ret_name += "-bg" + std::to_string(isp_pq.awb[2]);
 		ret_name +=  "-cnt" + std::to_string(inference_count) + ".raw";
 		dump_raw_with_ret(stVideoFrame, frmNum, ret_name.c_str(), RAW_12_BIT);
 		std::cout << "dump raw: " << ret_name << std::endl;
@@ -258,7 +268,7 @@ void deinit_teaisppq(SERVICE_CTX *ctx)
 
 void *teaisppqTask(void *arg)
 {
-	int rc = -1;
+	int rc = 0;
 	SERVICE_CTX_ENTITY *ent = (SERVICE_CTX_ENTITY *)arg;
 
 	prctl(PR_SET_NAME, "AIPQ", 0, 0, 0);
@@ -268,6 +278,8 @@ void *teaisppqTask(void *arg)
 		if (access("STOP_AI", F_OK) == 0) {
 			if (access("START_AI", F_OK) == 0) {
 				system("rm -f STOP_AI");
+			} else {
+				printf("touch START_AI to run AIPQ...\n");
 			}
 			usleep(1 * 1000000);
 		} else {
@@ -296,7 +308,7 @@ void *teaisppqTask(void *arg)
 #endif
 		if (0 != rc) {
 			std::cout << "fail to run the teaisppq" << std::endl;
-			if (access("STOP_AI", F_OK) != 0)
+			if (access("STOP_AI", F_OK) == 0)
 				break;
 		}
 	}

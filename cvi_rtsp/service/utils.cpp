@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <string.h>
+#include <inttypes.h>
 #include "utils.h"
 #include "cvi_awb.h"
 
@@ -196,7 +197,7 @@ void dump_raw(VIDEO_FRAME_INFO_S *p_raw_input, int frm_num, RAW_BITS raw_bits)
 
 	gettimeofday(&tv1, NULL);
 	snprintf(img_name, sizeof(img_name),
-			"./vi_0_%s_%s_w_%d_h_%d_x_%d_y_%d_tv_%ld_%ld_%ld.raw",
+			"./vi_0_%s_%s_w_%d_h_%d_x_%d_y_%d_tv_%ld_%ld_%" PRId64 ".raw",
 			frm_num == 1 ? "le" : "lese",
 			order_id,
 			p_raw_input[0].stVFrame.u32Width,
@@ -384,6 +385,11 @@ int get_pq_parameter(int pipe, PQ_PARAMETER_S *p_pq_param)
 	p_pq_param->awb_bgain = awb_info.u16Bgain;
 	p_pq_param->awb_rgain = awb_info.u16Rgain;
 	p_pq_param->awb_ggain = awb_info.u16Grgain;
+
+	ret = CVI_ISP_QueryInnerStateInfo(pipe, &p_pq_param->stInnerStateInfo);
+
+	if (ret != 0)
+		return -1;
 
 	return 0;
 }

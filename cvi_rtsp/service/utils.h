@@ -1,4 +1,5 @@
 #pragma once
+
 typedef enum {
 	RAW_12_BIT,
 	RAW_16_BIT
@@ -8,6 +9,7 @@ typedef struct {
 	CVI_U16 awb_rgain;
 	CVI_U16 awb_ggain;
 	CVI_U16 awb_bgain;
+	ISP_INNER_STATE_INFO_S stInnerStateInfo;
 } PQ_PARAMETER_S;
 
 int Bayer_12bit_2_16bit(uint8_t *bayerBuffer, uint16_t *outBuffer,

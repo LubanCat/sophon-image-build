@@ -1,8 +1,8 @@
 #include "ctx.h"
 #include "vpss_helper.h"
+#include <cvi_tdl.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include "cvi_isp.h"
 
 #define AI_LIB "libcvi_tdl.so"
@@ -17,7 +17,7 @@ do { \
 
 int load_ai_symbol(SERVICE_CTX *ctx)
 {
-    if (!ctx->ai_dl) {
+     if (!ctx->ai_dl) {
         std::cout << "Loading " AI_LIB " ..." << std::endl;
         ctx->ai_dl = dlopen(AI_LIB, RTLD_LAZY);
 
@@ -28,18 +28,19 @@ int load_ai_symbol(SERVICE_CTX *ctx)
         }
     }
 
+    dlerror();
+
     for (int idx=0; idx<ctx->dev_num; idx++) {
         SERVICE_CTX_ENTITY *ent = &ctx->entity[idx];
-        // common
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_CreateHandle2", AI_CreateHandle2, ent->ai_create_handle2);
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_DestroyHandle", AI_DestroyHandle, ent->ai_destroy_handle);
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_SetSkipVpssPreprocess", AI_SetSkipVpssPreprocess, ent->ai_set_skip_vpss_preprocess);
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_OpenModel", AI_OpenModel, ent->ai_open_model);
+        LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_GetVpssChnConfig", AI_GetVpssChnConfig, ent->ai_get_vpss_chn_config);
+        LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_RetinaFace", AI_RetinaFace, ent->ai_retinaface);
+
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_Service_CreateHandle", AI_Service_CreateHandle, ent->ai_service_create_handle);
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_Service_DestroyHandle", AI_Service_DestroyHandle, ent->ai_service_destroy_handle);
-        // face det
-        LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_GetVpssChnConfig", AI_GetVpssChnConfig, ent->ai_get_vpss_chn_config);
-        LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_ScrFDFace", AI_RetinaFace, ent->ai_retinaface);
         LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_Service_FaceDrawRect", AI_Service_FaceDrawRect, ent->ai_face_draw_rect);
     }
 
@@ -76,22 +77,22 @@ int init_ai(SERVICE_CTX *ctx)
             return -1;
         }
 
-        if (ent->ai_open_model(ent->ai_handle, CVI_AI_SUPPORTED_MODEL_RETINAFACE, ctx->model_path) != CVI_SUCCESS) {
+        if (ent->ai_open_model(ent->ai_handle, CVI_TDL_SUPPORTED_MODEL_RETINAFACE, ctx->model_path) != CVI_SUCCESS) {
             printf("CVI_AI_SetModelPath: %s failed!\n", ctx->model_path);
             return -1;
         }
 
-        ent->ai_set_skip_vpss_preprocess(ent->ai_handle, CVI_AI_SUPPORTED_MODEL_RETINAFACE, true);
+        ent->ai_set_skip_vpss_preprocess(ent->ai_handle, CVI_TDL_SUPPORTED_MODEL_RETINAFACE, true);
 
-        if (ent->ai_get_vpss_chn_config(ent->ai_handle, CVI_AI_SUPPORTED_MODEL_RETINAFACE, 1920, 1080, 0, &ent->retinaVpssConfig) != CVI_SUCCESS) {
+        if (ent->ai_get_vpss_chn_config(ent->ai_handle, CVI_TDL_SUPPORTED_MODEL_RETINAFACE, 1920, 1080, 0, &ent->retinaVpssConfig) != CVI_SUCCESS) {
             printf("CVI_AI_GetVpssChnConfig Failed!\n");
             return -1;
         }
 
         if (ent->retinaVpssConfig.chn_attr.stAspectRatio.enMode != ASPECT_RATIO_AUTO) {
-            LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_RescaleMetaCenterFace", FD_RescaleFunc, ent->rescale_fd);
+            LOAD_SYMBOL(ctx->ai_dl, "CVI_AI_RescaleMetaCenterFace", FD_RescaleFunc, ent->rescale_fd);
         } else {
-            LOAD_SYMBOL(ctx->ai_dl, "CVI_TDL_RescaleMetaRBFace", FD_RescaleFunc, ent->rescale_fd);
+            LOAD_SYMBOL(ctx->ai_dl, "CVI_AI_RescaleMetaRBFace", FD_RescaleFunc, ent->rescale_fd);
         }
 
         int rc = -1;

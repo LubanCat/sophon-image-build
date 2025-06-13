@@ -4,35 +4,27 @@
 #include <pthread.h>
 #include <sample_comm.h>
 #include <cvi_venc.h>
+#include <cvi_tdl.h>
 #include <cvi_rtsp/rtsp.h>
-#include "cvi_tdl.h"
+
 
 #define MAX_PATH_LEN 256
 
-// face detect use the scrfd model
-#define cvai_face_t cvtdl_face_t
-#define CVI_AI_SUPPORTED_MODEL_E CVI_TDL_SUPPORTED_MODEL_E
-#define cvai_vpssconfig_t cvtdl_vpssconfig_t
-#define cvai_service_brush_t cvtdl_service_brush_t
-#define cviai_handle_t cvitdl_handle_t
-#define cviai_service_handle_t cvitdl_service_handle_t
-#define CVI_AI_SUPPORTED_MODEL_RETINAFACE CVI_TDL_SUPPORTED_MODEL_SCRFDFACE
-#define cvai_bbox_t cvtdl_bbox_t
-
-typedef CVI_S32 (*FD_RescaleFunc)(const VIDEO_FRAME_INFO_S *frame, cvai_face_t *face);
-typedef int (*AI_CreateHandle2)(void *, const int, const uint8_t);
+typedef CVI_S32 (*FD_RescaleFunc)(const VIDEO_FRAME_INFO_S *frame, cvtdl_face_t *face);
 typedef int (*AI_CreateHandle)(void *);
+typedef int (*AI_CreateHandle2)(void *, const int, const uint8_t);
 typedef int (*AI_DestroyHandle)(void *);
 typedef int (*AI_Service_CreateHandle)(void *, void *);
 typedef int (*AI_Service_DestroyHandle)(void *);
-typedef void (*AI_SetSkipVpssPreprocess)(void *, CVI_AI_SUPPORTED_MODEL_E, bool);
-typedef int (*AI_OpenModel)(void *, CVI_AI_SUPPORTED_MODEL_E , const char *);
-typedef int (*AI_GetVpssChnConfig)(void *, CVI_AI_SUPPORTED_MODEL_E, const uint32_t, const uint32_t, const uint32_t i, cvai_vpssconfig_t *);
-typedef int (*AI_RetinaFace)(const void *, VIDEO_FRAME_INFO_S *, cvai_face_t *);
-typedef int (*AI_Service_FaceDrawRect)(void *, cvai_face_t *, VIDEO_FRAME_INFO_S *, const bool, cvai_service_brush_t);
+typedef void (*AI_SetSkipVpssPreprocess)(void *, CVI_TDL_SUPPORTED_MODEL_E, bool);
+typedef int (*AI_OpenModel)(void *, CVI_TDL_SUPPORTED_MODEL_E , const char *);
+typedef int (*AI_GetVpssChnConfig)(void *, CVI_TDL_SUPPORTED_MODEL_E, const uint32_t, const uint32_t, const uint32_t i, cvtdl_vpssconfig_t *);
+typedef int (*AI_RetinaFace)(const void *, VIDEO_FRAME_INFO_S *, cvtdl_face_t *);
+typedef int (*AI_Service_FaceDrawRect)(void *, cvtdl_face_t *, VIDEO_FRAME_INFO_S *, const bool, cvtdl_service_brush_t);
 // scene classification
 typedef int (*AI_Image_Cls)(const cvitdl_handle_t, VIDEO_FRAME_INFO_S *, cvtdl_class_meta_t *, cvtdl_isp_meta_t *);
 typedef int (*AI_Service_ObjectWriteText)(char *, int, int, VIDEO_FRAME_INFO_S *, float, float, float);
+
 
 struct SERVICE_CTX_ENTITY {
     pthread_t worker;
@@ -65,21 +57,18 @@ struct SERVICE_CTX_ENTITY {
     VI_PIPE ViPipe;
     VPSS_CHN VpssChn;
     VPSS_GRP VpssGrp;
-    VPSS_GRP VpssGrpDrcPost;
     VENC_CHN VencChn;
     chnInputCfg venc_cfg;
     char venc_json[MAX_PATH_LEN];
     void *ctx;
     bool enableRetinaFace;
     bool enableTeaisppq;
-    bool enableTeaispDrc;
-    bool enableHdmi;
     bool enableTEAISPBnr;
     char teaisp_model_list[MAX_PATH_LEN];
-    cvai_vpssconfig_t retinaVpssConfig;
-    cviai_handle_t ai_handle;
-    cviai_service_handle_t ai_service_handle;
-    cviai_service_handle_t teaisppq_service_handle;
+    cvtdl_vpssconfig_t retinaVpssConfig;
+    cvitdl_handle_t ai_handle;
+    cvitdl_service_handle_t ai_service_handle;
+    cvitdl_service_handle_t teaisppq_service_handle;
     FD_RescaleFunc rescale_fd;
     AI_CreateHandle2 ai_create_handle2;
     AI_CreateHandle ai_create_handle;
@@ -93,27 +82,27 @@ struct SERVICE_CTX_ENTITY {
     AI_Service_FaceDrawRect ai_face_draw_rect;
     // scene classification
     AI_Service_ObjectWriteText ai_write_text;
-    cviai_handle_t teaisppq_handle;
+    cvitdl_handle_t teaisppq_handle;
     AI_Image_Cls ai_img_cls;
 };
 
-#define SERVICE_CTX_ENTITY_MAX_NUM 6
+#define SERVICE_CTX_ENTITY_MAX_NUM 2
 
 struct SERVICE_SBM {
-    uint8_t enable;
-    uint16_t bufLine;
-    uint8_t bufSize;
+	uint8_t enable;
+	uint16_t bufLine;
+	uint8_t bufSize;
 };
 
 struct REPLAY_PARAM {
-    uint8_t pixelFormat;
-    uint16_t width;
-    uint16_t height;
-    bool timingEnable;
-    uint32_t frameRate;
-    uint8_t WDRMode;
-    uint8_t bayerFormat;
-    COMPRESS_MODE_E compressMode;
+	uint8_t pixelFormat;
+	uint16_t width;
+	uint16_t height;
+	bool timingEnable;
+	uint32_t frameRate;
+	uint8_t WDRMode;
+	uint8_t bayerFormat;
+	COMPRESS_MODE_E compressMode;
 };
 
 struct SERVICE_CTX {
@@ -130,7 +119,6 @@ struct SERVICE_CTX {
     uint8_t max_use_tpu_num;
     char model_path[MAX_PATH_LEN];
     char teaisppq_model_path[MAX_PATH_LEN];
-    char teaispdrc_model_path[MAX_PATH_LEN];
     void *ai_dl;
     SERVICE_SBM sbm;
     int tdl_ref_count;
