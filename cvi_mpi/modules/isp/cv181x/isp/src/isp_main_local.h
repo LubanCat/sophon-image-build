@@ -34,6 +34,12 @@ typedef enum _WDR_TYPE_E {
 	WDR_TYPE_MAX,
 } WDR_TYPE_E;
 
+typedef enum _TEAISP_MODEL_TYPE_E {
+	TEAISP_MODEL_NONE = 0,
+	TEAISP_MODEL_BNR,
+	TEAISP_MODEL_MOTION,
+} TEAISP_MODEL_TYPE_E;
+
 typedef struct _ISP_LIB_INFO_S {
 	CVI_U32 used;
 	ALG_LIB_S libInfo;
@@ -84,6 +90,9 @@ typedef struct _ISP_CTX_S {
 
 	ISP_FRAME_INFO_S frameInfo;
 	ISP_STATISTICS_CFG_S stsCfgInfo;
+	ISP_AWB_RATIO_ATTR_S stRatioAttr;
+
+	TEAISP_MODEL_TYPE_E enModelType;
 
 	pthread_mutex_t ispEventLock;
 	pthread_cond_t ispEventCond[ISP_VD_MAX];
@@ -121,7 +130,7 @@ typedef struct {
 	ISP_AUTO_GAMMA_ATTR_S autoGamma;
 	ISP_DEHAZE_ATTR_S dehaze;
 	ISP_CLUT_ATTR_S clut;
-	ISP_CLUT_SATURATION_ATTR_S clut_saturation;
+	ISP_CLUT_HSL_ATTR_S clut_hsl;
 	ISP_CSC_ATTR_S csc;
 	ISP_DCI_ATTR_S dci;
 	ISP_LDCI_ATTR_S ldci;

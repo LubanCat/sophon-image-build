@@ -102,7 +102,7 @@ fi
 
 # for eaier debugging, add $PWD to LD_LIBRARY_PATH and PATH
 SCRIPT_SELF=$(cd "$(dirname "$0")"; pwd)
-export LD_LIBRARY_PATH=${SCRIPT_SELF}/lib:${SCRIPT_SELF}/lib/ai:${LD_LIBRARY_PATH}:/mnt/system/usr/lib:/mnt/system/usr/lib/3rd:/lib/3rd
+export LD_LIBRARY_PATH=${SCRIPT_SELF}/lib:${SCRIPT_SELF}/lib/ai:${LD_LIBRARY_PATH}:/mnt/system/lib:/mnt/system/usr/lib:/mnt/system/usr/lib/3rd:/lib/3rd
 
 PATH=${SCRIPT_SELF}:/mnt/system/usr/bin:$PATH
 cd ${SCRIPT_SELF}

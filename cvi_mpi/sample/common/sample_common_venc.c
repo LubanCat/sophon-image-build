@@ -826,13 +826,6 @@ CVI_S32 SAMPLE_COMM_VENC_Create(
 			goto ERR_SAMPLE_COMM_VENC_CREATE;
 		}
 
-		s32Ret = SAMPLE_COMM_VENC_SetSuperFrame(pIc, VencChn);
-		if (s32Ret != CVI_SUCCESS) {
-			CVI_VENC_ERR("SAMPLE_COMM_VENC_SetSuperFrame, %d\n", s32Ret);
-			CVI_VENC_DestroyChn(VencChn);
-			goto ERR_SAMPLE_COMM_VENC_CREATE;
-		}
-
 		s32Ret = SAMPLE_COMM_VENC_EnableSvc(pIc, VencChn);
 		if (s32Ret != CVI_SUCCESS) {
 			CVI_VENC_ERR("SAMPLE_COMM_VENC_EnableSvc, %d\n", s32Ret);
@@ -966,6 +959,15 @@ CVI_S32 SAMPLE_COMM_VENC_Create(
 		s32Ret = SAMPLE_COMM_VENC_SetH265Dblk(pIc, VencChn);
 		if (s32Ret != CVI_SUCCESS) {
 			CVI_VENC_ERR("SAMPLE_COMM_VENC_SetH265Dblk, %d\n", s32Ret);
+			goto ERR_SAMPLE_COMM_VENC_CREATE;
+		}
+	}
+
+	if (pIc->enSuperFrmMode) {
+		s32Ret = SAMPLE_COMM_VENC_SetSuperFrame(pIc, VencChn);
+		if (s32Ret != CVI_SUCCESS) {
+			CVI_VENC_ERR("SAMPLE_COMM_VENC_SetSuperFrame, %d\n", s32Ret);
+			CVI_VENC_DestroyChn(VencChn);
 			goto ERR_SAMPLE_COMM_VENC_CREATE;
 		}
 	}

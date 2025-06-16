@@ -43,6 +43,7 @@ $(TARGET_SO): $(OBJS)
 	@echo -e $(GREEN)[LINK]$(END)[$(notdir $(LD))] $(notdir $@)
 
 clean:
+	@echo "Current directory: $(CURDIR)"
 	@rm -f $(TARGET_A) $(TARGET_SO)
 
 clean_all: clean
@@ -52,5 +53,3 @@ clean_all: clean
 	fi
 
 -include $(DEPS)
-
-

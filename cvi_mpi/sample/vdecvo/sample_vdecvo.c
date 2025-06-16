@@ -411,7 +411,12 @@ RETRY_GET_FRAME:
 				retry++;
 				if (s32Ret == CVI_ERR_VDEC_BUSY || s32Ret == CVI_ERR_VDEC_ERR_INVALID_RET) {
 					CVI_TRACE_LOG(CVI_DBG_ERR, "get frame timeout ..in overlay ..retry\n");
-					goto RETRY_GET_FRAME;
+					if (!pstVdecCfg->astVdecParam[0].stop_thread) {
+						usleep(10000);
+						goto RETRY_GET_FRAME;
+					} else {
+						break;
+					}
 				}
 			}
 			set_vpss_AspectRatio(i, VpssGrp, VpssChn, &pstVdecChn->stDispRect);

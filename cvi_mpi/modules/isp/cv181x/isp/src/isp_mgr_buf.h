@@ -41,6 +41,9 @@
 #include "isp_mono_ctrl.h"
 #include "isp_ccm_ctrl.h"
 #include "isp_ynr_ctrl.h"
+#include "teaisp_pq_ctrl.h"
+#include "teaisp_bnr_ctrl.h"
+#include "isp_lblc_ctrl.h"
 
 #ifdef __cplusplus
 #if __cplusplus
@@ -189,6 +192,7 @@ struct isp_3a_shared_buffer {
 	ISP_FOCUS_ATTR_S stFocusAttr;
 	CVI_U32 u32AFParamUpdateFlag;
 	ISP_FOCUS_STATISTICS_CFG_S stAfStatCfg;
+	ISP_AF_VCM_ATTR_S stAfVcmAttr;
 };
 
 struct isp_csc_shared_buffer {
@@ -208,7 +212,7 @@ struct isp_ca2_shared_buffer {
 
 struct isp_clut_shared_buffer {
 	ISP_CLUT_ATTR_S stCLUTAttr;
-	ISP_CLUT_SATURATION_ATTR_S stClutSaturationAttr;
+	ISP_CLUT_HSL_ATTR_S stClutHslAttr;
 	struct isp_clut_ctrl_runtime runtime;
 };
 
@@ -240,6 +244,23 @@ struct isp_ynr_shared_buffer {
 struct isp_mono_shared_buffer {
 	ISP_MONO_ATTR_S stMonoAttr;
 	struct isp_mono_ctrl_runtime runtime;
+};
+
+struct teaisp_pq_shared_buffer {
+	TEAISP_PQ_ATTR_S stTEAISPPQAttr;
+	struct teaisp_pq_ctrl_runtime runtime;
+};
+
+struct teaisp_bnr_shared_buffer {
+	TEAISP_BNR_ATTR_S stBNRAttr;
+	TEAISP_BNR_NP_S stNPAttr;
+	struct teaisp_bnr_ctrl_runtime runtime;
+};
+
+struct isp_lblc_shared_buffer {
+	ISP_LBLC_ATTR_S stLblcAttr;
+	ISP_LBLC_LUT_ATTR_S stLblcLutAttr;
+	struct isp_lblc_ctrl_runtime runtime;
 };
 
 CVI_S32 isp_mgr_buf_init(VI_PIPE ViPipe);

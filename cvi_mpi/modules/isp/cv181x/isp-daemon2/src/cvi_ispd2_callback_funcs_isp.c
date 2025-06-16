@@ -500,6 +500,34 @@ CVI_S32 CVI_ISPD2_CBFunc_ISP_GetMeshShadingGainLutAttr(TJSONRpcContentIn *ptCont
 }
 
 // -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_ISP_SetLblcAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_SET_API_EX(Lblc, ISP_LBLC_ATTR_S);
+}
+
+// -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_ISP_GetLblcAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_GET_API_EX(Lblc, ISP_LBLC_ATTR_S);
+}
+
+// -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_ISP_SetLblcLutAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_SET_API_EX(LblcLut, ISP_LBLC_LUT_ATTR_S);
+}
+
+// -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_ISP_GetLblcLutAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_GET_API_EX(LblcLut, ISP_LBLC_LUT_ATTR_S);
+}
+
+// -----------------------------------------------------------------------------
 CVI_S32 CVI_ISPD2_CBFunc_ISP_SetBlackLevelAttr(TJSONRpcContentIn *ptContentIn,
 	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
 {
@@ -799,17 +827,17 @@ CVI_S32 CVI_ISPD2_CBFunc_ISP_GetClutAttr(TJSONRpcContentIn *ptContentIn,
 }
 
 // -----------------------------------------------------------------------------
-CVI_S32 CVI_ISPD2_CBFunc_ISP_SetClutSaturationAttr(TJSONRpcContentIn *ptContentIn,
+CVI_S32 CVI_ISPD2_CBFunc_ISP_SetClutHslAttr(TJSONRpcContentIn *ptContentIn,
 	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
 {
-	CVI_ISP_SET_API_EX(ClutSaturation, ISP_CLUT_SATURATION_ATTR_S);
+	CVI_ISP_SET_API_EX(ClutHsl, ISP_CLUT_HSL_ATTR_S);
 }
 
 // -----------------------------------------------------------------------------
-CVI_S32 CVI_ISPD2_CBFunc_ISP_GetClutSaturationAttr(TJSONRpcContentIn *ptContentIn,
+CVI_S32 CVI_ISPD2_CBFunc_ISP_GetClutHslAttr(TJSONRpcContentIn *ptContentIn,
 	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
 {
-	CVI_ISP_GET_API_EX(ClutSaturation, ISP_CLUT_SATURATION_ATTR_S);
+	CVI_ISP_GET_API_EX(ClutHsl, ISP_CLUT_HSL_ATTR_S);
 }
 
 // -----------------------------------------------------------------------------
@@ -867,4 +895,41 @@ CVI_S32 CVI_ISPD2_CBFunc_ISP_GetCA2Attr(TJSONRpcContentIn *ptContentIn,
 	CVI_ISP_GET_API_EX(CA2, ISP_CA2_ATTR_S);
 }
 
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_PQ_SetAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_SET_API(CVI_TEAISP_PQ_SetAttr, CVI_TEAISP_PQ_GetAttr, TEAISP_PQ_ATTR_S);
+}
+
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_PQ_GetAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_GET_API(CVI_TEAISP_PQ_GetAttr, TEAISP_PQ_ATTR_S);
+}
+
+// -----------------------------------------------------------------------------
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_BNR_SetAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_SET_API(CVI_TEAISP_BNR_SetAttr, CVI_TEAISP_BNR_GetAttr, TEAISP_BNR_ATTR_S);
+}
+
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_BNR_GetAttr(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_GET_API(CVI_TEAISP_BNR_GetAttr, TEAISP_BNR_ATTR_S);
+}
+
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_BNR_SetNP(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_SET_API(CVI_TEAISP_BNR_SetNoiseProfileAttr,
+		CVI_TEAISP_BNR_GetNoiseProfileAttr, TEAISP_BNR_NP_S);
+}
+
+CVI_S32 CVI_ISPD2_CBFunc_TEAISP_BNR_GetNP(TJSONRpcContentIn *ptContentIn,
+	TJSONRpcContentOut *ptContentOut, JSONObject *pJsonResponse)
+{
+	CVI_ISP_GET_API(CVI_TEAISP_BNR_GetNoiseProfileAttr, TEAISP_BNR_NP_S);
+}
 // -----------------------------------------------------------------------------

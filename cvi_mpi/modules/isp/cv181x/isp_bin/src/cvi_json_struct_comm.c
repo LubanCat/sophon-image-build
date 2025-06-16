@@ -334,7 +334,9 @@ void CVI_FLOAT_JSON(int r_w_flag, JSON *j, char *key, CVI_FLOAT *value)
 			double temp;
 			cvi_json_type cvi_type = cvi_json_object_get_type(obj);
 
-			if (cvi_type != cvi_json_type_double) {
+			if (cvi_type != cvi_json_type_double && 
+				cvi_type != cvi_json_type_string &&
+				cvi_type != cvi_json_type_int) {
 				JSON_PRINT_ERR_DATA_TYPE(key);
 				return;
 			}
