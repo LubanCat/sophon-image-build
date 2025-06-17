@@ -1,4 +1,9 @@
 #include "core/cvi_tdl_core.h"
+#include "blip/blip_cap/blip_cap.hpp"
+#include "blip/blip_itm/blip_itm.hpp"
+#include "blip/blip_vqa/blip_vqa_tdec.hpp"
+#include "blip/blip_vqa/blip_vqa_tenc.hpp"
+#include "blip/blip_vqa/blip_vqa_venc.hpp"
 #include "clip/clip_image/clip_image.hpp"
 #include "clip/clip_text/clip_text.hpp"
 #include "core/core/cvtdl_errno.h"
@@ -30,6 +35,7 @@
 #include "lane_detection/polylanenet/polylanenet.hpp"
 
 #include "license_plate_detection/license_plate_detection.hpp"
+#include "license_plate_keypoint/license_plate_keypoint.hpp"
 #include "license_plate_recognition/license_plate_recognitionv2.hpp"
 #include "liveness/ir_liveness/ir_liveness.hpp"
 #include "motion_detection/md.hpp"
@@ -45,27 +51,30 @@
 #include "object_detection/yolov6/yolov6.hpp"
 #include "object_detection/yolov8/yolov8.hpp"
 #include "object_detection/yolox/yolox.hpp"
+#include "open_object_detection/yolo_world_v2/yolo_world_v2.hpp"
 
 #include "depth_estimation/stereo.hpp"
 #include "face_detection/face_mask_detection/retinaface_yolox.hpp"
 #include "face_detection/retina_face/retina_face.hpp"
 #include "face_detection/retina_face/scrfd_face.hpp"
 #include "face_detection/thermal_face_detection/thermal_face.hpp"
+#include "isp_image_classification/isp_image_classification.hpp"
 #include "mask_classification/mask_classification.hpp"
 #include "ocr/ocr_recognition/ocr_recognition.hpp"
 #include "osnet/osnet.hpp"
 #include "raw_image_classification/raw_image_classification.hpp"
 #include "segmentation/deeplabv3.hpp"
+#include "segmentation/topformer_seg/topformer_seg.hpp"
 #include "sound_classification/sound_classification_v2.hpp"
 #include "super_resolution/super_resolution.hpp"
-#ifdef CV186X
-#include "isp_image_classification/isp_image_classification.hpp"
-#endif
+#include "occlusion_classification/occlusion_classification.hpp"
+
 #ifndef NO_OPENCV
 #include "eye_classification/eye_classification.hpp"
 #include "face_quality/face_quality.hpp"
 #include "fall_detection/fall_det_monitor.hpp"
 #include "fall_detection/fall_detection.hpp"
+#include "human_keypoints_detection/smooth_keypoints/smooth_keypoints.hpp"
 #include "instance_segmentation/yolov8_seg/yolov8_seg.hpp"
 #include "license_plate_recognition/license_plate_recognition.hpp"
 #include "liveness/liveness.hpp"
@@ -89,7 +98,6 @@
 #include "utils/clip_postprocess.hpp"
 #include "utils/core_utils.hpp"
 #include "utils/token.hpp"
-#include "version.hpp"
 
 using namespace std;
 using namespace cvitdl;
@@ -184,33 +192,37 @@ unordered_map<int, CreatorFunc> MODEL_CREATORS = {
     {CVI_TDL_SUPPORTED_MODEL_SMOKECLASSIFICATION, CREATOR(SmokeClassification)},
     {CVI_TDL_SUPPORTED_MODEL_LPRNET_TW, CREATOR_P1(LicensePlateRecognition, LP_FORMAT, TAIWAN)},
     {CVI_TDL_SUPPORTED_MODEL_LPRNET_CN, CREATOR_P1(LicensePlateRecognition, LP_FORMAT, CHINA)},
+    {CVI_TDL_SUPPORTED_MODEL_LP_KEYPOINT, CREATOR(LicensePlateKeypoint)},
     {CVI_TDL_SUPPORTED_MODEL_OCR_DETECTION, CREATOR(OCRDetection)},
     {CVI_TDL_SUPPORTED_MODEL_MASKFACERECOGNITION, CREATOR(MaskFaceRecognition)},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV8_SEG, CREATOR(YoloV8Seg)},
 #endif
-#ifdef CV186X
-    {CVI_TDL_SUPPORTED_MODEL_ISP_IMAGE_CLASSIFICATION, CREATOR(IspImageClassification)},
-#endif
-    {CVI_TDL_SUPPORTED_MODEL_IRLIVENESS, CREATOR(IrLiveness)},
 
+    {CVI_TDL_SUPPORTED_MODEL_ISP_IMAGE_CLASSIFICATION, CREATOR(IspImageClassification)},
+    {CVI_TDL_SUPPORTED_MODEL_IRLIVENESS, CREATOR(IrLiveness)},
+    {CVI_TDL_SUPPORTED_MODEL_YOLO, CREATOR(Yolo)},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV3, CREATOR(Yolov3)},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV5, CREATOR(Yolov5)},
+    {CVI_TDL_SUPPORTED_MODEL_YOLOX, CREATOR(YoloX)},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV6, CREATOR(Yolov6)},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV7, CREATOR(Yolov5)},
-    {CVI_TDL_SUPPORTED_MODEL_YOLO, CREATOR(Yolo)},
-    {CVI_TDL_SUPPORTED_MODEL_YOLOX, CREATOR(YoloX)},
+    {CVI_TDL_SUPPORTED_MODEL_YOLOV10_DETECTION,
+     CREATOR_P1(YoloV10Detection, PAIR_INT, std::make_pair(64, 80))},
     {CVI_TDL_SUPPORTED_MODEL_PPYOLOE, CREATOR(PPYoloE)},
     {CVI_TDL_SUPPORTED_MODEL_SCRFDFACE, CREATOR(ScrFDFace)},
     {CVI_TDL_SUPPORTED_MODEL_RETINAFACE, CREATOR_P1(RetinaFace, PROCESS, CAFFE)},
     {CVI_TDL_SUPPORTED_MODEL_RETINAFACE_IR, CREATOR_P1(RetinaFace, PROCESS, PYTORCH)},
     {CVI_TDL_SUPPORTED_MODEL_FACEATTRIBUTE, CREATOR_P1(FaceAttribute, bool, true)},
     {CVI_TDL_SUPPORTED_MODEL_FACERECOGNITION, CREATOR_P1(FaceAttribute, bool, false)},
+    {CVI_TDL_SUPPORTED_MODEL_OCCLUSION_CLASSIFICATION, CREATOR(OcclusionClassification)},
 
     {CVI_TDL_SUPPORTED_MODEL_HAND_DETECTION,
      CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 1))},
     {CVI_TDL_SUPPORTED_MODEL_PERSON_PETS_DETECTION,
      CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 3))},
     {CVI_TDL_SUPPORTED_MODEL_YOLOV8_DETECTION,
+     CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 80))},
+    {CVI_TDL_SUPPORTED_MODEL_YOLOV11_DETECTION,
      CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 80))},
     {CVI_TDL_SUPPORTED_MODEL_PERSON_VEHICLE_DETECTION,
      CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 7))},
@@ -228,9 +240,10 @@ unordered_map<int, CreatorFunc> MODEL_CREATORS = {
      CREATOR_P1(MobileDetV2, MobileDetV2::Category, MobileDetV2::Category::pedestrian)},
     {CVI_TDL_SUPPORTED_MODEL_MOBILEDETV2_PERSON_PETS,
      CREATOR_P1(MobileDetV2, MobileDetV2::Category, MobileDetV2::Category::person_pets)},
-
-    // {CVI_TDL_SUPPORTED_MODEL_YOLOV8_HARDHAT,
-    //  CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 2))},
+    {CVI_TDL_SUPPORTED_MODEL_YOLOV8_HARDHAT,
+     CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 2))},
+    {CVI_TDL_SUPPORTED_MODEL_YOLOV8_FIRE_SMOKE,
+     CREATOR_P1(YoloV8Detection, PAIR_INT, std::make_pair(64, 2))},
     {CVI_TDL_SUPPORTED_MODEL_LANE_DET, CREATOR(BezierLaneNet)},
 
     {CVI_TDL_SUPPORTED_MODEL_LSTR, CREATOR(LSTR)},
@@ -249,6 +262,7 @@ unordered_map<int, CreatorFunc> MODEL_CREATORS = {
     {CVI_TDL_SUPPORTED_MODEL_WPODNET, CREATOR(LicensePlateDetection)},
 
     {CVI_TDL_SUPPORTED_MODEL_DEEPLABV3, CREATOR(Deeplabv3)},
+    {CVI_TDL_SUPPORTED_MODEL_TOPFORMER_SEG, CREATOR(TopformerSeg)},
     {CVI_TDL_SUPPORTED_MODEL_MOTIONSEGMENTATION, CREATOR(MotionSegmentation)},
 
     {CVI_TDL_SUPPORTED_MODEL_FACELANDMARKER, CREATOR(FaceLandmarker)},
@@ -261,15 +275,20 @@ unordered_map<int, CreatorFunc> MODEL_CREATORS = {
      CREATOR_P1(YoloV8Pose, TUPLE_INT, std::make_tuple(64, 17, 1))},
     {CVI_TDL_SUPPORTED_MODEL_LP_DETECTION,
      CREATOR_P1(YoloV8Pose, TUPLE_INT, std::make_tuple(64, 4, 2))},
-    {CVI_TDL_SUPPORTED_MODEL_YOLOV10_DETECTION,
-     CREATOR_P1(YoloV10Detection, PAIR_INT, std::make_pair(64, 80))},
+
     {CVI_TDL_SUPPORTED_MODEL_SIMCC_POSE, CREATOR(Simcc)},
     {CVI_TDL_SUPPORTED_MODEL_HRNET_POSE, CREATOR(Hrnet)},
     {CVI_TDL_SUPPORTED_MODEL_LANDMARK_DET3, CREATOR(FaceLandmarkDet3)},
     {CVI_TDL_SUPPORTED_MODEL_DMSLANDMARKERDET, CREATOR(DMSLandmarkerDet)},
     {CVI_TDL_SUPPORTED_MODEL_IMAGE_CLASSIFICATION, CREATOR(ImageClassification)},
-    {CVI_TDL_SUPPORTED_MODEL_CLIP_IMAGE, CREATOR(Clip_Image)},
     {CVI_TDL_SUPPORTED_MODEL_CLIP_TEXT, CREATOR(Clip_Text)},
+    {CVI_TDL_SUPPORTED_MODEL_BLIP_ITM, CREATOR(Blip_Itm)},
+    {CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_VENC, CREATOR(Blip_Vqa_Venc)},
+    {CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_TENC, CREATOR(Blip_Vqa_Tenc)},
+    {CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_TDEC, CREATOR(Blip_Vqa_Tdec)},
+    {CVI_TDL_SUPPORTED_MODEL_BLIP_CAP, CREATOR(Blip_Cap)},
+    {CVI_TDL_SUPPORTED_MODEL_YOLO_WORLD_V2,
+     CREATOR_P1(Yolo_World_V2, PAIR_INT, std::make_pair(64, 80))},
     {CVI_TDL_SUPPORTED_MODEL_RAW_IMAGE_CLASSIFICATION, CREATOR(RawImageClassification)},
 
     {CVI_TDL_SUPPORTED_MODEL_POLYLANE, CREATOR(Polylanenet)},
@@ -320,6 +339,31 @@ inline void __attribute__((always_inline)) removeCtx(cvitdl_context_t *ctx) {
   if (ctx->ive_handle) {
     ctx->ive_handle->destroy();
     ctx->ive_handle = nullptr;
+  }
+
+  if (ctx->td_model) {
+    delete ctx->td_model;
+    ctx->td_model = nullptr;
+  }
+
+  if (ctx->fall_model) {
+    delete ctx->fall_model;
+    ctx->fall_model = nullptr;
+  }
+
+  if (ctx->fall_monitor_model) {
+    delete ctx->fall_monitor_model;
+    ctx->fall_monitor_model = nullptr;
+  }
+
+  if (ctx->smooth_keypoints_model) {
+    delete ctx->smooth_keypoints_model;
+    ctx->smooth_keypoints_model = nullptr;
+  }
+
+  if (ctx->word_piece_tokenizer) {
+    delete ctx->word_piece_tokenizer;
+    ctx->word_piece_tokenizer = nullptr;
   }
 
   for (auto it : ctx->vec_vpss_engine) {
@@ -376,7 +420,7 @@ CVI_S32 CVI_TDL_CreateHandle2(cvitdl_handle_t *handle, const VPSS_GRP vpssGroupI
   ctx->ive_handle = NULL;
   ctx->vec_vpss_engine.push_back(new VpssEngine(vpssGroupId, vpssDev));
   const char timestamp[] = __DATE__ " " __TIME__;
-  LOGI("cvitdl_handle_t is created, version %s-%s\n", CVI_TDL_TAG, timestamp);
+  LOGI("cvitdl_handle_t is created, %s\n", timestamp);
   *handle = ctx;
   return CVI_TDL_SUCCESS;
 }
@@ -385,7 +429,7 @@ CVI_S32 CVI_TDL_CreateHandle3(cvitdl_handle_t *handle) {
   cvitdl_context_t *ctx = new cvitdl_context_t;
   ctx->ive_handle = NULL;
   const char timestamp[] = __DATE__ " " __TIME__;
-  LOGI("cvitdl_handle_t is created, version %s-%s\n", CVI_TDL_TAG, timestamp);
+  LOGI("cvitdl_handle_t is created, %s\n", timestamp);
   *handle = ctx;
   return CVI_TDL_SUCCESS;
 }
@@ -444,7 +488,7 @@ CVI_S32 CVI_TDL_OpenModel(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E conf
   return CVI_TDL_SUCCESS;
 }
 
-#ifndef CV186X
+#ifndef __CV186X__
 CVI_S32 CVI_TDL_OpenModel_FromBuffer(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E config,
                                      int8_t *buf, uint32_t size) {
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
@@ -510,7 +554,7 @@ CVI_S32 CVI_TDL_SetPerfEvalInterval(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MO
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
   Core *instance = getInferenceInstance(config, ctx);
   if (instance != nullptr) {
-    instance->set_perf_eval_interval(interval);
+    instance->setPerfEvalInterval(interval);
   } else {
     LOGE("Cannot create model: %s\n", CVI_TDL_GetModelName(config));
     return CVI_TDL_ERR_OPEN_MODEL;
@@ -583,15 +627,15 @@ CVI_S32 CVI_TDL_GetModelNmsThreshold(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_M
   return CVI_TDL_SUCCESS;
 }
 
-CVI_S32 CVI_TDL_UseMmap(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E model, bool mmap) {
-  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
-  Core *instance = getInferenceInstance(model, ctx);
-  if (instance == nullptr) {
-    return CVI_TDL_FAILURE;
-  }
-  instance->setUseMmap(mmap);
-  return CVI_TDL_SUCCESS;
-}
+// CVI_S32 CVI_TDL_UseMmap(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E model, bool mmap) {
+//   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+//   Core *instance = getInferenceInstance(model, ctx);
+//   if (instance == nullptr) {
+//     return CVI_TDL_FAILURE;
+//   }
+//   instance->setUseMmap(mmap);
+//   return CVI_TDL_SUCCESS;
+// }
 
 CVI_S32 CVI_TDL_SetVpssThread(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E config,
                               const uint32_t thread) {
@@ -799,7 +843,7 @@ CVI_S32 CVI_TDL_GetVpssChnConfig(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
         if (ret != CVI_TDL_SUCCESS)                                                            \
           return ret;                                                                          \
         else                                                                                   \
-          return obj->after_inference();                                                       \
+          return obj->afterInference();                                                        \
       }                                                                                        \
     } else {                                                                                   \
       LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n", \
@@ -825,7 +869,7 @@ CVI_S32 CVI_TDL_GetVpssChnConfig(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
         if (ret != CVI_TDL_SUCCESS)                                                            \
           return ret;                                                                          \
         else                                                                                   \
-          return obj->after_inference();                                                       \
+          return obj->afterInference();                                                        \
       }                                                                                        \
     } else {                                                                                   \
       LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n", \
@@ -851,7 +895,7 @@ CVI_S32 CVI_TDL_GetVpssChnConfig(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
         if (ret != CVI_TDL_SUCCESS)                                                            \
           return ret;                                                                          \
         else                                                                                   \
-          return obj->after_inference();                                                       \
+          return obj->afterInference();                                                        \
       }                                                                                        \
     } else {                                                                                   \
       LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n", \
@@ -877,7 +921,7 @@ CVI_S32 CVI_TDL_GetVpssChnConfig(cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
         if (ret != CVI_TDL_SUCCESS)                                                            \
           return ret;                                                                          \
         else                                                                                   \
-          return obj->after_inference();                                                       \
+          return obj->afterInference();                                                        \
       }                                                                                        \
     } else {                                                                                   \
       LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n", \
@@ -909,6 +953,10 @@ DEFINE_INF_FUNC_F1_P1(CVI_TDL_LicensePlateRecognition_TW, LicensePlateRecognitio
                       CVI_TDL_SUPPORTED_MODEL_LPRNET_TW, cvtdl_object_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_LicensePlateRecognition_CN, LicensePlateRecognition,
                       CVI_TDL_SUPPORTED_MODEL_LPRNET_CN, cvtdl_object_t *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_LicensePlateRecognition_V2, LicensePlateRecognitionV2,
+                      CVI_TDL_SUPPORTED_MODEL_LP_RECONGNITION, cvtdl_object_t *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_License_Plate_Keypoint, LicensePlateKeypoint,
+                      CVI_TDL_SUPPORTED_MODEL_LP_KEYPOINT, cvtdl_object_t *)
 DEFINE_INF_FUNC_F1_P2(CVI_TDL_FaceQuality, FaceQuality, CVI_TDL_SUPPORTED_MODEL_FACEQUALITY,
                       cvtdl_face_t *, bool *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_MaskFaceRecognition, MaskFaceRecognition,
@@ -958,61 +1006,6 @@ CVI_S32 CVI_TDL_Fall_Monitor(const cvitdl_handle_t handle, cvtdl_object_t *objec
   return ctx->fall_monitor_model->monitor(objects);
 }
 
-CVI_S32 CVI_TDL_Set_MaskOutlinePoint(VIDEO_FRAME_INFO_S *frame, cvtdl_object_t *obj_meta) {
-  int proto_h = obj_meta->mask_height;
-  int proto_w = obj_meta->mask_width;
-  for (uint32_t i = 0; i < obj_meta->size; i++) {
-    cv::Mat src(proto_h, proto_w, CV_8UC1, obj_meta->info[i].mask_properity->mask,
-                proto_w * sizeof(uint8_t));
-
-    std::vector<std::vector<cv::Point>> contours;
-    std::vector<cv::Vec4i> hierarchy;
-    // search for contours
-    cv::findContours(src, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
-    // find the longest contour
-    int longest_index = -1;
-    size_t max_length = 0;
-    for (size_t i = 0; i < contours.size(); i++) {
-      if (contours[i].size() > max_length) {
-        max_length = contours[i].size();
-        longest_index = i;
-      }
-    }
-    if (longest_index >= 0 && max_length >= 1) {
-      float ratio_height = (proto_h / static_cast<float>(frame->stVFrame.u32Height));
-      float ratio_width = (proto_w / static_cast<float>(frame->stVFrame.u32Width));
-      int source_y_offset, source_x_offset;
-      if (ratio_height > ratio_width) {
-        source_x_offset = 0;
-        source_y_offset = (proto_h - frame->stVFrame.u32Height * ratio_width) / 2;
-      } else {
-        source_x_offset = (proto_w - frame->stVFrame.u32Width * ratio_height) / 2;
-        source_y_offset = 0;
-      }
-      int source_region_height = proto_h - 2 * source_y_offset;
-      int source_region_width = proto_w - 2 * source_x_offset;
-      // calculate scaling factor
-      float height_scale =
-          static_cast<float>(frame->stVFrame.u32Height) / static_cast<float>(source_region_height);
-      float width_scale =
-          static_cast<float>(frame->stVFrame.u32Width) / static_cast<float>(source_region_width);
-      obj_meta->info[i].mask_properity->mask_point_size = max_length;
-      obj_meta->info[i].mask_properity->mask_point =
-          (float *)malloc(2 * max_length * sizeof(float));
-
-      size_t j = 0;
-      for (const auto &point : contours[longest_index]) {
-        obj_meta->info[i].mask_properity->mask_point[2 * j] =
-            (point.x - source_x_offset) * width_scale;
-        obj_meta->info[i].mask_properity->mask_point[2 * j + 1] =
-            (point.y - source_y_offset) * height_scale;
-        j++;
-      }
-    }
-  }
-  return CVI_SUCCESS;
-}
-
 CVI_S32 CVI_TDL_Set_Fall_FPS(const cvitdl_handle_t handle, float fps) {
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
   FallDetMonitor *fall_monitor_model = ctx->fall_monitor_model;
@@ -1024,6 +1017,44 @@ CVI_S32 CVI_TDL_Set_Fall_FPS(const cvitdl_handle_t handle, float fps) {
   }
   return ctx->fall_monitor_model->set_fps(fps);
 }
+
+CVI_S32 CVI_TDL_Smooth_Keypoints(const cvitdl_handle_t handle, cvtdl_object_t *objects) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  SmoothKeypoints *smooth_keypoints_model = ctx->smooth_keypoints_model;
+  if (smooth_keypoints_model == nullptr) {
+    LOGD("Init Smooth keypoints Model.\n");
+    ctx->smooth_keypoints_model = new SmoothKeypoints();
+    ctx->smooth_keypoints_model->smooth(objects);
+    return CVI_TDL_SUCCESS;
+  }
+  return ctx->smooth_keypoints_model->smooth(objects);
+}
+
+CVI_S32 CVI_TDL_Set_Smooth_Algparam(const cvitdl_handle_t handle, SmoothAlgParam smooth_param) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  SmoothKeypoints *smooth_keypoints_model = ctx->smooth_keypoints_model;
+  if (smooth_keypoints_model == nullptr) {
+    LOGD("Init Smooth keypoints Model.\n");
+    ctx->smooth_keypoints_model = new SmoothKeypoints();
+    ctx->smooth_keypoints_model->set_algparam(smooth_param);
+    return CVI_TDL_SUCCESS;
+  }
+  ctx->smooth_keypoints_model->set_algparam(smooth_param);
+  return CVI_TDL_SUCCESS;
+}
+
+SmoothAlgParam CVI_TDL_Get_Smooth_Algparam(const cvitdl_handle_t handle) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  SmoothKeypoints *smooth_keypoints_model = ctx->smooth_keypoints_model;
+  if (smooth_keypoints_model == nullptr) {
+    LOGD("Init Smooth keypoints Model.\n");
+    ctx->smooth_keypoints_model = new SmoothKeypoints();
+    return ctx->smooth_keypoints_model->get_algparam();
+  }
+  return ctx->smooth_keypoints_model->get_algparam();
+}
+
+
 #else
 CVI_S32 CVI_TDL_CropImage(VIDEO_FRAME_INFO_S *srcFrame, cvtdl_image_t *p_dst, cvtdl_bbox_t *bbox,
                           bool cvtRGB888) {
@@ -1041,7 +1072,6 @@ CVI_S32 CVI_TDL_CropImage_Face(VIDEO_FRAME_INFO_S *srcFrame, cvtdl_image_t *p_ds
   return CVI_TDL_ERR_NOT_YET_INITIALIZED;
 }
 #endif
-
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_DMSLDet, DMSLandmarkerDet, CVI_TDL_SUPPORTED_MODEL_DMSLANDMARKERDET,
                       cvtdl_face_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_FLDet3, FaceLandmarkDet3, CVI_TDL_SUPPORTED_MODEL_LANDMARK_DET3,
@@ -1072,6 +1102,8 @@ DEFINE_INF_FUNC_F1_P1(CVI_TDL_SoundClassification, SoundClassification,
                       CVI_TDL_SUPPORTED_MODEL_SOUNDCLASSIFICATION, int *)
 DEFINE_INF_FUNC_F2_P1(CVI_TDL_DeeplabV3, Deeplabv3, CVI_TDL_SUPPORTED_MODEL_DEEPLABV3,
                       cvtdl_class_filter_t *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_Topformer_Seg, TopformerSeg, CVI_TDL_SUPPORTED_MODEL_TOPFORMER_SEG,
+                      cvtdl_seg_t *)
 DEFINE_INF_FUNC_F2_P1(CVI_TDL_MotionSegmentation, MotionSegmentation,
                       CVI_TDL_SUPPORTED_MODEL_MOTIONSEGMENTATION, cvtdl_seg_logits_t *)
 
@@ -1088,14 +1120,21 @@ DEFINE_INF_FUNC_F1_P1(CVI_TDL_IncarObjectDetection, IncarObjectDetection,
                       CVI_TDL_SUPPORTED_MODEL_INCAROBJECTDETECTION, cvtdl_face_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_License_Plate_Detectionv2, YoloV8Pose,
                       CVI_TDL_SUPPORTED_MODEL_LP_DETECTION, cvtdl_object_t *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_Occlusion_Classification, OcclusionClassification,
+                      CVI_TDL_SUPPORTED_MODEL_OCCLUSION_CLASSIFICATION, cvtdl_class_meta_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_Image_Classification, ImageClassification,
                       CVI_TDL_SUPPORTED_MODEL_IMAGE_CLASSIFICATION, cvtdl_class_meta_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_Raw_Image_Classification, RawImageClassification,
                       CVI_TDL_SUPPORTED_MODEL_RAW_IMAGE_CLASSIFICATION, cvtdl_class_meta_t *)
-DEFINE_INF_FUNC_F1_P1(CVI_TDL_Clip_Image_Feature, Clip_Image, CVI_TDL_SUPPORTED_MODEL_CLIP_IMAGE,
-                      cvtdl_clip_feature *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_Clip_Text_Feature, Clip_Text, CVI_TDL_SUPPORTED_MODEL_CLIP_TEXT,
                       cvtdl_clip_feature *)
+DEFINE_INF_FUNC_F1_P2(CVI_TDL_Blip_Itm, Blip_Itm, CVI_TDL_SUPPORTED_MODEL_BLIP_ITM, cvtdl_tokens *,
+                      cvtdl_class_meta_t *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_Blip_Vqa_Venc, Blip_Vqa_Venc, CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_VENC,
+                      cvtdl_image_embeds *)
+DEFINE_INF_FUNC_F1_P1(CVI_TDL_Blip_Cap, Blip_Cap, CVI_TDL_SUPPORTED_MODEL_BLIP_CAP, cvtdl_tokens *)
+DEFINE_INF_FUNC_F1_P2(CVI_TDL_YoloWorldV2, Yolo_World_V2, CVI_TDL_SUPPORTED_MODEL_YOLO_WORLD_V2,
+                      cvtdl_clip_feature **, cvtdl_object_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_Lane_Det, BezierLaneNet, CVI_TDL_SUPPORTED_MODEL_LANE_DET,
                       cvtdl_lane_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_PolyLane_Det, Polylanenet, CVI_TDL_SUPPORTED_MODEL_POLYLANE,
@@ -1107,11 +1146,9 @@ DEFINE_INF_FUNC_F1_P1(CVI_TDL_OCR_Recognition, OCRRecognition,
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_LSTR_Det, LSTR, CVI_TDL_SUPPORTED_MODEL_LSTR, cvtdl_lane_t *)
 DEFINE_INF_FUNC_F1_P1(CVI_TDL_IrLiveness, IrLiveness, CVI_TDL_SUPPORTED_MODEL_IRLIVENESS,
                       cvtdl_face_t *)
-#ifdef CV186X
 DEFINE_INF_FUNC_F1_P2(CVI_TDL_Isp_Image_Classification, IspImageClassification,
                       CVI_TDL_SUPPORTED_MODEL_ISP_IMAGE_CLASSIFICATION, cvtdl_class_meta_t *,
                       cvtdl_isp_meta_t *)
-#endif
 
 CVI_S32 CVI_TDL_Detection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *frame,
                           CVI_TDL_SUPPORTED_MODEL_E model_index, cvtdl_object_t *obj) {
@@ -1122,7 +1159,9 @@ CVI_S32 CVI_TDL_Detection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *fram
       CVI_TDL_SUPPORTED_MODEL_YOLOV6,
       CVI_TDL_SUPPORTED_MODEL_YOLOV7,
       CVI_TDL_SUPPORTED_MODEL_YOLOV8_DETECTION,
+      CVI_TDL_SUPPORTED_MODEL_YOLOV11_DETECTION,
       CVI_TDL_SUPPORTED_MODEL_YOLOV8_HARDHAT,
+      CVI_TDL_SUPPORTED_MODEL_YOLOV8_FIRE_SMOKE,
       CVI_TDL_SUPPORTED_MODEL_YOLOX,
       CVI_TDL_SUPPORTED_MODEL_PPYOLOE,
       CVI_TDL_SUPPORTED_MODEL_HAND_DETECTION,
@@ -1136,7 +1175,6 @@ CVI_S32 CVI_TDL_Detection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *fram
       CVI_TDL_SUPPORTED_MODEL_MOBILEDETV2_VEHICLE,
       CVI_TDL_SUPPORTED_MODEL_MOBILEDETV2_PEDESTRIAN,
       CVI_TDL_SUPPORTED_MODEL_MOBILEDETV2_PERSON_PETS,
-      CVI_TDL_SUPPORTED_MODEL_YOLOV8_HARDHAT,
       CVI_TDL_SUPPORTED_MODEL_YOLOV10_DETECTION};
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
   if (detect_set.find(model_index) == detect_set.end()) {
@@ -1157,7 +1195,7 @@ CVI_S32 CVI_TDL_Detection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *fram
       if (ret != CVI_TDL_SUCCESS)
         return ret;
       else
-        return model->after_inference();
+        return model->afterInference();
     }
   } else {
     LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n",
@@ -1210,7 +1248,7 @@ CVI_S32 CVI_TDL_FaceDetection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *
       if (ret != CVI_TDL_SUCCESS)
         return ret;
       else
-        return model->after_inference();
+        return model->afterInference();
     }
   } else {
     LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n",
@@ -1243,7 +1281,7 @@ CVI_S32 CVI_TDL_PoseDetection(const cvitdl_handle_t handle, VIDEO_FRAME_INFO_S *
       if (ret != CVI_TDL_SUCCESS)
         return ret;
       else
-        return model->after_inference();
+        return model->afterInference();
     }
   } else {
     LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n",
@@ -1275,6 +1313,94 @@ CVI_S32 CVI_TDL_LicensePlateRecognition(const cvitdl_handle_t handle, VIDEO_FRAM
          CVI_TDL_GetModelName(model_id));
     return CVI_TDL_ERR_NOT_YET_INITIALIZED;
   }
+}
+
+CVI_S32 CVI_TDL_Blip_Vqa_Tenc(const cvitdl_handle_t handle, cvtdl_image_embeds *embeds_meta,
+                              cvtdl_tokens *tokens_meta) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  CVI_TDL_SUPPORTED_MODEL_E model_index = CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_TENC;
+  Blip_Vqa_Tenc *obj = dynamic_cast<Blip_Vqa_Tenc *>(getInferenceInstance(model_index, ctx));
+  if (obj == nullptr) {
+    LOGE("No instance found for Blip_Vqa_Tenc \n");
+    return CVI_TDL_ERR_OPEN_MODEL;
+  }
+  if (obj->isInitialized()) {
+    if (initVPSSIfNeeded(ctx, model_index) != CVI_SUCCESS) {
+      return CVI_TDL_ERR_INIT_VPSS;
+    } else {
+      CVI_S32 ret = obj->inference(embeds_meta, tokens_meta);
+      if (ret != CVI_TDL_SUCCESS)
+        return ret;
+      else
+        return obj->afterInference();
+    }
+  } else {
+    LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n",
+         CVI_TDL_GetModelName(model_index));
+    return CVI_TDL_ERR_NOT_YET_INITIALIZED;
+  }
+}
+
+CVI_S32 CVI_TDL_Blip_Vqa_Tdec(const cvitdl_handle_t handle, cvtdl_image_embeds *embeds_meta,
+                              cvtdl_tokens *tokens_meta) {
+  CVI_TDL_SUPPORTED_MODEL_E model_index = CVI_TDL_SUPPORTED_MODEL_BLIP_VQA_TDEC;
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  Blip_Vqa_Tdec *obj = dynamic_cast<Blip_Vqa_Tdec *>(getInferenceInstance(model_index, ctx));
+  if (obj == nullptr) {
+    LOGE("No instance found for Blip_Vqa_Tdec \n");
+    return CVI_TDL_ERR_OPEN_MODEL;
+  }
+  if (obj->isInitialized()) {
+    if (initVPSSIfNeeded(ctx, model_index) != CVI_SUCCESS) {
+      return CVI_TDL_ERR_INIT_VPSS;
+    } else {
+      CVI_S32 ret = obj->inference(embeds_meta, tokens_meta);
+      if (ret != CVI_TDL_SUCCESS)
+        return ret;
+      else
+        return obj->afterInference();
+    }
+  } else {
+    LOGE("Model (%s)is not yet opened! Please call CVI_TDL_OpenModel to initialize model\n",
+         CVI_TDL_GetModelName(model_index));
+    return CVI_TDL_ERR_NOT_YET_INITIALIZED;
+  }
+}
+
+CVI_S32 CVI_TDL_WordPieceInit(const cvitdl_handle_t handle, const char *vocabFile) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+
+  if (ctx->word_piece_tokenizer == nullptr) {
+    LOGD("Init word_piece_tokenizer.\n");
+    ctx->word_piece_tokenizer = new WordPieceTokenizer(std::string(vocabFile));
+
+    return CVI_TDL_SUCCESS;
+  }
+}
+
+CVI_S32 CVI_TDL_WordPieceToken(const cvitdl_handle_t handle, const char *textFile,
+                               cvtdl_tokens *tokens) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+
+  if (ctx->word_piece_tokenizer == nullptr) {
+    LOGE("Word_piece_tokenizer not init , run CVI_TDL_WordPieceInit first!\n");
+    return CVI_TDL_ERR_NOT_YET_INITIALIZED;
+  }
+
+  int ret = ctx->word_piece_tokenizer->tokenize(std::string(textFile), tokens);
+  return ret;
+}
+
+CVI_S32 CVI_TDL_WordPieceDecode(const cvitdl_handle_t handle, cvtdl_tokens *tokens) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+
+  if (ctx->word_piece_tokenizer == nullptr) {
+    LOGE("Word_piece_tokenizer not init , run CVI_TDL_WordPieceInit first!\n");
+    return CVI_TDL_ERR_NOT_YET_INITIALIZED;
+  }
+
+  int ret = ctx->word_piece_tokenizer->decode(tokens);
+  return ret;
 }
 
 // Tracker
@@ -1606,7 +1732,7 @@ CVI_S32 CVI_TDL_Change_Img(const cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
     return CVI_FAILURE;
   }
 
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
@@ -1628,7 +1754,7 @@ CVI_S32 CVI_TDL_Delete_Img(const cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
     LOGE("model not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
   }
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
 
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
@@ -1636,6 +1762,39 @@ CVI_S32 CVI_TDL_Delete_Img(const cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL
   }
   p_vpss_inst->releaseFrame(p_f, 0);
   delete p_f;
+  return CVI_SUCCESS;
+}
+
+CVI_S32 CVI_TDL_Set_ROI(const cvitdl_handle_t handle, CVI_TDL_SUPPORTED_MODEL_E model_type,
+                        VIDEO_FRAME_INFO_S *frame, Point_t roi_s, PIXEL_FORMAT_E enDstFormat,
+                        VIDEO_FRAME_INFO_S **crop_frame) {
+  if (handle == NULL || frame == NULL || crop_frame == NULL) {
+    printf("Error: Invalid parameter - handle, frame, or crop_frame is NULL.\n");
+    return CVI_FAILURE;
+  }
+
+  if (roi_s.x1 >= roi_s.x2 || roi_s.y1 >= roi_s.y2) {
+    printf("Error: Invalid ROI - roi_s.x1 >= roi_s.x2 or roi_s.y1 >= roi_s.y2.\n");
+    return CVI_FAILURE;
+  }
+
+  cvtdl_bbox_t yolo_box;
+  yolo_box.x1 = (float)(roi_s.x1);
+  yolo_box.x2 = (float)(roi_s.x2);
+  yolo_box.y1 = (float)(roi_s.y1);
+  yolo_box.y2 = (float)(roi_s.y2);
+
+  uint32_t bbox_w = yolo_box.x2 - yolo_box.x1;
+  uint32_t bbox_h = yolo_box.y2 - yolo_box.y1;
+
+  CVI_S32 ret = CVI_TDL_CropResizeImage(handle, model_type, frame, &yolo_box, bbox_w, bbox_h,
+                                        enDstFormat, crop_frame);
+
+  if (ret != CVI_SUCCESS) {
+    printf("Error: CropResizeImage failed with error code %d.\n", ret);
+    return CVI_FAILURE;
+  }
+
   return CVI_SUCCESS;
 }
 
@@ -1648,7 +1807,7 @@ CVI_S32 CVI_TDL_CropImage_With_VPSS(const cvitdl_handle_t handle,
     LOGE("model not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
   }
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
 
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
@@ -1699,7 +1858,7 @@ CVI_S32 CVI_TDL_CropResizeImage(const cvitdl_handle_t handle, CVI_TDL_SUPPORTED_
     LOGE("model not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
   }
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
 
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
@@ -1746,7 +1905,7 @@ CVI_S32 CVI_TDL_Resize_VideoFrame(const cvitdl_handle_t handle,
     LOGE("model not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
   }
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
 
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
@@ -1774,7 +1933,7 @@ DLL_EXPORT CVI_S32 CVI_TDL_Release_VideoFrame(const cvitdl_handle_t handle,
     LOGE("model not initialized:%d\n", (int)model_type);
     return CVI_FAILURE;
   }
-  VpssEngine *p_vpss_inst = modelt.instance->get_vpss_instance();
+  VpssEngine *p_vpss_inst = modelt.instance->getVpssInstance();
 
   if (p_vpss_inst == nullptr) {
     LOGE("vpssmodel not initialized:%d\n", (int)model_type);
@@ -1805,7 +1964,7 @@ CVI_S32 CVI_TDL_PersonVehicle_Detection(const cvitdl_handle_t handle, VIDEO_FRAM
       return CVI_TDL_ERR_INIT_VPSS;
     } else {
       int ret = yolo_model->inference(frame, obj_meta);
-      ret = yolo_model->after_inference();
+      ret = yolo_model->afterInference();
 
       if (ret == CVI_TDL_SUCCESS) {
         for (uint32_t i = 0; i < obj_meta->size; i++) {
@@ -1828,30 +1987,18 @@ CVI_S32 CVI_TDL_PersonVehicle_Detection(const cvitdl_handle_t handle, VIDEO_FRAM
   }
 }
 
-CVI_S32 CVI_TDL_Set_Yolov5_ROI(const cvitdl_handle_t handle, Point_t roi_s) {
-  printf("enter CVI_TDL_Set_Yolov5_ROI...\n");
-  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
-  Yolov5 *yolov5_model =
-      dynamic_cast<Yolov5 *>(getInferenceInstance(CVI_TDL_SUPPORTED_MODEL_YOLOV5, ctx));
-  if (yolov5_model == nullptr) {
-    LOGE("yolov5_model has not been inited\n");
-    return CVI_TDL_FAILURE;
-  }
-  return yolov5_model->set_roi(roi_s);
-}
-
 InputPreParam CVI_TDL_GetPreParam(const cvitdl_handle_t handle,
                                   const CVI_TDL_SUPPORTED_MODEL_E model_index) {
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
   cvitdl::Core *instance = getInferenceInstance(model_index, ctx);
-  return instance->get_preparam();
+  return instance->getPreparam();
 }
 
 CVI_S32 CVI_TDL_SetPreParam(const cvitdl_handle_t handle,
                             const CVI_TDL_SUPPORTED_MODEL_E model_index, InputPreParam pre_param) {
   cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
   cvitdl::Core *instance = getInferenceInstance(model_index, ctx);
-  instance->set_preparam(pre_param);
+  instance->setPreparam(pre_param);
   return CVI_SUCCESS;
 }
 
@@ -1929,66 +2076,31 @@ CVI_S32 CVI_TDL_Set_Polylanenet_Lower(const cvitdl_handle_t handle,
   return CVI_FAILURE;
 }
 
-CVI_S32 CVI_TDL_Set_TextPreprocess(const char *encoderFile, const char *bpeFile,
-                                   const char *textFile, int32_t **tokens, int numSentences) {
-  std::vector<std::vector<int32_t>> tokens_cpp(numSentences);
-  // call token_bpe function
-  int result =
-      token_bpe(std::string(encoderFile), std::string(bpeFile), std::string(textFile), tokens_cpp);
-  // calculate the total number of elements
-  for (int i = 0; i < numSentences; i++) {
-    // tokens[i] = new int32_t[tokens_cpp[i].size()];
-    tokens[i] = (int32_t *)malloc(tokens_cpp[i].size() * sizeof(int32_t));
-    memcpy(tokens[i], tokens_cpp[i].data(), tokens_cpp[i].size() * sizeof(int32_t));
-  }
+CVI_S32 CVI_TDL_Set_LSTR_ExportFeature(const cvitdl_handle_t handle,
+                                       const CVI_TDL_SUPPORTED_MODEL_E model_index, int flag) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
 
-  if (result == 0) {
+  if (model_index == CVI_TDL_SUPPORTED_MODEL_LSTR) {
+    LSTR *lstr_model = dynamic_cast<LSTR *>(getInferenceInstance(model_index, ctx));
+    lstr_model->export_feature = flag;
     return CVI_SUCCESS;
   }
-  LOGE("Tokenization error\n");
+  LOGE("not supported model index\n");
   return CVI_FAILURE;
 }
 
-CVI_S32 CVI_TDL_Set_ClipPostprocess(float **text_features, int text_features_num,
-                                    float **image_features, int image_features_num, float **probs) {
-  Eigen::MatrixXf text_features_eigen(text_features_num, 512);
-  for (int i = 0; i < text_features_num; ++i) {
-    for (int j = 0; j < 512; ++j) {
-      text_features_eigen(i, j) = text_features[i][j];
-    }
-  }
-  Eigen::MatrixXf image_features_eigen(image_features_num, 512);
-  for (int i = 0; i < image_features_num; ++i) {
-    for (int j = 0; j < 512; ++j) {
-      image_features_eigen(i, j) = image_features[i][j];
-    }
-  }
-
-  Eigen::MatrixXf result_eigen;
-  // using clip_postprocess which can be found in utils/clip_postpostprocess.cpp
-  int res = clip_postprocess(text_features_eigen, image_features_eigen, result_eigen);
-
-  // providing image classification functionality.
-  // using softmax after mutil 100 scale
-  for (int i = 0; i < result_eigen.rows(); ++i) {
-    float sum = 0.0;
-    float maxVal = result_eigen.row(i).maxCoeff();
-    Eigen::MatrixXf expInput = (result_eigen.row(i).array() - maxVal).exp();
-    sum = expInput.sum();
-    result_eigen.row(i) = expInput / sum;
-  }
-
-  for (int i = 0; i < result_eigen.rows(); i++) {
-    float max_score = 0;
-    for (int j = 0; j < result_eigen.cols(); j++) {
-      probs[i][j] = result_eigen(i, j);
-    }
-  }
-
-  if (res == 0) {
+CVI_S32 CVI_TDL_Set_Segmentation_DownRato(const cvitdl_handle_t handle,
+                                          const CVI_TDL_SUPPORTED_MODEL_E model_index,
+                                          int down_rato) {
+  cvitdl_context_t *ctx = static_cast<cvitdl_context_t *>(handle);
+  std::cout << "CVI_TDL_Set_Segmentation_DownRato into" << std::endl;
+  if (model_index == CVI_TDL_SUPPORTED_MODEL_TOPFORMER_SEG) {
+    TopformerSeg *topformer_model =
+        dynamic_cast<TopformerSeg *>(getInferenceInstance(model_index, ctx));
+    topformer_model->setDownRato(down_rato);
     return CVI_SUCCESS;
   }
-
-  LOGE("Tokenization error\n");
+  LOGE("not supported model index\n");
+  std::cout << "CVI_TDL_Set_Segmentation_DownRato out" << std::endl;
   return CVI_FAILURE;
 }

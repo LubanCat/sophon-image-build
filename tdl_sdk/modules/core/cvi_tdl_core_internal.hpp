@@ -2,16 +2,19 @@
 #include <unordered_map>
 #include <vector>
 
+#include "core.hpp"
 #include "core/cvi_tdl_core.h"
 #include "core/vpss_engine.hpp"
-#include "core_internel.hpp"
 
 #include "deepsort/cvi_deepsort.hpp"
 #include "fall_detection/fall_det_monitor.hpp"
 #include "fall_detection/fall_detection.hpp"
+#include "human_keypoints_detection/smooth_keypoints/smooth_keypoints.hpp"
 #include "ive/ive.hpp"
 #include "motion_detection/md.hpp"
 #include "tamper_detection/tamper_detection.hpp"
+#include "utils/token.hpp"
+
 typedef struct {
   cvitdl::Core *instance = nullptr;
   std::string model_path = "";
@@ -38,6 +41,8 @@ typedef struct {
   TamperDetectorMD *td_model = nullptr;
   FallMD *fall_model = nullptr;
   FallDetMonitor *fall_monitor_model = nullptr;
+  SmoothKeypoints *smooth_keypoints_model = nullptr;
+  WordPieceTokenizer *word_piece_tokenizer = nullptr;
   bool use_gdc_wrap = false;
 } cvitdl_context_t;
 

@@ -40,7 +40,7 @@ build_all
 | cvi_mpi          | https://github.com/sophgo/cvi_mpi.git         | sg200x-dev     | df2364e |
 | SensorSupportList| https://github.com/sophgo/SensorSupportList.git | sg200x-dev   | 3666db3 |
 | cvi_rtsp	   | https://github.com/sophgo/cvi_rtsp.git	   | sg200x-dev     | 9f66540   |
-| tdl_sdk          | https://github.com/sophgo/tdl_sdk/tree/master | master         | 8a044e2   |
+| tdl_sdk          | https://github.com/sophgo/tdl_sdk             | v1             | 30301dd   |
 | osdrv            | https://github.com/sophgo/osdrv.git           | sg200x-dev     | c7aeabf   |
 | rmadisk          | https://github.com/sophgo/ramdisk.git         | sg200x-dev     | 8bf2a74   |
 | cvibuilder       | https://github.com/sophgo/cvibuilder.git      | sg200x-dev     | 4309f2a |

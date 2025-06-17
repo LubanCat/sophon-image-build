@@ -12,7 +12,6 @@ else
     BUILD_TYPE=SDKRelease
 fi
 
-FTP_SERVER_IP=${FTP_SERVER_IP:-10.80.0.5}
 
 CONFIG_DUAL_OS="${CONFIG_DUAL_OS:-OFF}"
 if [[ "$CONFIG_DUAL_OS" == "y" ]]; then
@@ -45,7 +44,7 @@ if [ "$(printf '%s\n' "$CMAKE_REQUIRED_VERSION" "$CMAKE_VERSION" | sort -V | hea
 else
     echo "Cmake minimum required version is ${CMAKE_REQUIRED_VERSION}, trying to download from ftp."
     if [ ! -f cmake-3.18.4-Linux-x86_64.tar.gz ]; then
-        wget https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4-Linux-x86_64.tar.gz
+        wget ftp://${FTP_SERVER_NAME}:${FTP_SERVER_PWD}@${FTP_SERVER_IP}/sw_rls/third_party/cmake/cmake-3.18.4-Linux-x86_64.tar.gz
     fi
     tar zxf cmake-3.18.4-Linux-x86_64.tar.gz
     CMAKE_BIN=$PWD/cmake-3.18.4-Linux-x86_64/bin/cmake
@@ -61,6 +60,11 @@ elif [[ "$SDK_VER" == "32bit" ]]; then
     KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/arm/usr
 elif [[ "$SDK_VER" == "64bit" ]]; then
     TOOLCHAIN_FILE=$CVI_TDL_ROOT/toolchain/toolchain-aarch64-linux.cmake
+    if [[ "$CROSS_COMPILE" == "aarch64-none-linux-gnu-" ]]; then
+        TOOLCHAIN_FILE=$CVI_TDL_ROOT/toolchain/toolchain1131-aarch64-linux.cmake
+    elif [[ "$CROSS_COMPILE" == "aarch64-linux-" ]]; then
+        TOOLCHAIN_FILE=$CVI_TDL_ROOT/toolchain/toolchain930-aarch64-linux.cmake
+    fi
     SYSTEM_PROCESSOR=ARM64
     KERNEL_ROOT="${KERNEL_PATH}"/build/"${PROJECT_FULLNAME}"/arm64/usr
 elif [[ "$SDK_VER" == "glibc_riscv64" ]]; then
@@ -81,12 +85,11 @@ if [[ "$CHIP_ARCH" == "CV183X" ]]; then
 elif [[ "$CHIP_ARCH" == "CV182X" ]]; then
     USE_TPU_IVE=ON
 elif [[ "$CHIP_ARCH" == "CV181X" ]] || [[ "$CHIP_ARCH" == "SG200X" ]]; then
-    CHIP_ARCH="CV181X"
+    CHIP_ARCH=CV181X
     USE_TPU_IVE=OFF
 elif [[ "$CHIP_ARCH" == "CV180X" ]]; then
     USE_TPU_IVE=ON
 elif [[ "$CHIP_ARCH" == "SOPHON" ]]; then
-    CHIP_ARCH=CV186X
     USE_TPU_IVE=OFF
 else
     echo "Unsupported chip architecture: ${CHIP_ARCH}"
@@ -106,6 +109,7 @@ $CMAKE_BIN -G Ninja $CVI_TDL_ROOT \
         -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
         -DKERNEL_ROOT=$KERNEL_ROOT \
         -DUSE_TPU_IVE=$USE_TPU_IVE \
+        -DMW_VER=$MW_VER \
         -DBUILD_DOWNLOAD_DIR=$BUILD_DOWNLOAD_DIR \
         -DREPO_USER=$REPO_USER \
         -DCONFIG_DUAL_OS=$CONFIG_DUAL_OS \
@@ -115,23 +119,23 @@ ninja -j8 || exit 1
 ninja install || exit 1
 popd
 
-echo "trying to build sample in released folder."
-cp -rf $CVI_TDL_ROOT/scripts/compile_sample.sh ${AI_SDK_INSTALL_PATH}/sample
-pushd "${AI_SDK_INSTALL_PATH}/sample"
-    KERNEL_ROOT=$KERNEL_ROOT\
-    MW_PATH=$MW_PATH\
-    TPU_PATH=$TPU_SDK_INSTALL_PATH\
-    IVE_PATH=$IVE_SDK_INSTALL_PATH\
-    USE_TPU_IVE=$USE_TPU_IVE\
-    CHIP=$CHIP_ARCH\
-    SDK_VER=$SDK_VER\
-    source compile_sample.sh || exit 1
-popd
+# echo "trying to build sample in released folder."
+# cp -rf $CVI_TDL_ROOT/scripts/compile_sample.sh ${AI_SDK_INSTALL_PATH}/sample
+# pushd "${AI_SDK_INSTALL_PATH}/sample"
+#     KERNEL_ROOT=$KERNEL_ROOT\
+#     MW_PATH=$MW_PATH\
+#     TPU_PATH=$TPU_SDK_INSTALL_PATH\
+#     IVE_PATH=$IVE_SDK_INSTALL_PATH\
+#     USE_TPU_IVE=$USE_TPU_IVE\
+#     CHIP=$CHIP_ARCH\
+#     SDK_VER=$SDK_VER\
+#     source compile_sample.sh || exit 1
+# popd
 
 if [[ "$BUILD_TYPE" == "Release" ]]; then
     # Clone doc to aisdk
-    remote_user="swftp"
-    remote_host="10.80.0.5"
+    remote_user= FTP_SERVER_NAME
+    remote_host= FTP_SERVER_IP
     remote_password="cvitek"
     current_date=$(date +"%Y-%m-%d")
     remote_base_path="/sw_rls/daily_build/cvitek_develop_docs/master/${current_date}/CV180x_CV181x/"

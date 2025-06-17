@@ -159,11 +159,16 @@ void CVI_TDL_FreeCpp(cvtdl_seg_logits_t *seg_logits) {
 
 void CVI_TDL_FreeCpp(cvtdl_lane_t *lane_meta) {
   if (lane_meta->lane != NULL) {
-    // for (uint32_t i = 0; i < lane_meta->size; i++) {
     free(lane_meta->lane);
-    // }
+    lane_meta->lane = NULL;
+    lane_meta->size = 0;
   }
-  lane_meta->lane = NULL;
+
+  if (lane_meta->feature != NULL) {
+    free(lane_meta->feature);
+    lane_meta->feature = NULL;
+    lane_meta->feature_size = 0;
+  }
 }
 
 void CVI_TDL_FreeCpp(cvtdl_clip_feature *clip_meta) {
@@ -172,6 +177,61 @@ void CVI_TDL_FreeCpp(cvtdl_clip_feature *clip_meta) {
   }
   clip_meta->out_feature = NULL;
   clip_meta->feature_dim = 0;
+}
+
+void CVI_TDL_FreeCpp(cvtdl_tokens *tokens_meta) {
+  if (tokens_meta->input_ids != NULL) {
+    for (int i = 0; i < tokens_meta->sentences_num; i++) {
+      if (tokens_meta->input_ids[i] != NULL) {
+        free(tokens_meta->input_ids[i]);
+        tokens_meta->input_ids[i] = NULL;
+      }
+    }
+    free(tokens_meta->input_ids);
+    tokens_meta->input_ids = NULL;
+  }
+
+  if (tokens_meta->attention_mask != NULL) {
+    for (int i = 0; i < tokens_meta->sentences_num; i++) {
+      if (tokens_meta->attention_mask[i] != NULL) {
+        free(tokens_meta->attention_mask[i]);
+        tokens_meta->attention_mask[i] = NULL;
+      }
+    }
+    free(tokens_meta->attention_mask);
+    tokens_meta->attention_mask = NULL;
+  }
+
+  if (tokens_meta->text != NULL) {
+    for (int i = 0; i < tokens_meta->sentences_num; i++) {
+      if (tokens_meta->text[i] != NULL) {
+        free(tokens_meta->text[i]);
+        tokens_meta->text[i] = NULL;
+      }
+    }
+    free(tokens_meta->text);
+    tokens_meta->text = NULL;
+  }
+
+  tokens_meta->max_length = 0;
+  tokens_meta->sentences_num = 0;
+}
+
+void CVI_TDL_FreeCpp(cvtdl_image_embeds *embeds_meta) {
+  if (embeds_meta->images_embeds != NULL) {
+    free(embeds_meta->images_embeds);
+    embeds_meta->images_embeds = NULL;
+  }
+
+  embeds_meta->width = 0;
+  embeds_meta->height = 0;
+}
+
+void CVI_TDL_FreeCpp(cvtdl_seg_t *seg_ann) {
+  free(seg_ann->class_id);
+  free(seg_ann->class_conf);
+  seg_ann->srcWidth = 0;
+  seg_ann->srcHeight = 0;
 }
 
 void CVI_TDL_FreeFeature(cvtdl_feature_t *feature) { CVI_TDL_FreeCpp(feature); }
@@ -198,7 +258,11 @@ void CVI_TDL_FreeClassMeta(cvtdl_class_meta_t *cls_meta) { CVI_TDL_FreeCpp(cls_m
 
 void CVI_TDL_FreeLane(cvtdl_lane_t *lane_meta) { CVI_TDL_FreeCpp(lane_meta); }
 
+void CVI_TDL_FreeSeg(cvtdl_seg_t *seg_ann) { CVI_TDL_FreeCpp(seg_ann); }
+
 void CVI_TDL_FreeClip(cvtdl_clip_feature *clip_meta) { CVI_TDL_FreeCpp(clip_meta); }
+void CVI_TDL_FreeTokens(cvtdl_tokens *tokens_meta) { CVI_TDL_FreeCpp(tokens_meta); }
+void CVI_TDL_FreeImageEmbeds(cvtdl_image_embeds *embeds_meta) { CVI_TDL_FreeCpp(embeds_meta); }
 // Copy
 
 void CVI_TDL_CopyInfoCpp(const cvtdl_face_info_t *info, cvtdl_face_info_t *infoNew) {
@@ -291,6 +355,43 @@ void CVI_TDL_CopyInfoCpp(const cvtdl_object_info_t *info, cvtdl_object_info_t *i
   infoNew->classes = info->classes;
 }
 
+void CVI_TDL_CopyInfoCpp(const cvtdl_pts_t *info, cvtdl_pts_t *infoNew) {
+  infoNew->size = info->size;
+  infoNew->score = info->score;
+
+  if (infoNew->size != 0) {
+    uint32_t pts_size = infoNew->size * sizeof(float);
+    infoNew->x = (float *)malloc(pts_size);
+    infoNew->y = (float *)malloc(pts_size);
+    memcpy(infoNew->x, info->x, pts_size);
+    memcpy(infoNew->y, info->y, pts_size);
+  } else {
+    infoNew->x = NULL;
+    infoNew->y = NULL;
+  }
+}
+
+void CVI_TDL_CopyInfoCpp(const cvtdl_dms_t *info, cvtdl_dms_t *infoNew) {
+  infoNew->reye_score = info->reye_score;
+  infoNew->leye_score = info->leye_score;
+  infoNew->yawn_score = info->yawn_score;
+  infoNew->phone_score = info->phone_score;
+  infoNew->smoke_score = info->smoke_score;
+
+  infoNew->head_pose = info->head_pose;
+
+  CVI_TDL_CopyInfoCpp(&info->landmarks_106, &infoNew->landmarks_106);
+  CVI_TDL_CopyInfoCpp(&info->landmarks_5, &infoNew->landmarks_5);
+
+  infoNew->dms_od.size = info->dms_od.size;
+  infoNew->dms_od.width = info->dms_od.width;
+  infoNew->dms_od.height = info->dms_od.height;
+  infoNew->dms_od.rescale_type = info->dms_od.rescale_type;
+  if (info->dms_od.info) {
+    CVI_TDL_CopyInfoCpp(info->dms_od.info, infoNew->dms_od.info);
+  }
+}
+
 void CVI_TDL_CopyInfoCpp(const cvtdl_dms_od_info_t *info, cvtdl_dms_od_info_t *infoNew) {
   memcpy(infoNew->name, info->name, sizeof(info->name));
   infoNew->bbox = info->bbox;
@@ -322,12 +423,8 @@ void CVI_TDL_CopyFaceMeta(const cvtdl_face_t *src, cvtdl_face_t *dest) {
 
     if (src->dms) {
       dest->dms = (cvtdl_dms_t *)malloc(sizeof(cvtdl_dms_t));
-      memcpy(dest->dms, src->dms, sizeof(cvtdl_dms_t));
-      cvtdl_dms_od_info_t *src_dms_od_info = src->dms->dms_od.info;
-      if (src_dms_od_info) {
-        dest->dms->dms_od.info = (cvtdl_dms_od_info_t *)malloc(sizeof(cvtdl_dms_od_info_t));
-        memcpy(dest->dms->dms_od.info, src_dms_od_info, sizeof(cvtdl_dms_od_info_t));
-      }
+      memset(dest->dms, 0, sizeof(cvtdl_dms_t));
+      CVI_TDL_CopyInfoCpp(src->dms, dest->dms);
     }
   }
 }
@@ -404,8 +501,15 @@ void CVI_TDL_CopyImage(const cvtdl_image_t *src_image, cvtdl_image_t *dst_image)
   dst_image->pix[0] = (uint8_t *)malloc(image_size);
   memcpy(dst_image->pix[0], src_image->pix[0], image_size);
   // copy full image to dst image
-  dst_image->full_length = src_image->full_length;
-  dst_image->full_img = (uint8_t *)malloc(src_image->full_length);
+
+  if (dst_image->full_length != src_image->full_length) {
+    if (dst_image->full_img != NULL) {
+      free(dst_image->full_img);
+      dst_image->full_img = NULL;
+    }
+    dst_image->full_img = (uint8_t *)malloc(src_image->full_length);
+    dst_image->full_length = src_image->full_length;
+  }
   memcpy(dst_image->full_img, src_image->full_img, src_image->full_length);
   for (int i = 0; i < 3; i++) {
     dst_image->stride[i] = src_image->stride[i];

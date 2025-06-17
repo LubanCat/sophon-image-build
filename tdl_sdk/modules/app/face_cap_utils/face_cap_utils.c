@@ -261,7 +261,7 @@ void encode_img2jpg(VENC_CHN VeChn, VIDEO_FRAME_INFO_S *src_frame, VIDEO_FRAME_I
 
 int image_to_video_frame(face_capture_t *face_cpt_info, cvtdl_image_t *image,
                          VIDEO_FRAME_INFO_S *dstFrame) {
-  if (image->width > 256 || image->height > 256) {
+  if (image->width > 256 || image->height > 512) {
     LOGE("crop image size over 256,w:%u,h:%u\n", image->width, image->height);
     return CVI_FAILURE;
   }
@@ -419,7 +419,7 @@ int update_extend_resize_info(const float frame_width, const float frame_height,
 
 CVI_S32 extract_cropped_face(const cvitdl_handle_t tdl_handle, face_capture_t *face_cpt_info) {
   for (uint32_t i = 0; i < face_cpt_info->size; i++) {
-    if (face_cpt_info->_output[i] && face_cpt_info->cfg.img_capture_flag == 0) {
+    if (face_cpt_info->_output[i]) {
       int ret = CVI_TDL_FaceFeatureExtract(
           tdl_handle, face_cpt_info->data[i].image.pix[0], face_cpt_info->data[i].image.width,
           face_cpt_info->data[i].image.height, face_cpt_info->data[i].image.stride[0],
@@ -454,7 +454,7 @@ CVI_S32 _FaceCapture_Init(face_capture_t **face_cpt_info, uint32_t buffer_size) 
   _FaceCapture_GetDefaultConfig(&new_face_cpt_info->cfg);
   new_face_cpt_info->_m_limit = MEMORY_LIMIT;
 
-  uint32_t tmp_size = 256 * 256 * 3;
+  uint32_t tmp_size = 256 * 512 * 3; //512 for half body
   int ret = CVI_SYS_IonAlloc(&(new_face_cpt_info->tmp_buf_physic_addr),
                              (CVI_VOID **)&(new_face_cpt_info->p_tmp_buf_addr), "cvitdl/tmp_crop",
                              tmp_size);
@@ -514,6 +514,11 @@ CVI_S32 _FaceCapture_CleanAll(face_capture_t *face_cpt_info) {
       LOGI("[APP::FaceCapture] Clean Face Info[%u]\n", j);
       CVI_TDL_Free(&face_cpt_info->data[j].image);
       CVI_TDL_Free(&face_cpt_info->data[j].info);
+      if(face_cpt_info->data[j].image.full_img != NULL){
+        free(face_cpt_info->data[j].image.full_img);
+        face_cpt_info->data[j].image.full_img = NULL;
+        face_cpt_info->data[j].image.full_length = 0;
+      }
       face_cpt_info->data[j].state = IDLE;
     }
   }
@@ -659,6 +664,15 @@ CVI_S32 update_data(cvitdl_handle_t tdl_handle, face_capture_t *face_cpt_info,
       continue;
     }
 
+    float *ori_pts_x = NULL;
+    float *ori_pts_y = NULL;
+    if (face_cpt_info->fr_flag == 2) {
+      ori_pts_x = (float *)malloc(obj_meta.info[0].pts.size * sizeof(float));
+      ori_pts_y = (float *)malloc(obj_meta.info[0].pts.size * sizeof(float));
+      memcpy(ori_pts_x, obj_meta.info[0].pts.x, sizeof(float) * obj_meta.info[0].pts.size);
+      memcpy(ori_pts_y, obj_meta.info[0].pts.y, sizeof(float) * obj_meta.info[0].pts.size);
+    }
+
     float boxw = crop_box.x2 - crop_box.x1;
     float boxh = crop_box.y2 - crop_box.y1;
     float scalew = boxw / dst_wh;
@@ -676,12 +690,13 @@ CVI_S32 update_data(cvitdl_handle_t tdl_handle, face_capture_t *face_cpt_info,
     eye_dist = sqrt(eye_dist_x * eye_dist_x + eye_dist_y * eye_dist_y);
     if (eye_dist < face_cpt_info->cfg.eye_dist_thresh ||
         obj_meta.info[0].pts.score < face_cpt_info->cfg.landmark_score_thresh) {
-      // printf("skip track:%d,eyedist:%.3f,ptscore:%.3f\n", (int)trk_id, eye_dist,
-      //        obj_meta.info[0].pts.score);
+      LOGD("skip track:%d,eyedist:%.3f,ptscore:%.3f\n", (int)trk_id, eye_dist,
+           obj_meta.info[0].pts.score);
       CVI_TDL_Release_VideoFrame(tdl_handle, face_cpt_info->fl_model, crop_frame, true);
       CVI_TDL_Release_VideoFrame(tdl_handle, face_cpt_info->fl_model, crop_big_frame, true);
       CVI_TDL_Free(&obj_meta);
-
+      free(ori_pts_x);
+      free(ori_pts_y);
       continue;
     }
 
@@ -706,6 +721,8 @@ CVI_S32 update_data(cvitdl_handle_t tdl_handle, face_capture_t *face_cpt_info,
       CVI_TDL_Release_VideoFrame(tdl_handle, face_cpt_info->fl_model, crop_frame, true);
       CVI_TDL_Release_VideoFrame(tdl_handle, face_cpt_info->fl_model, crop_big_frame, true);
       CVI_TDL_Free(&obj_meta);
+      free(ori_pts_x);
+      free(ori_pts_y);
       continue;
     }
     // quality satisfied,update data
@@ -734,8 +751,30 @@ CVI_S32 update_data(cvitdl_handle_t tdl_handle, face_capture_t *face_cpt_info,
 
     face_cpt_info->data[update_idx].state = ALIVE;
 
-    memcpy(face_cpt_info->data[update_idx].info.pts.x, obj_meta.info[0].pts.x, sizeof(float) * 5);
-    memcpy(face_cpt_info->data[update_idx].info.pts.y, obj_meta.info[0].pts.y, sizeof(float) * 5);
+    if (face_cpt_info->fr_flag == 2) {
+      memcpy(face_cpt_info->data[update_idx].info.pts.x, ori_pts_x,
+             sizeof(float) * obj_meta.info[0].pts.size);
+      memcpy(face_cpt_info->data[update_idx].info.pts.y, ori_pts_y,
+             sizeof(float) * obj_meta.info[0].pts.size);
+
+      if (face_cpt_info->cfg.img_capture_flag == 2 || face_cpt_info->cfg.img_capture_flag == 3){
+
+        for (int i = 0; i < 5; i++) {
+          face_cpt_info->data[update_idx].info.pts.x[i] =
+              face_cpt_info->data[update_idx].info.pts.x[i] * scalew + crop_box.x1;
+          face_cpt_info->data[update_idx].info.pts.y[i] =
+              face_cpt_info->data[update_idx].info.pts.y[i] * scaleh + crop_box.y1;
+        }
+      }
+
+    } else {
+      memcpy(face_cpt_info->data[update_idx].info.pts.x, obj_meta.info[0].pts.x,
+             sizeof(float) * obj_meta.info[0].pts.size);
+      memcpy(face_cpt_info->data[update_idx].info.pts.y, obj_meta.info[0].pts.y,
+             sizeof(float) * obj_meta.info[0].pts.size);
+    }
+    free(ori_pts_x);
+    free(ori_pts_y);
 
     face_cpt_info->data[update_idx]._capture = true;
 
