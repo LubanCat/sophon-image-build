@@ -282,22 +282,35 @@ function clean_tpu_sdk()
   rm -f "$SYSTEM_OUT_DIR"/lib/libopencv_*
 }
 
-function build_cvi_rtsp()
+function _build_cvi_rtsp_env()
 {
-  pushd "$CVI_RTSP_PATH"
-  CROSS_COMPILE=${CROSS_COMPILE} SDK_VER=${SDK_VER} ./build.sh
-  # copy so
-  cp -a src/libcvi_rtsp.so  "$SYSTEM_OUT_DIR"/lib/
-  popd
+  export CROSS_COMPILE
 }
 
-function clean_cvi_rtsp()
-{
+function build_cvi_rtsp()
+{(
+  print_notice "Run ${FUNCNAME[0]}() function"
+  _build_cvi_rtsp_env
+
   pushd "$CVI_RTSP_PATH"
-  make clean
-  rm -rf prebuilt/
+  BUILD_SERVICE=1 MW_DIR=${MW_PATH} ./build.sh
+  BUILD_SERVICE=1 make install DESTDIR="$(pwd)/install" || return "$?"
+  make package DESTDIR="$(pwd)/install" || return "$?"
+
+  if [[ "$FLASH_SIZE_SHRINK" != "y" ]]; then
+    BUILD_SERVICE=1 make install DESTDIR="${SYSTEM_OUT_DIR}/usr" || return "$?"
+  fi
   popd
-}
+)}
+
+function clean_cvi_rtsp()
+{(
+  print_notice "Run ${FUNCNAME[0]}() function"
+  pushd "$CVI_RTSP_PATH"
+  BUILD_SERVICE=1 make clean
+  popd
+)}
+
 
 function build_sdk()
 {
@@ -410,16 +423,21 @@ function clean_ivs_sdk()
   fi
 }
 
-function build_ai_sdk()
+function build_tdl_sdk()
 {
-  build_cvi_rtsp || return "$?"
-  build_sdk ai || return "$?"
+  print_notice "Run ${FUNCNAME[0]}() function"
+  pushd "$TDL_SDK_PATH"
+  ./build_tdl_sdk.sh all
+  test "$?" -ne 0 && print_notice "${FUNCNAME[0]}() failed !!" && popd && return 1
+  popd
 }
 
-function clean_ai_sdk()
+function clean_tdl_sdk()
 {
-    clean_cvi_rtsp
-    clean_sdk ai
+  print_notice "Run ${FUNCNAME[0]}() function"
+  pushd "$TDL_SDK_PATH"
+  ./build_tdl_sdk.sh clean
+  popd
 }
 
 function build_cnv_sdk()
@@ -484,6 +502,26 @@ function clean_cvi_pipeline()
   rm -rf prebuilt/*
   popd
 }
+
+function build_pqtool_server()
+{(
+  print_notice "Run ${FUNCNAME[0]}() function"
+  cd "$PQTOOL_SERVER_PATH" || return
+  make all SDK_VER="$SDK_VER" MULTI_PROCESS_SUPPORT="$MULTI_PROCESS_SUPPORT" || return "$?"
+  test "$?" -ne 0 && print_notice "build pqtool_server failed !!" && popd && return 1
+
+  if [[ "$FLASH_SIZE_SHRINK" != "y" ]]; then
+    make install DESTDIR="$SYSTEM_OUT_DIR" || return "$?"
+  fi
+)}
+
+function clean_pqtool_server()
+{(
+  print_notice "Run ${FUNCNAME[0]}() function"
+  cd "$PQTOOL_SERVER_PATH" || return
+  make clean
+  make uninstall DESTDIR="$SYSTEM_OUT_DIR"
+)}
 
 function build_3rd_party()
 {
@@ -630,10 +668,11 @@ function build_all()
   build_3rd_party || return $?
   build_middleware || return $?
   if [ "$TPU_REL" = 1 ]; then
+    build_cvi_rtsp || return $?
     build_tpu_sdk || return $?
     build_ive_sdk || return $?
     build_ivs_sdk || return $?
-    build_ai_sdk  || return $?
+    build_tdl_sdk || return $?
   fi
   pack_cfg || return $?
   pack_rootfs || return $?
@@ -654,10 +693,11 @@ function clean_all()
   clean_ramdisk
   clean_3rd_party
   if [ "$TPU_REL" = 1 ]; then
+    clean_cvi_rtsp
     clean_ive_sdk
     clean_ivs_sdk
     clean_tpu_sdk
-    clean_ai_sdk
+    clean_tdl_sdk
     clean_cnv_sdk
   fi
   clean_access_guard_turnkey_app
@@ -783,6 +823,7 @@ function cvi_setup_env()
   IVE_SDK_PATH="$TOP_DIR"/ive
   IVS_SDK_PATH="$TOP_DIR"/ivs
   CNV_SDK_PATH="$TOP_DIR"/cnv
+  TDL_SDK_PATH="$TOP_DIR"/tdl_sdk
   ACCESSGUARD_PATH="$TOP_DIR"/access-guard-turnkey
   IPC_APP_PATH="$TOP_DIR"/framework/applications/ipc
   AI_SDK_PATH="$TOP_DIR"/tdl_sdk
