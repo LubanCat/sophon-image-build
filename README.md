@@ -36,7 +36,7 @@ build_all
 
 |                  |   URL                                  | Branch         |    Commit      |
 |:----------------:|:---------------------------------------|:---------------|:---------------|
-| linux_5.10       | https://github.com/sophgo/linux_5.10          | sg200x-dev     | 6fe9639  |
+| linux_5.10       | https://github.com/sophgo/linux_5.10          | sg200x-dev     | e1b5c29  |
 | cvi_mpi          | https://github.com/sophgo/cvi_mpi.git         | sg200x-dev     | df2364e |
 | SensorSupportList| https://github.com/sophgo/SensorSupportList.git | sg200x-dev   | 3666db3 |
 | cvi_rtsp	   | https://github.com/sophgo/cvi_rtsp.git	   | sg200x-dev     | 9f66540   |
@@ -49,8 +49,8 @@ build_all
 | cvimath          | https://github.com/sophgo/cvimath.git         | sg200x-dev     | ce8705f  |
 | cnpy             | https://github.com/sophgo/cnpy.git	           | tpu	        | 2f56f4c  |
 | flatbuffers      | https://github.com/sophgo/flatbuffers.git     | master         | 6da1cf7  |
-| fsbl             | https://github.com/sophgo/fsbl     | sg200x-dev  | 15a84c5 |
-| opensbi          | https://github.com/sophgo/opensbi  | sg200x-dev  | fffb475 |
+| fsbl             | https://github.com/sophgo/fsbl     | sg200x-dev  | 69853ff |
+| opensbi          | https://github.com/sophgo/opensbi  | sg200x-dev  | 3b045ae |
 | u-boot-2021.10   | https://github.com/sophgo/u-boot-2021.10   | sg200x-dev | 4a21b6b |
 | oss              | https://github.com/sophgo/oss.git          | master        | 53c237e   |
 
