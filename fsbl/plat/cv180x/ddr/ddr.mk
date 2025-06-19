@@ -56,10 +56,6 @@ $(eval $(call add_define,REAL_DDRPHY))
 $(eval $(call add_define,REAL_LOCK))
 $(eval $(call add_define,X16_MODE))
 
-# overdrive clock setting
-ifeq ($(OD_CLK_SEL),y)
-$(eval $(call add_define,OD_CLK_SEL))
-endif
 
 endif
 

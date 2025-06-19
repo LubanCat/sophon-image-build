@@ -17,6 +17,7 @@
 #include <decompress.h>
 #include <delay_timer.h>
 #include <security/security.h>
+#include <emmc/emmc.h>
 
 uint64_t load_addr = 0x0c000;
 uint64_t run_addr   = 0x8000C000;
@@ -114,48 +115,17 @@ int load_param2(int retry)
 	return 0;
 }
 
-int load_ddr_param(int retry)
-{
-	uint32_t crc;
-	int ret = -1;
-
-	NOTICE("DPS/0x%x/0x%x.\n", fip_param2.ddr_param_loadaddr, fip_param2.ddr_param_size);
-
-	if (fip_param2.ddr_param_size >= sizeof(sram_union_buf.ddr_param))
-		fip_param2.ddr_param_size = sizeof(sram_union_buf.ddr_param);
-
-	ret = p_rom_api_load_image(&sram_union_buf.ddr_param, fip_param2.ddr_param_loadaddr, fip_param2.ddr_param_size,
-				   retry);
-	if (ret < 0) {
-		return ret;
-	}
-
-	crc = p_rom_api_image_crc(&sram_union_buf.ddr_param, fip_param2.ddr_param_size);
-	if (crc != fip_param2.ddr_param_cksum) {
-		ERROR("ddr_param_cksum (0x%x/0x%x)\n", crc, fip_param2.ddr_param_cksum);
-		return -1;
-	}
-
-	NOTICE("DPE.\n");
-
-	return 0;
-}
-
 int load_ddr(void)
 {
+#ifndef ENABLE_BOOT0
 	int retry = 0;
 
 retry_from_flash:
 	for (retry = 0; retry < p_rom_api_get_number_of_retries(); retry++) {
 		if (load_param2(retry) < 0)
 			continue;
-
-		if (load_ddr_param(retry) < 0)
-			continue;
-
 		break;
 	}
-
 	if (retry >= p_rom_api_get_number_of_retries()) {
 		switch (p_rom_api_get_boot_src()) {
 		case BOOT_SRC_UART:
@@ -166,16 +136,54 @@ retry_from_flash:
 			p_rom_api_flash_init();
 			goto retry_from_flash;
 		default:
-			ERROR("Failed to load DDR param (%d).\n", retry);
+			ERROR("Failed to load param2 (%d).\n", retry);
 			panic_handler();
 		}
 	}
-
+#endif
 	time_records->ddr_init_start = read_time_ms();
 	ddr_init(&sram_union_buf.ddr_param);
 	time_records->ddr_init_end = read_time_ms();
 
 	return 0;
+}
+
+static int emmc_read_fip_bl2(uint32_t offset, uint32_t size, uintptr_t buf)
+{
+	int lba = 0;
+
+	if (((offset & EMMC_BLOCK_MASK) != 0) || ((buf & EMMC_BLOCK_MASK) != 0) || ((size & EMMC_BLOCK_MASK) != 0))
+		return -22;
+
+	lba = offset / EMMC_BLOCK_SIZE;
+
+	// INFO("%s offset %x,lba %d, size %d, dst buf 0x%lx\n", __func__, offset, lba, size, buf);
+
+	if (size != emmc_partition_read_blocks(EMMC_PARTITION_BOOT1, lba, buf, size))
+		return -5;
+
+	return 0;
+}
+
+static int load_data_from_storage(void *buffer, uint32_t offset, uint32_t size, int retry)
+{
+	static int is_get_boot_src;
+	static int boot_src;
+
+	if (!is_get_boot_src) {
+		boot_src = p_rom_api_get_boot_src();
+		is_get_boot_src = 1;
+
+		/* reinit eMMC */
+		if (boot_src == BOOT_SRC_EMMC)
+			bm_emmc_init();
+	}
+
+	//use BL2 eMMC driver to load image
+	if (boot_src == BOOT_SRC_EMMC)
+		return emmc_read_fip_bl2(offset, size, (uintptr_t)buffer);
+	else
+		return p_rom_api_load_image(buffer, offset, size, retry);
 }
 
 int load_blcp_2nd(int retry)
@@ -204,7 +212,7 @@ int load_blcp_2nd(int retry)
 		panic_handler();
 	}
 
-	ret = p_rom_api_load_image((void *)(uintptr_t)fip_param2.blcp_2nd_runaddr, fip_param2.blcp_2nd_loadaddr,
+	ret = load_data_from_storage((void *)(uintptr_t)fip_param2.blcp_2nd_runaddr, fip_param2.blcp_2nd_loadaddr,
 				   fip_param2.blcp_2nd_size, retry);
 	if (ret < 0) {
 		return ret;
@@ -227,11 +235,19 @@ int load_blcp_2nd(int retry)
 	rtos_base = mmio_read_32(AXI_SRAM_RTOS_BASE);
 	init_comm_info(0);
 
-	time_records->release_blcp_2nd = read_time_ms();
-	if (rtos_base == CVI_RTOS_MAGIC_CODE) {
-		mmio_write_32(AXI_SRAM_RTOS_BASE, fip_param2.blcp_2nd_runaddr);
-	} else {
-		reset_c906l(fip_param2.blcp_2nd_runaddr);
+	switch (p_rom_api_get_boot_src()) {
+		case BOOT_SRC_UART:
+		// case BOOT_SRC_SD:
+		// case BOOT_SRC_USB:
+			break;
+
+		default:
+			time_records->release_blcp_2nd = read_time_ms();
+			if (rtos_base == CVI_RTOS_MAGIC_CODE) {
+				mmio_write_32(AXI_SRAM_RTOS_BASE, fip_param2.blcp_2nd_runaddr);
+			} else {
+				reset_c906l(fip_param2.blcp_2nd_runaddr);
+			}
 	}
 
 	NOTICE("C2E.\n");
@@ -262,7 +278,7 @@ int load_monitor(int retry, uint64_t *monitor_entry)
 		panic_handler();
 	}
 
-	ret = p_rom_api_load_image((void *)(uintptr_t)fip_param2.monitor_runaddr, fip_param2.monitor_loadaddr,
+	ret = load_data_from_storage((void *)(uintptr_t)fip_param2.monitor_runaddr, fip_param2.monitor_loadaddr,
 				   fip_param2.monitor_size, retry);
 	if (ret < 0) {
 		return ret;
@@ -302,7 +318,7 @@ int load_loader_2nd(int retry, uint64_t *loader_2nd_entry)
 
 	NOTICE("L2/0x%x.\n", fip_param2.loader_2nd_loadaddr);
 
-	ret = p_rom_api_load_image(loader_2nd_header, fip_param2.loader_2nd_loadaddr, BLOCK_SIZE, retry);
+	ret = load_data_from_storage(loader_2nd_header, fip_param2.loader_2nd_loadaddr, BLOCK_SIZE, retry);
 	if (ret < 0) {
 		return -1;
 	}
@@ -382,6 +398,45 @@ int load_loader_2nd(int retry, uint64_t *loader_2nd_entry)
 	return 0;
 }
 
+int load_loader_2nd_alios(int retry, uint64_t *loader_2nd_entry)
+{
+	void *image_buf;
+	int ret = -1;
+	#ifdef BOOT_SPINOR
+	load_addr = 0x0c000;
+	#endif
+
+	#ifdef BOOT_EMMC
+	load_addr = 0x00000;
+	#endif
+
+	#ifdef BOOT_SPINAND
+	load_addr = 0x280000;
+	#endif
+	uint64_t loadaddr_alios = load_addr;
+	uint64_t runaddr_alios  = run_addr;
+	uint64_t size_alios     = reading_size;
+
+	image_buf = (void *)runaddr_alios;
+	NOTICE("loadaddr_alios:0x%lx runaddr_alios:0x%lx.\n", loadaddr_alios, runaddr_alios);
+
+	ret = p_rom_api_load_image(image_buf, loadaddr_alios, size_alios, retry);
+	NOTICE("image_buf:0x%lx.\n", *((uint64_t *)runaddr_alios));
+	if (security_is_tee_enabled()) {
+		ret = dec_verify_image(image_buf, fip_param2.alios_boot_size, 0, fip_param1);
+		if (ret < 0) {
+			ERROR("verify alios boot0 failed (%d)\n", ret);
+			return ret;
+		}
+	}
+
+	sys_switch_all_to_pll();
+
+	*loader_2nd_entry = run_addr;
+
+	return 0;
+}
+
 int load_rest(void)
 {
 	int retry = 0;
@@ -391,6 +446,9 @@ int load_rest(void)
 	// Init sys PLL and switch clocks to PLL
 	sys_pll_init();
 #ifndef ENABLE_BOOT0
+#ifdef FSBL_FASTBOOT
+	mmio_write_32(0x030020B8, 0x00030009); // improve axi clock from 300m to 500m
+#endif
 retry_from_flash:
 	for (retry = 0; retry < p_rom_api_get_number_of_retries(); retry++) {
 		if (load_blcp_2nd(retry) < 0)
@@ -420,6 +478,9 @@ retry_from_flash:
 		}
 	}
 
+#ifdef FSBL_FASTBOOT
+	mmio_write_32(0x030020B8, 0x00050009); // restore axi clock from 500m to 300m
+#endif
 	sync_cache();
 	console_flush();
 
