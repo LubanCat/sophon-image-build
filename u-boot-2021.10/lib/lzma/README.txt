@@ -16,8 +16,8 @@ Example:
 
 Notice: The files from lzma sdk are _not modified_ by this script!
 
-The files LzmaTools.{c,h} are provided to export the lzma_buff_to_buff_decompress()
-function that wraps the complex lzma_decode() function from the LZMA SDK. The
+The files LzmaTools.{c,h} are provided to export the lzmaBuffToBuffDecompress()
+function that wraps the complex LzmaDecode() function from the LZMA SDK. The
 do_bootm() function uses the lzmaBuffToBuffDecopress() function to expand the
 compressed image.
 

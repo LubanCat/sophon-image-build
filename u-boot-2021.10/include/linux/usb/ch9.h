@@ -874,8 +874,8 @@ struct usb_ss_cap_descriptor {		/* Link Power Management */
 #define USB_HIGH_SPEED_OPERATION	(1 << 2) /* High speed operation */
 #define USB_5GBPS_OPERATION		(1 << 3) /* Operation at 5Gbps */
 	__u8  bFunctionalitySupport;
-	__u8  b_u1_dev_exit_lat;
-	__le16 b_u2_dev_exit_lat;
+	__u8  bU1devExitLat;
+	__le16 bU2DevExitLat;
 } __attribute__((packed));
 
 #define USB_DEFAULT_U1_DEV_EXIT_LAT     0x01	/* Less then 1 microsec */

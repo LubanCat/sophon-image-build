@@ -402,7 +402,8 @@ char *fw_getenv(char *name)
 
 		for (nxt = env; *nxt; ++nxt) {
 			if (nxt >= &environment.data[ENV_SIZE]) {
-				fprintf(stderr, "## Error: environment not terminated\n");
+				fprintf(stderr, "## Error: "
+					"environment not terminated\n");
 				return NULL;
 			}
 		}
@@ -427,7 +428,8 @@ char *fw_getdefenv(char *name)
 
 		for (nxt = env; *nxt; ++nxt) {
 			if (nxt >= &default_environment[ENV_SIZE]) {
-				fprintf(stderr, "## Error: default environment not terminated\n");
+				fprintf(stderr, "## Error: "
+					"default environment not terminated\n");
 				return NULL;
 			}
 		}
@@ -461,11 +463,11 @@ int fw_printenv(int argc, char *argv[], int value_only, struct env_opts *opts)
 
 	if (argc == 0) {	/* Print all env variables  */
 		char *env, *nxt;
-
 		for (env = environment.data; *env; env = nxt + 1) {
 			for (nxt = env; *nxt; ++nxt) {
 				if (nxt >= &environment.data[ENV_SIZE]) {
-					fprintf(stderr, "## Error: environment not terminated\n");
+					fprintf(stderr, "## Error: "
+						"environment not terminated\n");
 					return -1;
 				}
 			}
@@ -540,7 +542,8 @@ int fw_env_write(char *name, char *value)
 	for (nxt = env = environment.data; *env; env = nxt + 1) {
 		for (nxt = env; *nxt; ++nxt) {
 			if (nxt >= &environment.data[ENV_SIZE]) {
-				fprintf(stderr, "## Error: environment not terminated\n");
+				fprintf(stderr, "## Error: "
+					"environment not terminated\n");
 				errno = EINVAL;
 				return -1;
 			}
@@ -890,11 +893,14 @@ static int flash_bad_block(int fd, uint8_t mtd_type, loff_t blockstart)
 static int flash_read_buf(int dev, int fd, void *buf, size_t count,
 			  off_t offset)
 {
-	size_t blocklen;	/* erase / write length - one block on NAND, 0 on NOR */
+	size_t blocklen;	/* erase / write length - one block on NAND,
+				   0 on NOR */
 	size_t processed = 0;	/* progress counter */
 	size_t readlen = count;	/* current read length */
-	off_t block_seek;	/* offset inside the current block to the start of the data */
-	loff_t blockstart;	/* running start of the current block - MEMGETBADBLOCK needs 64 bits */
+	off_t block_seek;	/* offset inside the current block to the start
+				   of the data */
+	loff_t blockstart;	/* running start of the current block -
+				   MEMGETBADBLOCK needs 64 bits */
 	int rc;
 
 	blockstart = (offset / DEVESIZE(dev)) * DEVESIZE(dev);
@@ -976,13 +982,19 @@ static int flash_write_buf(int dev, int fd, void *buf, size_t count)
 	void *data;
 	struct erase_info_user erase;
 	size_t blocklen;	/* length of NAND block / NOR erase sector */
-	size_t erase_len;	/* whole area that can be erased - may include bad blocks */
-	size_t erasesize;	/* erase / write length - one block on NAND, whole area on NOR */
+	size_t erase_len;	/* whole area that can be erased - may include
+				   bad blocks */
+	size_t erasesize;	/* erase / write length - one block on NAND,
+				   whole area on NOR */
 	size_t processed = 0;	/* progress counter */
-	size_t write_total;	/* total size to actually write - excluding bad blocks */
-	off_t erase_offset;	/* offset to the first erase block (aligned) below offset */
-	off_t block_seek;	/* offset inside the erase block to the start of the data */
-	loff_t blockstart;	/* running start of the current block - MEMGETBADBLOCK needs 64 bits */
+	size_t write_total;	/* total size to actually write - excluding
+				   bad blocks */
+	off_t erase_offset;	/* offset to the first erase block (aligned)
+				   below offset */
+	off_t block_seek;	/* offset inside the erase block to the start
+				   of the data */
+	loff_t blockstart;	/* running start of the current block -
+				   MEMGETBADBLOCK needs 64 bits */
 	int was_locked = 0;	/* flash lock flag */
 	int rc;
 
@@ -1375,10 +1387,11 @@ static int flash_io(int mode)
 		return -1;
 	}
 
-	if (mode == O_RDWR)
+	if (mode == O_RDWR) {
 		rc = flash_io_write(fd_current);
-	else
+	} else {
 		rc = flash_read(fd_current);
+	}
 
 	if (close(fd_current)) {
 		fprintf(stderr,
@@ -1639,7 +1652,6 @@ static int check_device_config(int dev)
 		}
 	} else if (S_ISCHR(st.st_mode)) {
 		struct mtd_info_user mtdinfo;
-
 		rc = ioctl(fd, MEMGETINFO, &mtdinfo);
 		if (rc < 0) {
 			fprintf(stderr, "Cannot get MTD information for %s\n",
@@ -1664,7 +1676,6 @@ static int check_device_config(int dev)
 			DEVESIZE(dev) = ENVSIZE(dev);
 	} else {
 		uint64_t size;
-
 		DEVTYPE(dev) = MTD_ABSENT;
 		if (DEVESIZE(dev) == 0)
 			/* Assume the erase size to be 512 bytes */

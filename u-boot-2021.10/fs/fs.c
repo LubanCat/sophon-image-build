@@ -845,7 +845,6 @@ int do_fs_uuid(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[],
 {
 	int ret;
 	char uuid[37];
-
 	memset(uuid, 0, sizeof(uuid));
 
 	if (argc < 3 || argc > 4)

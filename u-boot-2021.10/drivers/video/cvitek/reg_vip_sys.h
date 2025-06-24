@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 // $Module: vip_sys $
 // $RegisterBank Version: V 1.0.00 $
 // $Author:  $

@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __CVI_UPDATE_H__
 #define __CVI_UPDATE_H__
 
 #define EXTRA_FLAG_SIZE 32
-#define COMPARE_STRING_LEN
+#define COMPARE_STRING_LEN 
 #define SD_UPDATE_MAGIC 0x4D474E32
 #define ETH_UPDATE_MAGIC 0x4D474E35
 #define USB_DRIVE_UPGRADE_MAGIC 0x55425355
@@ -31,6 +29,6 @@ enum storage_type_e { sd_dl = 0, usb_dl };
 #define pr_debug(fmt, ...)
 #endif
 
-int _prg_image(char *file, uint32_t chunk_header_size, char *file_name);
+int _prgImage(char *file, uint32_t chunk_header_size, char *file_name);
 
 #endif /* __CVI_UPDATE_H__ */

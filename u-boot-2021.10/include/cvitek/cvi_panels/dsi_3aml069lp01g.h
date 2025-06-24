@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _MIPI_TX_PARAM__3AML069LP01G_H_
 #define _MIPI_TX_PARAM__3AML069LP01G_H_
 

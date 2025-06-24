@@ -19,7 +19,7 @@ config TARGET_CVITEK_CV180X
 
 endchoice
 
-source "board/cvitek/mars/Kconfig"
-source "board/cvitek/phobos/Kconfig"
+source "board/cvitek/cv181x/Kconfig"
+source "board/cvitek/cv180x/Kconfig"
 
 endif

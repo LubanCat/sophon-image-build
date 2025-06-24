@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2023 bitmain
- */
-
 #include <common.h>
 #include <dm.h>
 #include <i2s.h>
@@ -250,7 +245,7 @@ int i2s_set_fmt(struct i2s_tdm_regs *i2s_reg,
 			debug("Set format to IBNF\n");
 #ifdef CONFIG_SHIFT_HALF_T
 			// if (concurrent_rx_enable == true)
-			//	tmp |= RX_SAMPLE_EDGE_N | TX_SAMPLE_EDGE_P; /* for crx */
+			// 	tmp |= RX_SAMPLE_EDGE_N | TX_SAMPLE_EDGE_P; /* for crx */
 			// else
 				tmp |= RX_SAMPLE_EDGE_P | TX_SAMPLE_EDGE_N;
 #else
@@ -325,7 +320,7 @@ int i2s_set_fmt(struct i2s_tdm_regs *i2s_reg,
 		//codec_fmt |= SND_SOC_DAIFMT_IB_IF;
 	}
 
-	tmp = readl(&i2s_reg->blk_mode_setting) & ~(ROLE_MASK); /* clear bit 2~4 to set frame format */
+	tmp=readl(&i2s_reg->blk_mode_setting) & ~(ROLE_MASK); /* clear bit 2~4 to set frame format */
 	switch (role) {
 	case MASTER_MODE:
 		tmp |= MASTER_MODE;
@@ -348,7 +343,7 @@ int i2s_set_fmt(struct i2s_tdm_regs *i2s_reg,
 
 	// printf("Set codes fmt\n");
 	// if (skip_codec_setting == false)
-	//	adau1372_set_dai_fmt(codec_fmt);
+	// 	adau1372_set_dai_fmt(codec_fmt);
 	printf("[%s]end\n", __func__);
 	return 0;
 }
@@ -474,7 +469,6 @@ void i2s_sw_reset(struct i2s_tdm_regs *i2s_reg)
 		while (1) {
 			u32 tmp = readl(&i2s_reg->rx_status);
 			u32 tmp2 = readl(&i2s_reg->i2s_clk_ctrl0);
-
 			printf("rx_status=0x%x, clk_ctrl0=0x%x\n", tmp, tmp2);
 			if ((tmp & RESET_RX_SCLK) >> 23) {
 				//debug("RX Reset complete\n");
@@ -574,7 +568,7 @@ static int cvitekub_i2s_probe(struct udevice *dev)
 	priv->channels = 2;
 	priv->rfs = 64;
 	priv->bfs = 32;
-	debug("%s\n", __func__);
+	debug("cvitekub_i2s_probe\n");
 	return cvitekub_i2s_init(priv);
 }
 

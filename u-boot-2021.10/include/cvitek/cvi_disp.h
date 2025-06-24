@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2020. All rights reserved.
  *
@@ -25,5 +24,6 @@
 #define VO_INTF_MIPI_SLAVE (0x01L << 14)
 #define VO_INTF_HDMI (0x01L << 15)
 #define VO_INTF_I80 (0x01L << 16)
+#define VO_INTF_I80_HW (0x01L << 17)
 
 #endif // __CVI_DISP_H__

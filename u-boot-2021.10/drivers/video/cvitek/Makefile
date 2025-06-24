@@ -6,6 +6,6 @@
 #
 
 ifdef CONFIG_VIDEO_CVITEK
-obj-y += cvi_disp.o cvi_mipi.o scaler.o reg.o vip_sys.o dsi_phy.o cvi_i80.o
+obj-y += cvi_disp.o cvi_mipi.o scaler.o reg.o vip_sys.o dsi_phy.o cvi_i80.o cvi_i80_hw.o
 obj-$(CONFIG_DISPLAY_CVITEK_LVDS) += cvi_lvds.o
 endif

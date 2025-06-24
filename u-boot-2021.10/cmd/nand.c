@@ -71,7 +71,6 @@ static int nand_dump(struct mtd_info *mtd, ulong off, int only_oob,
 	off &= ~(mtd->writesize - 1);
 	loff_t addr = (loff_t) off;
 	struct mtd_oob_ops ops;
-
 	memset(&ops, 0, sizeof(ops));
 	ops.datbuf = datbuf;
 	ops.oobbuf = oobbuf;
@@ -488,14 +487,15 @@ static int do_nand(struct cmd_tbl *cmdtp, int flag, int argc,
 			"\nReally scrub this NAND flash? <y/N>\n";
 
 		if (cmd[5] != 0) {
-			if (!strcmp(&cmd[5], ".spread"))
+			if (!strcmp(&cmd[5], ".spread")) {
 				spread = 1;
-			else if (!strcmp(&cmd[5], ".part"))
+			} else if (!strcmp(&cmd[5], ".part")) {
 				args = 1;
-			else if (!strcmp(&cmd[5], ".chip"))
+			} else if (!strcmp(&cmd[5], ".chip")) {
 				args = 0;
-			else
+			} else {
 				goto usage;
+			}
 		}
 
 		/*
@@ -748,7 +748,6 @@ static int do_nand(struct cmd_tbl *cmdtp, int flag, int argc,
 	if (strcmp(cmd, "lock") == 0) {
 		int tight = 0;
 		int status = 0;
-
 		if (argc == 3) {
 			if (!strcmp("tight", argv[2]))
 				tight = 1;
@@ -888,28 +887,28 @@ static int nand_load_image(struct cmd_tbl *cmdtp, struct mtd_info *mtd,
 	}
 	bootstage_mark(BOOTSTAGE_ID_NAND_HDR_READ);
 
-	switch (genimg_get_format((void *)addr)) {
+	switch (genimg_get_format ((void *)addr)) {
 #if defined(CONFIG_LEGACY_IMAGE_FORMAT)
 	case IMAGE_FORMAT_LEGACY:
 		hdr = (image_header_t *)addr;
 
 		bootstage_mark(BOOTSTAGE_ID_NAND_TYPE);
-		image_print_contents(hdr);
+		image_print_contents (hdr);
 
-		cnt = image_get_image_size(hdr);
+		cnt = image_get_image_size (hdr);
 		break;
 #endif
 #if defined(CONFIG_FIT)
 	case IMAGE_FORMAT_FIT:
 		fit_hdr = (const void *)addr;
-		puts("Fit image detected...\n");
+		puts ("Fit image detected...\n");
 
-		cnt = fit_get_size(fit_hdr);
+		cnt = fit_get_size (fit_hdr);
 		break;
 #endif
 	default:
 		bootstage_error(BOOTSTAGE_ID_NAND_TYPE);
-		puts("** Unknown image type\n");
+		puts ("** Unknown image type\n");
 		return 1;
 	}
 	bootstage_mark(BOOTSTAGE_ID_NAND_TYPE);
@@ -925,14 +924,14 @@ static int nand_load_image(struct cmd_tbl *cmdtp, struct mtd_info *mtd,
 
 #if defined(CONFIG_FIT)
 	/* This cannot be done earlier, we need complete FIT image in RAM first */
-	if (genimg_get_format((void *)addr) == IMAGE_FORMAT_FIT) {
+	if (genimg_get_format ((void *)addr) == IMAGE_FORMAT_FIT) {
 		if (fit_check_format(fit_hdr, IMAGE_SIZE_INVAL)) {
 			bootstage_error(BOOTSTAGE_ID_NAND_FIT_READ);
-			puts("** Bad FIT image format\n");
+			puts ("** Bad FIT image format\n");
 			return 1;
 		}
 		bootstage_mark(BOOTSTAGE_ID_NAND_FIT_READ_OK);
-		fit_print_contents(fit_hdr);
+		fit_print_contents (fit_hdr);
 	}
 #endif
 
@@ -957,7 +956,6 @@ static int do_nandboot(struct cmd_tbl *cmdtp, int flag, int argc,
 
 	if (argc >= 2) {
 		char *p = (argc == 2) ? argv[1] : argv[2];
-
 		if (!(str2long(p, &addr)) && (mtdparts_init() == 0) &&
 		    (find_dev_and_part(p, &dev, &pnum, &part) == 0)) {
 			if (dev->id->type != MTD_DEV_TYPE_NAND) {

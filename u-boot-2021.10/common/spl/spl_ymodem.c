@@ -89,7 +89,7 @@ int spl_ymodem_load_image(struct spl_image_info *spl_image,
 	info.mode = xyzModem_ymodem;
 	ret = xyzModem_stream_open(&info, &err);
 	if (ret) {
-		printf("spl: ymodem err - %s\n", xyz_modem_error(err));
+		printf("spl: ymodem err - %s\n", xyzModem_error(err));
 		return ret;
 	}
 

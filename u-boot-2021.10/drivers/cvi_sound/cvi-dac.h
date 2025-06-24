@@ -1,8 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2023 bitmain
- */
-
 #ifndef __CVI_DAC_H__
 #define __CVI_DAC_H__
 

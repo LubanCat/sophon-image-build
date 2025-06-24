@@ -15,15 +15,14 @@
 	.word 0xdeadbee6
 	b boot0_time_recode
 /* BOOT0 header end */
-boot0_time_recode :
+boot0_time_recode:
 	mrs x0, cntpct_el0
 	ldr x1, =BOOT0_START_TIME
 	str w0, [x1]
-
 	b reset
 
 	.global BOOT0_START_TIME
-BOOT0_START_TIME :
+BOOT0_START_TIME:
 	.word 0
 
 #endif /* __BOOT0_H__ */

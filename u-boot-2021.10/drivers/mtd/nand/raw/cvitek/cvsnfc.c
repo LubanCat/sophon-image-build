@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2023 bitmain
- */
-
 #include <common.h>
 #include <nand.h>
 #include <asm/io.h>
@@ -137,7 +132,8 @@ static void cvsnfc_send_cmd_pageprog(struct cvsnfc_host *host)
 		return;
 	}
 
-	host->set_system_clock(spi->write, ENABLE);
+	if (host->set_system_clock)
+		host->set_system_clock(spi->write, ENABLE);
 
 	val = CVSNFC_INT_CLR_ALL;
 	cvsfc_write(host, CVSNFC_INT_CLR, val);
@@ -250,7 +246,8 @@ static void cvsnfc_send_cmd_readstart(struct cvsnfc_host *host)
 		return;
 	}
 
-	host->set_system_clock(spi->read, ENABLE);
+	if (host->set_system_clock)
+		host->set_system_clock(spi->read, ENABLE);
 
 	val = CVSNFC_INT_CLR_ALL;
 	cvsfc_write(host, CVSNFC_INT_CLR, val);
@@ -476,7 +473,7 @@ static uint8_t cvsnfc_read_byte(struct mtd_info *mtd)
 
 	if ((host->offset % 4) == 0) {
 		data = cvsfc_read(host, REG_SPI_NAND_RX_DATA);
-		pr_info("%s read data 0x%x, offset %d\n", __func__, data, host->offset);
+		pr_info("cvsnfc_read_byte read data 0x%x, offset %d\n", data, host->offset);
 	}
 
 	if (host->cmd_option.last_cmd == NAND_CMD_READID) {
@@ -496,17 +493,21 @@ static uint8_t cvsnfc_read_byte(struct mtd_info *mtd)
 	}
 
 	if ((host->cmd_option.last_cmd == NAND_CMD_ERASE1) ||
-	    (host->cmd_option.last_cmd == NAND_CMD_PAGEPROG))
+	    (host->cmd_option.last_cmd == NAND_CMD_PAGEPROG)) {
 		return value;
+	}
 
-	if (host->cmd_option.last_cmd == NAND_CMD_ERASE2)
+	if (host->cmd_option.last_cmd == NAND_CMD_ERASE2) {
 		return value;
+	}
 
-	if (host->cmd_option.command == NAND_CMD_STATUS)
+	if (host->cmd_option.command == NAND_CMD_STATUS) {
 		return value;
+	}
 
-	if (host->cmd_option.last_cmd == NAND_CMD_READOOB)
+	if (host->cmd_option.last_cmd == NAND_CMD_READOOB) {
 		return value;
+	}
 
 	host->offset++;
 
@@ -1155,8 +1156,9 @@ int cvsnfc_read_page(struct mtd_info *mtd, struct nand_chip *chip,
 
 	ret = spi_nand_read_from_cache(host, col_addr, mtd->writesize, buf);
 
-	if (ret == -EBADMSG)
+	if (ret == -EBADMSG) {
 		pr_info("%s : ECC status ECC_UNCORR on page 0x%x, block %d\n", __func__, page, blk_idx);
+	}
 
 	return ret;
 }
@@ -1326,8 +1328,9 @@ freq_retry:
 
 			memset(header_buf, 0x0, 0x20);
 			ret = spi_nand_read_from_cache(host, 0, 0x20, header_buf); /* read first 32 bytes */
-			if (ret == -EBADMSG)
+			if (ret == -EBADMSG) {
 				printf("%s : ECC status ECC_UNCORR\n", __func__);
+			}
 			if (!memcmp(header_buf + PATTERN1_OFFSET, pattern1, 4) &&
 			    !memcmp(header_buf + PATTERN2_OFFSET, pattern2, 4)) {
 				if (dly_param_idx == 0 && dly_grp_idx == 0) {
@@ -1427,13 +1430,15 @@ static int read_oob_data(struct mtd_info *mtd, uint8_t *buf, int page)
 
 	ret = spi_nand_read_from_cache(host, col_addr, mtd->oobsize, buf);
 
-	if (DEBUG_READ)
+	if (DEBUG_READ) {
 		bbt_dump_buf("1oob data:", buf, 16);
+	}
 
 	cvsnfc_ctrl_ecc(mtd, 1);
 
-	if (ret != 0)
+	if (ret != 0) {
 		printf("%s : ECC status ret %d page 0x%x\n", __func__, ret, page);
+	}
 
 	return ret;
 }
@@ -1515,8 +1520,9 @@ static int cvsnfc_read_subpage(struct mtd_info *mtd, struct nand_chip *chip,
 
 	ret = spi_nand_read_from_cache(host, col_addr, mtd->writesize, host->buffer);
 
-	if (ret != 0)
+	if (ret != 0) {
 		printf("%s : ECC status ret %d page 0x%x\n", __func__, ret, page);
+	}
 
 	if (DEBUG_READ)
 		bbt_dump_buf("data:", buf, 16);

@@ -100,9 +100,9 @@ typedef enum
   LZMA_STATUS_NOT_FINISHED,                /* stream was not finished */
   LZMA_STATUS_NEEDS_MORE_INPUT,            /* you must provide more input bytes */
   LZMA_STATUS_MAYBE_FINISHED_WITHOUT_MARK  /* there is probability that stream was finished without end mark */
-} e_lzma_status;
+} ELzmaStatus;
 
-/* e_lzma_status is used only as output value for function call */
+/* ELzmaStatus is used only as output value for function call */
 
 
 /* ---------- Interfaces ---------- */
@@ -127,11 +127,11 @@ LzmaDec_Allocate* can return:
   SZ_ERROR_UNSUPPORTED - Unsupported properties
 */
 
-SRes LzmaDec_AllocateProbs(CLzmaDec *p, const Byte *props, unsigned propsSize, i_sz_alloc *alloc);
-void LzmaDec_FreeProbs(CLzmaDec *p, i_sz_alloc *alloc);
+SRes LzmaDec_AllocateProbs(CLzmaDec *p, const Byte *props, unsigned propsSize, ISzAlloc *alloc);
+void LzmaDec_FreeProbs(CLzmaDec *p, ISzAlloc *alloc);
 
-SRes LzmaDec_Allocate(CLzmaDec *state, const Byte *prop, unsigned propsSize, i_sz_alloc *alloc);
-void LzmaDec_Free(CLzmaDec *state, i_sz_alloc *alloc);
+SRes LzmaDec_Allocate(CLzmaDec *state, const Byte *prop, unsigned propsSize, ISzAlloc *alloc);
+void LzmaDec_Free(CLzmaDec *state, ISzAlloc *alloc);
 
 /* ---------- Dictionary Interface ---------- */
 
@@ -175,7 +175,7 @@ Returns:
 */
 
 SRes LzmaDec_DecodeToDic(CLzmaDec *p, SizeT dicLimit,
-    const Byte *src, SizeT *srcLen, ELzmaFinishMode finishMode, e_lzma_status *status);
+    const Byte *src, SizeT *srcLen, ELzmaFinishMode finishMode, ELzmaStatus *status);
 
 
 /* ---------- Buffer Interface ---------- */
@@ -192,12 +192,12 @@ finishMode:
 */
 
 SRes LzmaDec_DecodeToBuf(CLzmaDec *p, Byte *dest, SizeT *destLen,
-    const Byte *src, SizeT *srcLen, ELzmaFinishMode finishMode, e_lzma_status *status);
+    const Byte *src, SizeT *srcLen, ELzmaFinishMode finishMode, ELzmaStatus *status);
 
 
 /* ---------- One Call Interface ---------- */
 
-/* lzma_decode
+/* LzmaDecode
 
 finishMode:
   It has meaning only if the decoding reaches output limit (*destLen).
@@ -216,8 +216,8 @@ Returns:
   SZ_ERROR_INPUT_EOF - It needs more bytes in input buffer (src).
 */
 
-SRes lzma_decode(Byte *dest, SizeT *destLen, const Byte *src, SizeT *srcLen,
+SRes LzmaDecode(Byte *dest, SizeT *destLen, const Byte *src, SizeT *srcLen,
     const Byte *propData, unsigned propSize, ELzmaFinishMode finishMode,
-    e_lzma_status *status, i_sz_alloc *alloc);
+    ELzmaStatus *status, ISzAlloc *alloc);
 
 #endif

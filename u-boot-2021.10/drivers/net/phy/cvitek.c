@@ -1,6 +1,7 @@
-// SPDX-License-Identifier:     GPL-2.0+
 /*
  * CVITEK PHY drivers
+ *
+ * SPDX-License-Identifier:	GPL-2.0+
  *
  * Copyright 2020 CVITEK, Inc.
  */
@@ -62,17 +63,17 @@ static void cv182xa_ephy_init(void)
 	//Set rg_eth_txitune0  0x03009064 [7:0]
 	if ((mmio_read_32(EPHY_EFUSE_VALID_BIT_BASE) & EPHY_EFUSE_TXITUNE_FLAG) ==
 		EPHY_EFUSE_TXITUNE_FLAG) {
-		val = ((mmio_read_32(0x03051024) >> 24) & 0xFF) |
-				(((mmio_read_32(0x03051024) >> 16) & 0xFF) << 8);
+		val = ((mmio_read_32(0x03050124) >> 24) & 0xFF) |
+				(((mmio_read_32(0x03050124) >> 16) & 0xFF) << 8);
 		mmio_clrsetbits_32(0x03009064, 0xFFFF, val);
 	} else
 		mmio_write_32(0x03009064, 0x5a5a);
-
+	mmio_write_32(0x03009064, 0x5a5a);
 	// Set Echo_I
 	// Set rg_eth_txechoiadj 0x03009054  [15:8]
 	if ((mmio_read_32(EPHY_EFUSE_VALID_BIT_BASE) & EPHY_EFUSE_TXECHORC_FLAG) ==
 		EPHY_EFUSE_TXECHORC_FLAG) {
-		mmio_clrsetbits_32(0x03009054, 0xFF00, ((mmio_read_32(0x03051024) >> 8) & 0xFF) << 8);
+		mmio_clrsetbits_32(0x03009054, 0xFF00, ((mmio_read_32(0x03050124) >> 8) & 0xFF) << 8);
 	} else
 		mmio_write_32(0x03009054, 0x0000);
 
@@ -82,12 +83,12 @@ static void cv182xa_ephy_init(void)
 	// Set rg_eth_txechorcadj 0x03009058  [3:0]
 	if ((mmio_read_32(EPHY_EFUSE_VALID_BIT_BASE) & EPHY_EFUSE_TXRXTERM_FLAG) ==
 		EPHY_EFUSE_TXRXTERM_FLAG) {
-		val = (((mmio_read_32(0x03051020) >> 28) & 0xF) << 4) |
-				(((mmio_read_32(0x03051020) >> 24) & 0xF) << 8);
+		val = (((mmio_read_32(0x03050120) >> 28) & 0xF) << 4) |
+				(((mmio_read_32(0x03050120) >> 24) & 0xF) << 8);
 		mmio_clrsetbits_32(0x03009058, 0xFF0, val);
 	} else
 		mmio_write_32(0x03009058, 0x0bb0);
-
+	mmio_write_32(0x03009058, 0x0bb0);
 // ETH_100BaseT
 	// Set Rise update
 	mmio_write_32(0x0300905c, 0x0c10);
@@ -138,6 +139,7 @@ static void cv182xa_ephy_init(void)
 //	Link Pulse
 	// Switch to MII-page10
 	mmio_write_32(0x0300907c, 0x0a00);
+#if 1
 	// Set Link Pulse
 	mmio_write_32(0x03009040, 0x3e00);
 	mmio_write_32(0x03009044, 0x7864);
@@ -152,6 +154,23 @@ static void cv182xa_ephy_init(void)
 	mmio_write_32(0x03009068, 0x8688);
 	mmio_write_32(0x0300906c, 0x8484);
 	mmio_write_32(0x03009070, 0x0082);
+#else 
+	// from sean
+	// Fix err: the status is still linkup when removed the network cable.
+	mmio_write_32(0x03009040, 0x2000);
+	mmio_write_32(0x03009044, 0x3832);
+	mmio_write_32(0x03009048, 0x3132);
+	mmio_write_32(0x0300904c, 0x2d2f);
+	mmio_write_32(0x03009050, 0x2c2d);
+	mmio_write_32(0x03009054, 0x1b2b);
+	mmio_write_32(0x03009058, 0x94a0);
+	mmio_write_32(0x0300905c, 0x8990);
+	mmio_write_32(0x03009060, 0x8788);
+	mmio_write_32(0x03009064, 0x8485);
+	mmio_write_32(0x03009068, 0x8283);
+	mmio_write_32(0x0300906c, 0x8182);
+	mmio_write_32(0x03009070, 0x0081);
+#endif
 // TP_IDLE
 	// Switch to MII-page11
 	mmio_write_32(0x0300907c, 0x0b00);

@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __CVSNFC_SPI_IDSH
 #define __CVSNFC_SPI_IDSH
 

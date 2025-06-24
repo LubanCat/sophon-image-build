@@ -105,8 +105,7 @@ struct phy_driver {
 	int (*probe)(struct phy_device *phydev);
 
 	/* Called to configure the PHY, and modify the controller
-	 * based on the results.  Should be called after phy_connect
-	 */
+	 * based on the results.  Should be called after phy_connect */
 	int (*config)(struct phy_device *phydev);
 
 	/* Called when starting up the controller */
@@ -404,7 +403,7 @@ int phy_reset(struct phy_device *phydev);
  * @interface:	type of MAC-PHY interface
  * @return: pointer to phy_device if a PHY is found, or NULL otherwise
  */
-struct phy_device *phy_find_by_mask(struct mii_dev *bus, unsigned int phy_mask,
+struct phy_device *phy_find_by_mask(struct mii_dev *bus, unsigned phy_mask,
 		phy_interface_t interface);
 
 #ifdef CONFIG_PHY_FIXED
@@ -577,8 +576,8 @@ static inline bool phy_interface_is_sgmii(struct phy_device *phydev)
 }
 
 /* PHY UIDs for various PHYs that are referenced in external code */
-#define PHY_UID_CS4340		0x13e51002
-#define PHY_UID_CS4223		0x03e57003
+#define PHY_UID_CS4340  	0x13e51002
+#define PHY_UID_CS4223  	0x03e57003
 #define PHY_UID_TN2020		0x00a19410
 #define PHY_UID_IN112525_S03	0x02107440
 

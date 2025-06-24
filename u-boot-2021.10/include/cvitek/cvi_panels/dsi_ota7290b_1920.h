@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _MIPI_TX_PARAM_OTA7290B_1920_H_
 #define _MIPI_TX_PARAM_OTA7290B_1920_H_
 

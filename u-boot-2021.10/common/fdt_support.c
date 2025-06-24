@@ -189,7 +189,7 @@ int fdt_root(void *fdt)
 
 	err = fdt_check_header(fdt);
 	if (err < 0) {
-		printf("%s: %s\n", __func__, fdt_strerror(err));
+		printf("fdt_root: %s\n", fdt_strerror(err));
 		return err;
 	}
 
@@ -240,7 +240,7 @@ int fdt_initrd(void *fdt, ulong initrd_start, ulong initrd_end)
 
 	err = fdt_add_mem_rsv(fdt, initrd_start, initrd_end - initrd_start);
 	if (err < 0) {
-		printf("%s: %s\n", __func__, fdt_strerror(err));
+		printf("fdt_initrd: %s\n", fdt_strerror(err));
 		return err;
 	}
 
@@ -285,7 +285,7 @@ int fdt_chosen(void *fdt)
 
 	err = fdt_check_header(fdt);
 	if (err < 0) {
-		printf("%s: %s\n", __func__, fdt_strerror(err));
+		printf("fdt_chosen: %s\n", fdt_strerror(err));
 		return err;
 	}
 
@@ -316,14 +316,12 @@ void do_fixup_by_path(void *fdt, const char *path, const char *prop,
 {
 #if defined(DEBUG)
 	int i;
-
 	debug("Updating property '%s/%s' = ", path, prop);
 	for (i = 0; i < len; i++)
-		debug(" %.2x", *(u8 *)(val+i));
+		debug(" %.2x", *(u8*)(val+i));
 	debug("\n");
 #endif
 	int rc = fdt_find_and_setprop(fdt, path, prop, val, len, create);
-
 	if (rc)
 		printf("Unable to update property %s:%s, err=%s\n",
 			path, prop, fdt_strerror(rc));
@@ -333,7 +331,6 @@ void do_fixup_by_path_u32(void *fdt, const char *path, const char *prop,
 			  u32 val, int create)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
-
 	do_fixup_by_path(fdt, path, prop, &tmp, sizeof(tmp), create);
 }
 
@@ -345,10 +342,9 @@ void do_fixup_by_prop(void *fdt,
 	int off;
 #if defined(DEBUG)
 	int i;
-
 	debug("Updating property '%s' = ", prop);
 	for (i = 0; i < len; i++)
-		debug(" %.2x", *(u8 *)(val+i));
+		debug(" %.2x", *(u8*)(val+i));
 	debug("\n");
 #endif
 	off = fdt_node_offset_by_prop_value(fdt, -1, pname, pval, plen);
@@ -364,7 +360,6 @@ void do_fixup_by_prop_u32(void *fdt,
 			  const char *prop, u32 val, int create)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
-
 	do_fixup_by_prop(fdt, pname, pval, plen, prop, &tmp, 4, create);
 }
 
@@ -374,10 +369,9 @@ void do_fixup_by_compat(void *fdt, const char *compat,
 	int off = -1;
 #if defined(DEBUG)
 	int i;
-
 	debug("Updating property '%s' = ", prop);
 	for (i = 0; i < len; i++)
-		debug(" %.2x", *(u8 *)(val+i));
+		debug(" %.2x", *(u8*)(val+i));
 	debug("\n");
 #endif
 	off = fdt_node_offset_by_compatible(fdt, -1, compat);
@@ -392,7 +386,6 @@ void do_fixup_by_compat_u32(void *fdt, const char *compat,
 			    const char *prop, u32 val, int create)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
-
 	do_fixup_by_compat(fdt, compat, prop, &tmp, 4, create);
 }
 
@@ -455,21 +448,22 @@ int fdt_fixup_memory_banks(void *blob, u64 start[], u64 size[], int banks)
 	u8 tmp[MEMORY_BANKS_MAX * 16]; /* Up to 64-bit address + 64-bit size */
 
 	if (banks > MEMORY_BANKS_MAX) {
-		printf("%s: num banks %d exceeds hardcoded limit %d. Recompile with higher MEMORY_BANKS_MAX?\n",
-		       __func__, banks, MEMORY_BANKS_MAX);
+		printf("%s: num banks %d exceeds hardcoded limit %d."
+		       " Recompile with higher MEMORY_BANKS_MAX?\n",
+		       __FUNCTION__, banks, MEMORY_BANKS_MAX);
 		return -1;
 	}
 
 	err = fdt_check_header(blob);
 	if (err < 0) {
-		printf("%s: %s\n", __func__, fdt_strerror(err));
+		printf("%s: %s\n", __FUNCTION__, fdt_strerror(err));
 		return err;
 	}
 
 	/* find or create "/memory" node. */
 	nodeoffset = fdt_find_or_add_subnode(blob, 0, "memory");
 	if (nodeoffset < 0)
-		return nodeoffset;
+			return nodeoffset;
 
 	err = fdt_setprop(blob, nodeoffset, "device_type", "memory",
 			sizeof("memory"));
@@ -712,8 +706,7 @@ int fdt_shrink_to_minimum(void *blob, uint extrasize)
 #define FDT_PCI_IO		(0x01000000)
 #define FDT_PCI_MEM64		(0x03000000)
 
-int fdt_pci_dma_ranges(void *blob, int phb_off, struct pci_controller *hose)
-{
+int fdt_pci_dma_ranges(void *blob, int phb_off, struct pci_controller *hose) {
 
 	int addrcell, sizecell, len, r;
 	u32 *dma_range;
@@ -1037,7 +1030,7 @@ void fdt_del_node_and_alias(void *blob, const char *alias)
 static void of_dump_addr(const char *s, const fdt32_t *addr, int na)
 {
 	printf("%s", s);
-	while (na--)
+	while(na--)
 		printf(" %08x", *(addr++));
 	printf("\n");
 }
@@ -1123,7 +1116,6 @@ static u64 of_bus_default_map(fdt32_t *addr, const fdt32_t *range,
 static int of_bus_default_translate(fdt32_t *addr, u64 offset, int na)
 {
 	u64 a = fdt_read_number(addr, na);
-
 	memset(addr, 0, na * 4);
 	a += offset;
 	if (na > 1)
@@ -1312,7 +1304,7 @@ static u64 __of_translate_address(const void *blob, int node_offset,
 	/* Cound address cells & copy address locally */
 	bus->count_cells(blob, parent, &na, &ns);
 	if (!OF_CHECK_COUNTS(na, ns)) {
-		printf("%s: Bad cell count for %s\n", __func__,
+		printf("%s: Bad cell count for %s\n", __FUNCTION__,
 		       fdt_get_name(blob, node_offset, NULL));
 		goto bail;
 	}
@@ -1339,7 +1331,7 @@ static u64 __of_translate_address(const void *blob, int node_offset,
 		pbus = of_match_bus(blob, parent);
 		pbus->count_cells(blob, parent, &pna, &pns);
 		if (!OF_CHECK_COUNTS(pna, pns)) {
-			printf("%s: Bad cell count for %s\n", __func__,
+			printf("%s: Bad cell count for %s\n", __FUNCTION__,
 				fdt_get_name(blob, node_offset, NULL));
 			break;
 		}
@@ -1427,7 +1419,7 @@ int fdt_get_dma_range(const void *blob, int node, phys_addr_t *cpu,
 	bus_node = of_match_bus(blob, node);
 	bus_node->count_cells(blob, node, &na, &ns);
 	if (!OF_CHECK_COUNTS(na, ns)) {
-		printf("%s: Bad cell count for %s\n", __func__,
+		printf("%s: Bad cell count for %s\n", __FUNCTION__,
 		       fdt_get_name(blob, node, NULL));
 		return -EINVAL;
 		goto out;
@@ -1436,7 +1428,7 @@ int fdt_get_dma_range(const void *blob, int node, phys_addr_t *cpu,
 	bus_node = of_match_bus(blob, parent);
 	bus_node->count_cells(blob, parent, &pna, &pns);
 	if (!OF_CHECK_COUNTS(pna, pns)) {
-		printf("%s: Bad cell count for %s\n", __func__,
+		printf("%s: Bad cell count for %s\n", __FUNCTION__,
 		       fdt_get_name(blob, parent, NULL));
 		return -EINVAL;
 		goto out;
@@ -1462,10 +1454,8 @@ int fdt_node_offset_by_compat_reg(void *blob, const char *compat,
 					phys_addr_t compat_off)
 {
 	int len, off = fdt_node_offset_by_compatible(blob, -1, compat);
-
 	while (off != -FDT_ERR_NOTFOUND) {
 		const fdt32_t *reg = fdt_getprop(blob, off, "reg", &len);
-
 		if (reg) {
 			if (compat_off == fdt_translate_address(blob, off, reg))
 				return off;
@@ -1611,7 +1601,7 @@ int fdt_set_node_status(void *fdt, int nodeoffset,
  *	    FDT_STATUS_FAIL, FDT_STATUS_FAIL_ERROR_CODE
  * @error_code: optional, only used if status is FDT_STATUS_FAIL_ERROR_CODE
  */
-int fdt_set_status_by_alias(void *fdt, const char *alias,
+int fdt_set_status_by_alias(void *fdt, const char* alias,
 			    enum fdt_status status, unsigned int error_code)
 {
 	int offset = fdt_path_offset(fdt, alias);
@@ -1672,8 +1662,8 @@ int fdt_verify_alias_address(void *fdt, int anode, const char *alias, u64 addr)
 
 	node = fdt_path_offset(fdt, path);
 	if (node < 0) {
-		printf("Warning: device tree alias '%s' points to invalid node %s.\n",
-			alias, path);
+		printf("Warning: device tree alias '%s' points to invalid "
+		       "node %s.\n", alias, path);
 		return 0;
 	}
 
@@ -1899,7 +1889,6 @@ int fdt_fixup_display(void *blob, const char *path, const char *display)
 	     off >= 0;
 	     off = fdt_next_subnode(blob, off)) {
 		uint32_t h = fdt_get_phandle(blob, off);
-
 		debug("%s:0x%x\n", fdt_get_name(blob, off, NULL),
 		      fdt32_to_cpu(h));
 		if (strcasecmp(fdt_get_name(blob, off, NULL), display) == 0)

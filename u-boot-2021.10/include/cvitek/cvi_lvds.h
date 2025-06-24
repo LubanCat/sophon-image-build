@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2021. All rights reserved.
  *

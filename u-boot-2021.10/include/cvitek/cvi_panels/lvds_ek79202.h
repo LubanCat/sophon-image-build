@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _LVDS_EK79202_H_
 #define _LVDS_EK79202_H_
 

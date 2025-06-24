@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org> et al.
  *

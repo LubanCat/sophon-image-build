@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-
 #include <common.h>
 #include <command.h>
 #include <asm/io.h>
@@ -31,8 +29,7 @@ static uint32_t lastend;
 uint32_t update_magic;
 
 
-#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA) && \
-	(!defined ATHENA2_FPGA_PALLDIUM_ENV)
+#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA)
 static uint32_t bcd2hex4(uint32_t bcd)
 {
 	return ((bcd) & 0x0f) + (((bcd) >> 4) & 0xf0) + (((bcd) >> 8) & 0xf00) + (((bcd) >> 12) & 0xf000);
@@ -41,7 +38,7 @@ static uint32_t bcd2hex4(uint32_t bcd)
 static int _storage_update(enum storage_type_e type);
 #endif
 
-int _prg_image(char *file, uint32_t chunk_header_size, char *file_name)
+int _prgImage(char *file, uint32_t chunk_header_size, char *file_name)
 {
 	uint32_t size = *(uint32_t *)((uintptr_t)file + 4);
 	uint32_t offset = *(uint32_t *)((uintptr_t)file + 8);
@@ -115,9 +112,8 @@ int _prg_image(char *file, uint32_t chunk_header_size, char *file_name)
 	return size;
 }
 
-#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA) && \
-	(!defined ATHENA2_FPGA_PALLDIUM_ENV)
-static int _check_header(char *file, char str_storage[10])
+#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA)
+static int _checkHeader(char *file, char strStorage[10])
 {
 	char *magic = (void *)HEADER_ADDR;
 	uint32_t version = *(uint32_t *)((uintptr_t)HEADER_ADDR + 4);
@@ -126,7 +122,7 @@ static int _check_header(char *file, char str_storage[10])
 	uint32_t file_sz = *(uint32_t *)((uintptr_t)HEADER_ADDR + 16);
 #ifdef CONFIG_NAND_SUPPORT
 	char *extra = (void *)((uintptr_t)HEADER_ADDR + 20);
-	static char prev_extra[EXTRA_FLAG_SIZE + 1] = { '\0' };
+	static char prevExtra[EXTRA_FLAG_SIZE + 1] = { '\0' };
 #endif
 	int ret = strncmp(magic, HEADER_MAGIC, 4);
 
@@ -139,9 +135,9 @@ static int _check_header(char *file, char str_storage[10])
 	uint32_t pos = HEADER_SIZE;
 #ifdef CONFIG_NAND_SUPPORT
 	// Erase partition first
-	if (strncmp(extra, prev_extra, EXTRA_FLAG_SIZE)) {
-		strncpy(prev_extra, extra, EXTRA_FLAG_SIZE);
-		snprintf(cmd, 255, "nand erase.part -y %s", prev_extra);
+	if (strncmp(extra, prevExtra, EXTRA_FLAG_SIZE)) {
+		strncpy(prevExtra, extra, EXTRA_FLAG_SIZE);
+		snprintf(cmd, 255, "nand erase.part -y %s", prevExtra);
 		pr_debug("%s\n", cmd);
 		run_command(cmd, 0);
 	}
@@ -150,14 +146,14 @@ static int _check_header(char *file, char str_storage[10])
 		uint32_t load_size = file_sz > (MAX_LOADSIZE + chunk_sz) ?
 				     MAX_LOADSIZE + chunk_sz :
 				     file_sz;
-		snprintf(cmd, 255, "fatload %s %p %s 0x%x 0x%x;", str_storage,
+		snprintf(cmd, 255, "fatload %s %p %s 0x%x 0x%x;", strStorage,
 			 (void *)UPDATE_ADDR, file, load_size, pos);
 		pr_debug("%s\n", cmd);
 		ret = run_command(cmd, 0);
 		if (ret)
 			return ret;
 
-		ret = _prg_image((void *)UPDATE_ADDR, chunk_sz, file);
+		ret = _prgImage((void *)UPDATE_ADDR, chunk_sz, file);
 		if (ret == 0) {
 			printf("program file:%s failed\n", file);
 			break;
@@ -172,7 +168,7 @@ static int _storage_update(enum storage_type_e type)
 {
 	int ret = 0;
 	char cmd[255] = { '\0' };
-	char str_storage[10] = { '\0' };
+	char strStorage[10] = { '\0' };
 	uint8_t sd_index = 0;
 	uint8_t fip_name[16] = {0};
 
@@ -180,11 +176,11 @@ static int _storage_update(enum storage_type_e type)
 		printf("Start SD downloading...\n");
 		// Consider SD card with MBR as default
 #if defined(CONFIG_NAND_SUPPORT) || defined(CONFIG_SPI_FLASH)
-		strlcpy(str_storage, "mmc 0:1", 9);
+		strlcpy(strStorage, "mmc 0:1", 9);
 		sd_index = 0;
 #elif defined(CONFIG_EMMC_SUPPORT)
 		sd_index = 1;
-		strlcpy(str_storage, "mmc 1:1", 9);
+		strlcpy(strStorage, "mmc 1:1", 9);
 #endif
 		snprintf(cmd, 255, "mmc dev %u:1 SD_HS", sd_index);
 		run_command(cmd, 0);
@@ -193,22 +189,22 @@ static int _storage_update(enum storage_type_e type)
 #else
 		strcpy(fip_name, "fip.bin");
 #endif
-		snprintf(cmd, 255, "fatload %s %p %s;", str_storage,
+		snprintf(cmd, 255, "fatload %s %p %s;", strStorage,
 			 (void *)HEADER_ADDR, fip_name);
 		ret = run_command(cmd, 0);
 		if (ret) {
 			// Consider SD card without MBR
 			printf("** Trying use partition 0 (without MBR) **\n");
 #if defined(CONFIG_NAND_SUPPORT) || defined(CONFIG_SPI_FLASH)
-			strlcpy(str_storage, "mmc 0:0", 9);
+			strlcpy(strStorage, "mmc 0:0", 9);
 			sd_index = 0;
 #elif defined(CONFIG_EMMC_SUPPORT)
 			sd_index = 1;
-			strlcpy(str_storage, "mmc 1:0", 9);
+			strlcpy(strStorage, "mmc 1:0", 9);
 #endif
 			snprintf(cmd, 255, "mmc dev %u:0 SD_HS", sd_index);
 			run_command(cmd, 0);
-			snprintf(cmd, 255, "fatload %s %p %s;", str_storage,
+			snprintf(cmd, 255, "fatload %s %p %s;", strStorage,
 				 (void *)HEADER_ADDR, fip_name);
 			ret = run_command(cmd, 0);
 			if (ret)
@@ -243,7 +239,7 @@ static int _storage_update(enum storage_type_e type)
 			return ret;
 	}
 	for (int i = 1; i < ARRAY_SIZE(imgs); i++) {
-		snprintf(cmd, 255, "fatload %s %p %s 0x%x 0;", str_storage,
+		snprintf(cmd, 255, "fatload %s %p %s 0x%x 0;", strStorage,
 			 (void *)HEADER_ADDR, imgs[i], HEADER_SIZE);
 		pr_debug("%s\n", cmd);
 		ret = run_command(cmd, 0);
@@ -251,7 +247,7 @@ static int _storage_update(enum storage_type_e type)
 			printf("load %s failed, skip it!\n", imgs[i]);
 			continue;
 		}
-		if (_check_header(imgs[i], str_storage))
+		if (_checkHeader(imgs[i], strStorage))
 			continue;
 	}
 	return 0;
@@ -300,7 +296,7 @@ static int _usb_update(uint32_t usb_pid)
 			pr_debug("cvi_utask failed(%d)\n", ret);
 			return ret;
 		}
-		//_prg_image((void *)UPDATE_ADDR, readl(HEADER_ADDR + 8));
+		//_prgImage((void *)UPDATE_ADDR, readl(HEADER_ADDR + 8));
 	};
 	return 0;
 }
@@ -332,7 +328,14 @@ int uart_download(void *buf, const char *filename)
 		return ret;
 	}
 
+	uint32_t version = *(uint32_t *)((uintptr_t)HEADER_ADDR + 4);
 	uint32_t chunk_header_sz = *(uint32_t *)((uintptr_t)HEADER_ADDR + 8);
+	uint32_t total_chunk = *(uint32_t *)((uintptr_t)HEADER_ADDR + 12);
+	uint32_t file_sz = *(uint32_t *)((uintptr_t)HEADER_ADDR + 16);
+#ifdef CONFIG_NAND_SUPPORT
+	char *extra = (void *)((uintptr_t)HEADER_ADDR + 20);
+	static char prevExtra[EXTRA_FLAG_SIZE + 1] = { '\0' };
+#endif
 
 	ret = strncmp(magic, HEADER_MAGIC, 4);
 	if (ret) {
@@ -340,10 +343,35 @@ int uart_download(void *buf, const char *filename)
 		return ret;
 	}
 
-	ret = _prg_image((void *)(HEADER_ADDR + HEADER_SIZE), chunk_header_sz, NULL);
-	if (ret == 0) {
-		printf("Program file %s failed!\n", filename);
-		return ret;
+	printf("Header Version:%d\n", version);
+	uint32_t pos = HEADER_SIZE;
+#ifdef CONFIG_NAND_SUPPORT
+	// Erase partition first
+	if (strncmp(extra, prevExtra, EXTRA_FLAG_SIZE)) {
+		strncpy(prevExtra, extra, EXTRA_FLAG_SIZE);
+		snprintf(cmd, 255, "nand erase.part -y %s", prevExtra);
+		pr_debug("%s\n", cmd);
+		run_command(cmd, 0);
+	}
+#endif
+
+	for (int i = 0; i < total_chunk; i++) {
+		uint32_t load_size = file_sz > (MAX_LOADSIZE + chunk_header_sz) ?
+				     MAX_LOADSIZE + chunk_header_sz :
+				     file_sz;
+		snprintf(cmd, 255, "loadb %p %d ", (void *)UPDATE_ADDR, UART_DL_BAUDRATE);
+		pr_debug("%s\n", cmd);
+		ret = run_command(cmd, 0);
+		if (ret)
+			return ret;
+
+		ret = _prgImage((void *)UPDATE_ADDR, chunk_header_sz, NULL);
+		if (ret == 0) {
+			printf("program file:%s failed\n", filename);
+			break;
+		}
+		pos += load_size;
+		file_sz -= load_size;
 	}
 	return 0;
 }
@@ -408,8 +436,7 @@ static int do_cvi_update(struct cmd_tbl *cmdtp, int flag, int argc,
 			 char *const argv[])
 {
 
-#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA) && \
-	(!defined ATHENA2_FPGA_PALLDIUM_ENV)
+#if (!defined CONFIG_TARGET_CVITEK_CV181X_FPGA) && (!defined CONFIG_TARGET_CVITEK_ATHENA2_FPGA)
 	int ret = 1;
 	uint32_t usb_pid = 0;
 

@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _COMMON_VIP_H_
 #define _COMMON_VIP_H_
 

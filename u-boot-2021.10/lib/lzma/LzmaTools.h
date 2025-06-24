@@ -13,6 +13,6 @@
 
 #include <lzma/LzmaTypes.h>
 
-extern int lzma_buff_to_buff_decompress (unsigned char *outStream, SizeT *uncompressedSize,
+extern int lzmaBuffToBuffDecompress (unsigned char *outStream, SizeT *uncompressedSize,
 			      unsigned char *inStream,  SizeT  length);
 #endif

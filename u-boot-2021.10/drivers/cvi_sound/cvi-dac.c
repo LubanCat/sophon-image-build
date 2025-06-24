@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2023 bitmain
- */
-
 #include <dm/device.h>
 #include "cvi-dac.h"
 #include <audio_codec.h>
@@ -292,19 +287,19 @@ int cv182xdac_ioctl(u32 cmd, struct cvi_vol_ctrl vol, u32 val)
 static void dump_182xdac_reg(struct cv182xdac *dac)
 {
 #ifdef __DEBUG__
-printf("AUDIO_PHY_TXDAC_CTRL0 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_CTRL0));
-printf("AUDIO_PHY_TXDAC_CTRL1 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_CTRL1));
-printf("AUDIO_PHY_TXDAC_AFE0 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE0));
-printf("AUDIO_PHY_TXDAC_AFE1 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1));
-printf("AUDIO_PHY_TXDAC_ANA0 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA0));
-printf("AUDIO_PHY_TXDAC_ANA1 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA1));
-printf("AUDIO_PHY_TXDAC_ANA2 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA2));
+printf("AUDIO_PHY_TXDAC_CTRL0 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_CTRL0));
+printf("AUDIO_PHY_TXDAC_CTRL1 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_CTRL1));
+printf("AUDIO_PHY_TXDAC_AFE0 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE0));
+printf("AUDIO_PHY_TXDAC_AFE1 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_AFE1));
+printf("AUDIO_PHY_TXDAC_ANA0 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA0));
+printf("AUDIO_PHY_TXDAC_ANA1 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA1));
+printf("AUDIO_PHY_TXDAC_ANA2 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA2));
 
-printf("status :\n");
-printf("AUDIO_PHY_TXDAC_ANA3 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA3));
-printf("AUDIO_PHY_RXADC_STATUS = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_STATUS));
-printf("AUDIO_PHY_RXADC_ANA1 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_ANA1));
-printf("AUDIO_PHY_RXADC_ANA4 = 0x%x\n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_ANA4));
+printf("status : \n");
+printf("AUDIO_PHY_TXDAC_ANA3 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_TXDAC_ANA3));
+printf("AUDIO_PHY_RXADC_STATUS = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_STATUS));
+printf("AUDIO_PHY_RXADC_ANA1 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_ANA1));
+printf("AUDIO_PHY_RXADC_ANA4 = 0x%x \n", dac_read_reg(dac->dac_base, AUDIO_PHY_RXADC_ANA4));
 #endif
 
 }

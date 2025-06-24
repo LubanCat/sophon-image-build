@@ -54,7 +54,7 @@ static int cvitekub_sound_stop_play(struct udevice *dev)
 
 static int cvitekub_sound_probe(struct udevice *dev)
 {
-	printf("%s\n", __func__);
+	printf("cvitekub_sound_probe\n");
 	int ret = 0;
 	struct sound_uc_priv *uc_priv = dev_get_uclass_priv(dev);
 

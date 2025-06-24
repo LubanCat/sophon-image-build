@@ -450,8 +450,8 @@ static inline void usb_ep_fifo_flush(struct usb_ep *ep)
 /*-------------------------------------------------------------------------*/
 
 struct usb_dcd_config_params {
-	__u8  b_u1_dev_exit_lat;	/* U1 Device exit Latency */
-	__le16 b_u2_dev_exit_lat;	/* U2 Device exit Latency */
+	__u8  bU1devExitLat;	/* U1 Device exit Latency */
+	__le16 bU2DevExitLat;	/* U2 Device exit Latency */
 };
 
 struct usb_gadget;

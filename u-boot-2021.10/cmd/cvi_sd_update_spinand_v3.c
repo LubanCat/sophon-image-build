@@ -72,7 +72,7 @@
 
 #define BIT(nr)			(1UL << (nr))
 
-#define PTR_INC(base, offset) (void *)((u8 *)(base) + (offset))
+#define PTR_INC(base, offset) (void *)((uint8_t *)(base) + (offset))
 #define GET_PG_IDX_IN_BLK(x, y) ((x) % (y))
 #define GET_BLK_IDX(x, y) ((x) / (y))
 
@@ -84,56 +84,56 @@
 #define FIP_NO_AVAILABLE_BLOCK 1
 
 struct _spi_nand_info_t {
-	u32 version;
-	u32 id;
-	u32 page_size;
+	uint32_t version;
+	uint32_t id;
+	uint32_t page_size;
 
-	u32 spare_size;
-	u32 block_size;
-	u32 pages_per_block;
+	uint32_t spare_size;
+	uint32_t block_size;
+	uint32_t pages_per_block;
 
-	u32 fip_block_cnt;
-	u8 pages_per_block_shift;
-	u8 badblock_pos;
-	u8 dummy_data1[2];
-	u32 flags;
-	u8 ecc_en_feature_offset;
-	u8 ecc_en_mask;
-	u8 ecc_status_offset;
-	u8 ecc_status_mask;
-	u8 ecc_status_shift;
-	u8 ecc_status_uncorr_val;
-	u8 dummy_data2[2];
-	u32 erase_count; // erase count for sys base block
-	u8 sck_l;
-	u8 sck_h;
-	u16 max_freq;
-	u32 sample_param;
-	u8 xtal_switch;
-	u8 dummy_data3[71];
+	uint32_t fip_block_cnt;
+	uint8_t pages_per_block_shift;
+	uint8_t badblock_pos;
+	uint8_t dummy_data1[2];
+	uint32_t flags;
+	uint8_t ecc_en_feature_offset;
+	uint8_t ecc_en_mask;
+	uint8_t ecc_status_offset;
+	uint8_t ecc_status_mask;
+	uint8_t ecc_status_shift;
+	uint8_t ecc_status_uncorr_val;
+	uint8_t dummy_data2[2];
+	uint32_t erase_count; // erase count for sys base block
+	uint8_t sck_l;
+	uint8_t sck_h;
+	uint16_t max_freq;
+	uint32_t sample_param;
+	uint8_t xtal_switch;
+	uint8_t dummy_data3[71];
 };
 
 #define FIP_BK_TAG_SIZE	4
 /* the header should start with FIH1, FIB1+sequence number */
 struct block_header_t {
-	u8 tag[FIP_BK_TAG_SIZE];
-	u32 bk_cnt_or_seq; /* for first block, it is block count. Otherwise, it is sequence number */
-	u32 checknum; /* the check number to make sure all fip header and body are consistent */
-	u32 dummy;
+	uint8_t tag[FIP_BK_TAG_SIZE];
+	uint32_t bk_cnt_or_seq; /* for first block, it is block count. Otherwise, it is sequence number */
+	uint32_t checknum; /* the check number to make sure all fip header and body are consistent */
+	uint32_t dummy;
 };
 
 struct _fip_param1_t {
-	u64 magic1;
-	u32 magic2;
-	u32 param_cksum;
+	uint64_t magic1;
+	uint32_t magic2;
+	uint32_t param_cksum;
 	struct _spi_nand_info_t nand_info;
 };
 
 struct _fip_info_t {
-	u8 bk_position[SPI_NAND_FIP_RSVD_BLOCK_COUNT / 2];
-	u32 checknum[SPI_NAND_FIP_RSVD_BLOCK_COUNT / 2];
-	u8 total_count;
-	u16 current_bk_mask;
+	uint8_t bk_position[SPI_NAND_FIP_RSVD_BLOCK_COUNT / 2];
+	uint32_t checknum[SPI_NAND_FIP_RSVD_BLOCK_COUNT / 2];
+	uint8_t total_count;
+	uint16_t current_bk_mask;
 };
 
 struct _spi_nand_info_t *g_spi_nand_info;
@@ -142,9 +142,9 @@ struct _spi_nand_info_t spinand_info;
 static char spi_nand_defect_bk_list[(MAX_BLOCK_CNT / 8) + 1];
 static char spi_nand_bk_usage_list[(MAX_BLOCK_CNT / 8) + 1];
 
-static u8 spi_nand_g_param_init = 0xff;
-u8 *pg_buf;
-u32 g_virgin_start;
+static uint8_t spi_nand_g_param_init = 0xff;
+uint8_t *pg_buf;
+uint32_t g_virgin_start;
 
 //int spi_nand_flush_vec(void);
 //void spi_nand_dump_vec(void);
@@ -241,9 +241,10 @@ static void spi_nand_global_param_init(void)
 
 	get_spi_nand_info();
 
-	pg_buf = (u8 *)malloc(info->page_size + info->spare_size);
+	pg_buf = (uint8_t *)malloc(info->page_size + info->spare_size);
 
 	spi_nand_g_param_init = 1;
+
 }
 
 /*
@@ -265,7 +266,7 @@ static int spi_nand_scan_defect(void)
 	memset(spi_nand_bk_usage_list, 0, (MAX_BLOCK_CNT / 8) + 1);
 
 	for (u32 blk_id = 0; blk_id < info->fip_block_cnt; blk_id++) {
-		u32 pg = blk_id << info->pages_per_block_shift;
+		uint32_t pg = blk_id << info->pages_per_block_shift;
 
 		host->addr_value[1] = pg;
 		cvsnfc_send_cmd_erase(host);
@@ -351,14 +352,14 @@ int fip_reallocate_and_recovery(struct _fip_info_t *fip, int fip_idx, int bk_idx
 	struct cvsnfc_host *host = cvsnfc_get_host();
 	int status;
 	void *temp_buf;
-	u8 bk_shift;
+	uint8_t bk_shift;
 	int bk_page_id;
 	int target_page_id;
 	int blk_id;
 
 	bk_shift = info->pages_per_block_shift;
 
-	temp_buf = (u8 *)malloc(info->page_size);
+	temp_buf = (uint8_t *)malloc(info->page_size);
 
 	/* erase original block first */
 	host->addr_value[1] = (fip + fip_idx)->bk_position[bk_idx] << bk_shift;
@@ -421,7 +422,7 @@ int fip_block_recover(struct _fip_info_t *fip, int bk_idx, int backup_fip, int t
 	int backup_page_id;
 	int target_page_id;
 
-	temp_buf = (u8 *)malloc(info->page_size);
+	temp_buf = (uint8_t *)malloc(info->page_size);
 	for (int pg_idx = 0; pg_idx < info->pages_per_block; pg_idx++) {
 
 		backup_page_id = ((fip + backup_fip)->bk_position[bk_idx] << info->pages_per_block_shift) + pg_idx;
@@ -572,9 +573,9 @@ int fip_check_page_and_recovery(struct _fip_info_t *fip)
 	struct _spi_nand_info_t *info = &spinand_info;
 	struct cvsnfc_host *host = cvsnfc_get_host();
 	int status;
-	u8	erase_and_recover = 0;
-	u8 fip_idx = 0;
-	u8 bk_shift;
+	uint8_t	erase_and_recover = 0;
+	uint8_t fip_idx = 0;
+	uint8_t bk_shift;
 
 	bk_shift = info->pages_per_block_shift;
 
@@ -642,8 +643,9 @@ int check_and_update_fip_bin(void)
 
 	memset(pg_buf, 0, sizeof(pg_sz));
 	memset(&fip_info, 0xff, sizeof(struct _fip_info_t) * SPI_NAND_BASE_DATA_BACKUP_COPY);
-	for (int i = 0; i < SPI_NAND_BASE_DATA_BACKUP_COPY; i++)
+	for (int i = 0; i < SPI_NAND_BASE_DATA_BACKUP_COPY; i++) {
 		fip_info[i].current_bk_mask = 0x0;
+	}
 	memset(spi_nand_defect_bk_list, 0, (MAX_BLOCK_CNT / 8) + 1);
 	memset(spi_nand_bk_usage_list, 0, (MAX_BLOCK_CNT / 8) + 1);
 
@@ -755,9 +757,9 @@ int check_and_update_fip_bin(void)
 	return 0;
 }
 
-static u32 spi_nand_crc16_ccitt_with_tag(unsigned char *buf, int len)
+static uint32_t spi_nand_crc16_ccitt_with_tag(unsigned char *buf, int len)
 {
-	u32 crc = 0;
+	uint32_t crc = 0;
 
 	crc = crc16_ccitt(0, buf, len);
 	crc |= 0xCAFE0000;
@@ -785,7 +787,7 @@ static int spi_nand_flush_fip_bin(void *buf)
 	u32 blk_idx = 0;
 	u32 blk_id = 0;
 	u32 src_len;
-	u8 *temp_buf;
+	uint8_t *temp_buf;
 	unsigned int checknum;
 
 	srand(get_timer(0));
@@ -822,18 +824,18 @@ static int spi_nand_flush_fip_bin(void *buf)
 
 	pg_per_blk = info->pages_per_block;
 
-	temp_buf = (u8 *)malloc(info->page_size);
+	temp_buf = (uint8_t *)malloc(info->page_size);
 
 	for (u32 i = 0; i < SPI_NAND_BASE_DATA_BACKUP_COPY; i++) {
 		u32 offset_in_buf = 0;
-		u8 wrote_bk_cnt = 0;
+		uint8_t wrote_bk_cnt = 0;
 
 		printf("write %d copy of fip\n", i + 1);
 
 		for (u32 pg_idx_in_buf = 0; pg_idx_in_buf < ttl_pg_cnt_to_write; pg_idx_in_buf++) {
 			u32 pg_idx_in_blk;
 
-			u8 block_damage = 0;
+			uint8_t block_damage = 0;
 
 			pg_idx_in_blk = GET_PG_IDX_IN_BLK(pg_idx_in_buf, pg_per_blk);
 			blk_idx = GET_BLK_IDX(pg_idx_in_buf, pg_per_blk);
@@ -843,11 +845,11 @@ static int spi_nand_flush_fip_bin(void *buf)
 			if (pg_idx_in_blk == 0) {
 				if (wrote_bk_cnt == 0) { /* Fill FIP image first block header */
 					struct _fip_param1_t *temp_fip_param;
-					u32 crc = 0;
+					uint32_t crc = 0;
 					int param_crc_size;
 
 					memcpy(bk_header.tag, FIP_IMAGE_HEAD, 4);
-					bk_header.bk_cnt_or_seq = (u32)ttl_block_cnt_to_write;
+					bk_header.bk_cnt_or_seq = (uint32_t)ttl_block_cnt_to_write;
 					bk_header.checknum = checknum;
 					memcpy(temp_buf, &bk_header, bk_overhead);
 					temp_fip_param = src_buf_addr;
@@ -864,7 +866,7 @@ static int spi_nand_flush_fip_bin(void *buf)
 
 				} else { /* Fill remaining FIP image body */
 					memcpy(bk_header.tag, FIP_IMAGE_BODY, 4);
-					bk_header.bk_cnt_or_seq = (u32)wrote_bk_cnt;
+					bk_header.bk_cnt_or_seq = (uint32_t)wrote_bk_cnt;
 					bk_header.checknum = checknum;
 					memcpy(temp_buf, &bk_header, bk_overhead);
 					if (pg_idx_in_buf == (ttl_pg_cnt_to_write - 1)) { /* last page */
@@ -965,7 +967,7 @@ int spi_nand_fip_download(void *buf)
 /*
  * This function is entry point of u-boot download process
  */
-int do_cvi_update_spinand(u32 component, void *addr)
+int do_cvi_update_spinand(uint32_t component, void *addr)
 {
 	printf("%s with version 0x%x\n", __func__, SPI_NAND_VERSION);
 

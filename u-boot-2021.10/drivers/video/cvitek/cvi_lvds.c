@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2020. All rights reserved.
+ *
  */
 
 #include <common.h>
@@ -54,8 +54,9 @@ int lvds_init(struct cvi_lvds_cfg_s *lvds_cfg)
 			continue;
 		}
 		dphy_dsi_set_lane(i, lvds_cfg->lane_id[i], lvds_cfg->lane_pn_swap[i], false);
-		if (lvds_cfg->lane_id[i] != VO_LVDS_LANE_CLK)
+		if (lvds_cfg->lane_id[i] != VO_LVDS_LANE_CLK) {
 			data_en[lvds_cfg->lane_id[i] - 1] = true;
+		}
 	}
 
 	dphy_dsi_lane_en(true, data_en, false);

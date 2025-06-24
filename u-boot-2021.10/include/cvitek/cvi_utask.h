@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _BM_USB_H_
 #define _BM_USB_H_
 int cvi_usb_polling(void);

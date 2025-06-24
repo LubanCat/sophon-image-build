@@ -63,7 +63,6 @@ int fit_find_config_node(const void *fdt)
 
 		if (dflt_conf_name) {
 			const char *node_name = fdt_get_name(fdt, node, NULL);
-
 			if (strcmp(dflt_conf_name, node_name) == 0) {
 				dflt_conf_node = node;
 				dflt_conf_desc = name;

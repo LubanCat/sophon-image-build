@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2020. All rights reserved.
+ *
  */
 
 #ifndef _CVI_DSI_PHY_H_
@@ -26,6 +26,7 @@ void dphy_dsi_set_pll(u32 clkkHz, u8 lane, u8 bits);
 void dphy_lvds_enable(bool en);
 void dphy_lvds_set_pll(u32 clkkHz, u8 link);
 void dphy_dsi_analog_setting(bool is_lvds);
+void vip_sys_clk_setting(u32 value);
 
 void dpyh_mipi_tx_manual_packet(const u8 *data, u8 count);
 

@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2023 bitmain
- */
-
 #include <common.h>
 #include <linux/mtd/nand.h>
 #include "cvsnfc_spi_ids.h"
@@ -117,8 +112,9 @@ static int spi_nand_winbond_select_die(struct cvsnfc_op *spi, unsigned int id)
 	struct cvsnfc_host *host = (struct cvsnfc_host *)spi->host;
 	static uint8_t pre_id = 0xff;
 
-	if (id == pre_id)
+	if (id == pre_id) {
 		return 0;
+	}
 
 	// Select Die
 	cvsfc_write(host, REG_SPI_NAND_TRX_CTRL2, 0x1);
@@ -1281,6 +1277,30 @@ struct cvsnfc_chip_info cvsnfc_spi_nand_flash_table[] = {
 		.xtal_switch = 1,
 	},
 
+	{
+		.name      = "XT26G02CWSIGA",
+		.id        = {0x0b, 0x12},
+		.id_len    = 2,
+		.chipsize  = _256M,
+		.erasesize = _128K,
+		.pagesize  = _2K,
+		.oobsize   = 128,
+		.badblock_pos = BBP_FIRST_PAGE,
+		.driver    = &spi_nand_driver_gd,
+		.flags = FLAGS_SET_QE_BIT | FLAGS_ENABLE_X2_BIT | FLAGS_ENABLE_X4_BIT,
+		.ecc_en_feature_offset = 0xb0, /* Configuration register */
+		.ecc_en_mask = 1 << 4, /* bit 4 */
+		.ecc_status_offset = 0xc0, /* Status register */
+		.ecc_status_mask = 0xF0, /* bit 4 & 5 & 6 & 7 */
+		.ecc_status_shift = 4,
+		.ecc_status_uncorr_val = 0xF,
+		.sck_l = 1,
+		.sck_h = 0,
+		.max_freq = SPI_NAND_FREQ_62MHz,
+		.sample_param = 0x40001000,
+		.xtal_switch = 1,
+	},
+
 	/* TOSHIBA TC58CVG1S3HxAIx 2Gbit */
 	{
 
@@ -1527,7 +1547,7 @@ struct cvsnfc_chip_info cvsnfc_spi_nand_flash_table[] = {
 		.sample_param = 0x40001000,
 		.xtal_switch = 1,
 	},
-
+  
 	{
 		.name      = "F35SQA512M",
 		.id        = {0xcd, 0x70, 0x70},

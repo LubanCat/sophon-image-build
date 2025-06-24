@@ -14,8 +14,6 @@
 #include "../../board/cvitek/cv181x/cv181x_reg.h"
 #elif IS_ENABLED(CONFIG_TARGET_CVITEK_CV180X)
 #include "../../board/cvitek/cv180x/cv180x_reg.h"
-#elif IS_ENABLED(CONFIG_TARGET_CVITEK_ATHENA2)
-#include "../../board/cvitek/athena2/athena2_reg.h"
 #endif
 
 #define DW_WDT_CR	0x00
@@ -103,7 +101,7 @@ static int designware_wdt_stop(struct udevice *dev)
 	designware_wdt_reset(dev);
 	writel(0, priv->base + DW_WDT_CR);
 
-	if (CONFIG_IS_ENABLED(DM_RESET)) {
+        if (CONFIG_IS_ENABLED(DM_RESET)) {
 		int ret;
 
 		ret = reset_assert_bulk(&priv->resets);

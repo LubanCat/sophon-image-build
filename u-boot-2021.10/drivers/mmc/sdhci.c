@@ -53,7 +53,6 @@ static void sdhci_reset(struct sdhci_host *host, u8 mask)
 static void sdhci_cmd_done(struct sdhci_host *host, struct mmc_cmd *cmd)
 {
 	int i;
-
 	if (cmd->resp_type & MMC_RSP_136) {
 		/* CRC is stripped so we need to do some shifting. */
 		for (i = 0; i < 4; i++) {
@@ -72,7 +71,6 @@ static void sdhci_transfer_pio(struct sdhci_host *host, struct mmc_data *data)
 {
 	int i;
 	char *offs;
-
 	for (i = 0; i < data->blocksize; i += 4) {
 		offs = data->dest + i;
 		if (data->flags == MMC_DATA_READ)
@@ -252,7 +250,8 @@ static int sdhci_send_command(struct mmc *mmc, struct mmc_cmd *cmd,
 
 	mask = SDHCI_CMD_INHIBIT | SDHCI_DATA_INHIBIT;
 
-	/* We shouldn't wait for data inihibit for stop commands, even though they might use busy signaling */
+	/* We shouldn't wait for data inihibit for stop commands, even
+	   though they might use busy signaling */
 	if (cmd->cmdidx == MMC_CMD_STOP_TRANSMISSION ||
 	    ((cmd->cmdidx == MMC_CMD_SEND_TUNING_BLOCK ||
 	      cmd->cmdidx == MMC_CMD_SEND_TUNING_BLOCK_HS200) && !data))
@@ -347,8 +346,9 @@ static int sdhci_send_command(struct mmc *mmc, struct mmc_cmd *cmd,
 	} else
 		ret = -1;
 
-	if (!ret && data)
+	if (!ret && data) {
 		ret = sdhci_transfer_data(host, data);
+	}
 
 	if (host->quirks & SDHCI_QUIRK_WAIT_SEND_CMD)
 		udelay(1000);
@@ -863,7 +863,6 @@ int sdhci_setup_cfg(struct mmc_config *cfg, struct sdhci_host *host,
 	u32 caps, caps_1 = 0;
 #if CONFIG_IS_ENABLED(DM_MMC)
 	u64 dt_caps, dt_caps_mask;
-
 	dt_caps_mask = dev_read_u64_default(host->mmc->dev,
 					    "sdhci-caps-mask", 0);
 	dt_caps = dev_read_u64_default(host->mmc->dev,

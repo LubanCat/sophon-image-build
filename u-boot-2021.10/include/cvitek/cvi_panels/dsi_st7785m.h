@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _MIPI_TX_PARAM_ST7785M_H_
 #define _MIPI_TX_PARAM_ST7785M_H_
 

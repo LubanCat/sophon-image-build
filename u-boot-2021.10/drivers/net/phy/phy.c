@@ -991,14 +991,17 @@ struct phy_device *fixed_phy_create(ofnode node)
 	ofnode subnode;
 
 	if_str = ofnode_read_string(node, "phy-mode");
-	if (!if_str)
+	if (!if_str) {
 		if_str = ofnode_read_string(node, "phy-interface-type");
-	if (if_str)
+	}
+	if (if_str) {
 		interface = phy_get_interface_by_name(if_str);
+	}
 
 	subnode = ofnode_find_subnode(node, "fixed-link");
-	if (!ofnode_valid(subnode))
+	if (!ofnode_valid(subnode)) {
 		return NULL;
+	}
 
 	phydev = phy_device_create(NULL, 0, PHY_FIXED_ID, false, interface);
 	if (phydev)

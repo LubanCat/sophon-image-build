@@ -113,7 +113,7 @@ int spl_load_legacy_img(struct spl_image_info *spl_image,
 		}
 
 		load->read(load, dataptr, spl_image->size, src);
-		ret = lzma_buff_to_buff_decompress((void *)spl_image->load_addr,
+		ret = lzmaBuffToBuffDecompress((void *)spl_image->load_addr,
 					       &lzma_len, src, spl_image->size);
 		if (ret) {
 			printf("LZMA decompression error: %d\n", ret);

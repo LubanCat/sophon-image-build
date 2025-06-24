@@ -219,6 +219,9 @@ static int mmc_load_image_raw_partition(struct spl_image_info *spl_image,
 #endif
 
 #ifdef CONFIG_SPL_OS_BOOT
+#ifndef CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR
+#define CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR	SPL_BOOT_PART_OFFSET
+#endif
 static int mmc_load_image_raw_os(struct spl_image_info *spl_image,
 				 struct mmc *mmc)
 {

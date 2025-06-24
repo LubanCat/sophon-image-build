@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _I80_PARAM_ST7789V_H_
 #define _I80_PARAM_ST7789V_H_
 

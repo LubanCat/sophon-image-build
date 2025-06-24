@@ -1155,7 +1155,7 @@ config SPL_USB_STORAGE
 	  device.
 
 config SPL_USB_GADGET
-	bool "Support USB Gadget drivers"
+	bool "Suppport USB Gadget drivers"
 	help
 	  Enable USB Gadget API which allows to enable USB device functions
 	  in SPL.

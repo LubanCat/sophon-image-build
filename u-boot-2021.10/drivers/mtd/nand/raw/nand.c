@@ -107,7 +107,6 @@ static void create_mtd_concat(void)
 
 	for (i = 0; i < CONFIG_SYS_MAX_NAND_DEVICE; i++) {
 		struct mtd_info *mtd = get_nand_dev_by_index(i);
-
 		if (mtd != NULL) {
 			nand_info_list[nand_devices_found] = mtd;
 			nand_devices_found++;
@@ -129,6 +128,8 @@ static void create_mtd_concat(void)
 
 		nand_register(nand_devices_found, mtd);
 	}
+
+	return;
 }
 #else
 static void create_mtd_concat(void)

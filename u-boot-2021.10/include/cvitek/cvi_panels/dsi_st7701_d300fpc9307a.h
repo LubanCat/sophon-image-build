@@ -1,1 +1,0 @@
-../../../../middleware/v2/component/panel/sg200x/dsi_st7701_d300fpc9307a.h

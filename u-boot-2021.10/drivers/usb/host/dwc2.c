@@ -621,30 +621,30 @@ static int dwc_otg_submit_rh_msg_in_descriptor(struct usb_device *dev,
 	uint32_t dsc;
 	int len = 0;
 	int stat = 0;
-	uint16_t w_value = cpu_to_le16(cmd->value);
-	uint16_t w_length = cpu_to_le16(cmd->length);
+	uint16_t wValue = cpu_to_le16(cmd->value);
+	uint16_t wLength = cpu_to_le16(cmd->length);
 
 	switch (cmd->requesttype & ~USB_DIR_IN) {
 	case 0:
-		switch (w_value & 0xff00) {
+		switch (wValue & 0xff00) {
 		case 0x0100:	/* device descriptor */
-			len = min3(txlen, (int)sizeof(root_hub_dev_des), (int)w_length);
+			len = min3(txlen, (int)sizeof(root_hub_dev_des), (int)wLength);
 			memcpy(buffer, root_hub_dev_des, len);
 			break;
 		case 0x0200:	/* configuration descriptor */
-			len = min3(txlen, (int)sizeof(root_hub_config_des), (int)w_length);
+			len = min3(txlen, (int)sizeof(root_hub_config_des), (int)wLength);
 			memcpy(buffer, root_hub_config_des, len);
 			break;
 		case 0x0300:	/* string descriptors */
-			switch (w_value & 0xff) {
+			switch (wValue & 0xff) {
 			case 0x00:
 				len = min3(txlen, (int)sizeof(root_hub_str_index0),
-					   (int)w_length);
+					   (int)wLength);
 				memcpy(buffer, root_hub_str_index0, len);
 				break;
 			case 0x01:
 				len = min3(txlen, (int)sizeof(root_hub_str_index1),
-					   (int)w_length);
+					   (int)wLength);
 				memcpy(buffer, root_hub_str_index1, len);
 				break;
 			}
@@ -681,7 +681,7 @@ static int dwc_otg_submit_rh_msg_in_descriptor(struct usb_device *dev,
 			data[10] = data[9];
 		}
 
-		len = min3(txlen, (int)data[0], (int)w_length);
+		len = min3(txlen, (int)data[0], (int)wLength);
 		memcpy(buffer, data, len);
 		break;
 	default:
@@ -750,7 +750,7 @@ static int dwc_otg_submit_rh_msg_out(struct dwc2_priv *priv,
 	int len = 0;
 	int stat = 0;
 	uint16_t bmrtype_breq = cmd->requesttype | (cmd->request << 8);
-	uint16_t w_value = cpu_to_le16(cmd->value);
+	uint16_t wValue = cpu_to_le16(cmd->value);
 
 	switch (bmrtype_breq & ~USB_DIR_IN) {
 	case (USB_REQ_CLEAR_FEATURE << 8) | USB_RECIP_ENDPOINT:
@@ -758,7 +758,7 @@ static int dwc_otg_submit_rh_msg_out(struct dwc2_priv *priv,
 		break;
 
 	case (USB_REQ_CLEAR_FEATURE << 8) | USB_RECIP_OTHER | USB_TYPE_CLASS:
-		switch (w_value) {
+		switch (wValue) {
 		case USB_PORT_FEAT_C_CONNECTION:
 			setbits_le32(&regs->hprt0, DWC2_HPRT0_PRTCONNDET);
 			break;
@@ -766,7 +766,7 @@ static int dwc_otg_submit_rh_msg_out(struct dwc2_priv *priv,
 		break;
 
 	case (USB_REQ_SET_FEATURE << 8) | USB_RECIP_OTHER | USB_TYPE_CLASS:
-		switch (w_value) {
+		switch (wValue) {
 		case USB_PORT_FEAT_SUSPEND:
 			break;
 
@@ -793,7 +793,7 @@ static int dwc_otg_submit_rh_msg_out(struct dwc2_priv *priv,
 		}
 		break;
 	case (USB_REQ_SET_ADDRESS << 8):
-		priv->root_hub_devnum = w_value;
+		priv->root_hub_devnum = wValue;
 		break;
 	case (USB_REQ_SET_CONFIGURATION << 8):
 		break;
@@ -970,7 +970,6 @@ int chunk_msg(struct dwc2_priv *priv, struct usb_device *dev,
 		uint8_t hub_addr;
 		uint8_t hub_port;
 		uint32_t hprt0 = readl(&regs->hprt0);
-
 		if ((hprt0 & DWC2_HPRT0_PRTSPD_MASK) ==
 		     DWC2_HPRT0_PRTSPD_HIGH) {
 			usb_find_usb2_hub_address_port(dev, &hub_addr,
@@ -987,7 +986,6 @@ int chunk_msg(struct dwc2_priv *priv, struct usb_device *dev,
 		int actual_len = 0;
 		uint32_t hcint;
 		int odd_frame = 0;
-
 		xfer_len = len - done;
 
 		if (xfer_len > max_xfer_len)
@@ -1004,7 +1002,6 @@ int chunk_msg(struct dwc2_priv *priv, struct usb_device *dev,
 
 		if (eptype == DWC2_HCCHAR_EPTYPE_INTR) {
 			int uframe_num = readl(&host_regs->hfnum);
-
 			if (!(uframe_num & 0x1))
 				odd_frame = 1;
 		}
@@ -1063,7 +1060,7 @@ int _submit_bulk_msg(struct dwc2_priv *priv, struct usb_device *dev,
 {
 	int devnum = usb_pipedevice(pipe);
 	int ep = usb_pipeendpoint(pipe);
-	u8 *pid;
+	u8* pid;
 
 	if ((devnum >= MAX_DEVICE) || (devnum == priv->root_hub_devnum)) {
 		dev->status = 0;

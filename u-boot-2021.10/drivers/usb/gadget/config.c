@@ -31,7 +31,7 @@
  * sets of descriptors need to be cv181xhaled.
  */
 int
-usb_descriptor_fillbuf(void *buf, unsigned int buflen,
+usb_descriptor_fillbuf(void *buf, unsigned buflen,
 		const struct usb_descriptor_header **src)
 {
 	u8	*dest = buf;
@@ -40,8 +40,8 @@ usb_descriptor_fillbuf(void *buf, unsigned int buflen,
 		return -EINVAL;
 
 	/* fill buffer from src[] until null descriptor ptr */
-	for (; *src != NULL; src++) {
-		unsigned int		len = (*src)->b_length;
+	for (; NULL != *src; src++) {
+		unsigned		len = (*src)->bLength;
 
 		if (len > buflen)
 			return -EINVAL;
@@ -65,18 +65,18 @@ usb_descriptor_fillbuf(void *buf, unsigned int buflen,
  *
  * This copies descriptors into the response buffer, building a descriptor
  * for that configuration.  It returns the buffer length or a negative
- * status code.  The config.w_total_length field is set to match the length
+ * status code.  The config.wTotalLength field is set to match the length
  * of the result, but other descriptor fields (including power usage and
  * interface count) must be set by the caller.
  *
  * Gadget drivers could use this when constructing a config descriptor
  * in response to USB_REQ_GET_DESCRIPTOR.  They will need to patch the
- * resulting b_descriptor_type value if USB_DT_OTHER_SPEED_CONFIG is needed.
+ * resulting bDescriptorType value if USB_DT_OTHER_SPEED_CONFIG is needed.
  */
 int usb_gadget_config_buf(
 	const struct usb_config_descriptor	*config,
 	void					*buf,
-	unsigned int				length,
+	unsigned				length,
 	const struct usb_descriptor_header	**desc
 )
 {
@@ -99,9 +99,9 @@ int usb_gadget_config_buf(
 		return -EINVAL;
 
 	/* patch up the config descriptor */
-	cp->b_length = USB_DT_CONFIG_SIZE;
-	cp->b_descriptor_type = USB_DT_CONFIG;
-	put_unaligned_le16(len, &cp->w_total_length);
-	cp->bm_attributes |= USB_CONFIG_ATT_ONE;
+	cp->bLength = USB_DT_CONFIG_SIZE;
+	cp->bDescriptorType = USB_DT_CONFIG;
+	put_unaligned_le16(len, &cp->wTotalLength);
+	cp->bmAttributes |= USB_CONFIG_ATT_ONE;
 	return len;
 }

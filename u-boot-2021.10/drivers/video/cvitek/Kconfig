@@ -56,6 +56,14 @@ config DISPLAY_CVITEK_I80
 	  interfaces, LCD controller signals are divided into two types:
 	  data signals and control signals.
 
+config DISPLAY_CVITEK_I80_HW
+	bool "I80 Port"
+	help
+	  This enables Intel 8080(I80) display support.
+	  Intel 8080 (I80) is one kind of the most common LCD MPU parallel
+	  interfaces, LCD controller signals are divided into two types:
+	  data signals and control signals.
+
 config DISPLAY_CVITEK_MIPI
 	bool "DSI Port"
 	help

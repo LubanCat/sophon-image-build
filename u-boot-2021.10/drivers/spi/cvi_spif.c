@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2021. All rights reserved.
  *
@@ -112,8 +111,8 @@ static uint8_t cvitek_spi_data_out_tran(struct cvitek_spi_priv *priv, struct spi
 	int i;
 	struct spi_slave *spi = flash->spi;
 
-	debug("%s: flags 0x%lx, opcode 0x%x, spi->mode 0x%x\n",
-	      __func__, flags, flash->program_opcode, spi->mode);
+	debug("cvitek_spi_data_out_tran(): flags 0x%lx, opcode 0x%x, spi->mode 0x%x\n",
+	      flags, flash->program_opcode, spi->mode);
 
 	if (data_bytes > 65535) {
 		printf("data out overflow, should be less than 65535 bytes(%d)\n", data_bytes);
@@ -145,7 +144,7 @@ static uint8_t cvitek_spi_data_out_tran(struct cvitek_spi_priv *priv, struct spi
 	mmio_write_16(spi_base + REG_SPI_TRAN_NUM, data_bytes);
 	tran_csr |= BIT_SPI_TRAN_CSR_GO_BUSY;
 
-	debug("%s tran_csr 0x%x\n", __func__, tran_csr);
+	debug("cvitek_spi_data_out_tran tran_csr 0x%x\n", tran_csr);
 
 	mmio_write_16(spi_base + REG_SPI_TRAN_CSR, tran_csr);
 
@@ -387,6 +386,22 @@ static int cvitek_spi_set_mode(struct udevice *bus, uint mode)
 
 	return 0;
 }
+
+#if 0
+static bool cvitek_spi_supports_op(struct spi_slave *slave,
+				 const struct spi_mem_op *op)
+{
+	debug("%s\n", __func__);
+	return true;
+}
+
+static int cvitek_spi_adjust_op_size(struct spi_slave *slave,
+				   struct spi_mem_op *op)
+{
+	debug("%s\n", __func__);
+	return 0;
+}
+#endif
 
 static int cvitek_spi_exec_op(struct spi_slave *slave,
 			    const struct spi_mem_op *op)

@@ -32,13 +32,13 @@ static int check_channel(struct udevice *dev, int value, bool number_or_mask,
 			 const char *caller_function)
 {
 	struct adc_uclass_plat *uc_pdata = dev_get_uclass_plat(dev);
-	unsigned int mask = number_or_mask ? (1 << value) : value;
+	unsigned mask = number_or_mask ? (1 << value) : value;
 
 	/* For the real ADC hardware, some ADC channels can be inactive.
 	 * For example if device has 4 analog channels, and only channels
 	 * 1-st and 3-rd are valid, then channel mask is: 0b1010, so request
 	 * with mask 0b1110 should return an error.
-	 */
+	*/
 	if ((uc_pdata->channel_mask >= mask) && (uc_pdata->channel_mask & mask))
 		return 0;
 

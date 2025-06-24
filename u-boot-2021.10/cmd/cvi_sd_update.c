@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-
 #include <stdlib.h>
 #include <common.h>
 #include <config.h>
@@ -15,12 +13,12 @@
 //------------------------------------------------------------------------------
 //  data type definitions: typedef, struct or class
 //------------------------------------------------------------------------------
-#define PTR_INC(base, offset) (void *)((u8 *)(base) + (offset))
+#define PTR_INC(base, offset) (void *)((uint8_t *)(base) + (offset))
 
 static int do_cvi_sd_update(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
 	char *addr;
-	u32 component = 0;
+	uint32_t component = 0;
 
 	if (argc != 4) {
 		printf("Usage:\n%s\n", cmdtp->usage);

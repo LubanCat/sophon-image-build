@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright (C) 2023 bitmain
  */
@@ -18,10 +17,10 @@
 
 #define CONFIG_SYS_I2S_SYS_BASE	0x04108000
 
-#define REG_AUDIO_SRC_BASE	0x041D0000
-#define REG_AUDIO_MISC_BASE	0x041D0C00
+#define REG_AUDIO_SRC_BASE 		0x041D0000
+#define REG_AUDIO_MISC_BASE 	0x041D0C00
 
-#define REG_AUDIO_GPIO_BASE	0x0300A12C
+#define REG_AUDIO_GPIO_BASE		0x0300A12C
 #define CONFIG_USE_AUDIO_PLL
 #define CONFIG_SHIFT_HALF_T
 //shit 1/2 T for inv, ex master generate data at falling edge and let codec sample at rising edge//

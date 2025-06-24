@@ -42,7 +42,7 @@ struct gpio_dwapb_plat {
 	void __iomem	*base;
 };
 
-static int dwapb_gpio_direction_input(struct udevice *dev, unsigned int pin)
+static int dwapb_gpio_direction_input(struct udevice *dev, unsigned pin)
 {
 	struct gpio_dwapb_plat *plat = dev_get_plat(dev);
 
@@ -50,7 +50,7 @@ static int dwapb_gpio_direction_input(struct udevice *dev, unsigned int pin)
 	return 0;
 }
 
-static int dwapb_gpio_direction_output(struct udevice *dev, unsigned int pin,
+static int dwapb_gpio_direction_output(struct udevice *dev, unsigned pin,
 				     int val)
 {
 	struct gpio_dwapb_plat *plat = dev_get_plat(dev);
@@ -65,7 +65,7 @@ static int dwapb_gpio_direction_output(struct udevice *dev, unsigned int pin,
 	return 0;
 }
 
-static int dwapb_gpio_set_value(struct udevice *dev, unsigned int pin, int val)
+static int dwapb_gpio_set_value(struct udevice *dev, unsigned pin, int val)
 {
 	struct gpio_dwapb_plat *plat = dev_get_plat(dev);
 
@@ -77,7 +77,7 @@ static int dwapb_gpio_set_value(struct udevice *dev, unsigned int pin, int val)
 	return 0;
 }
 
-static int dwapb_gpio_get_function(struct udevice *dev, unsigned int offset)
+static int dwapb_gpio_get_function(struct udevice *dev, unsigned offset)
 {
 	struct gpio_dwapb_plat *plat = dev_get_plat(dev);
 	u32 gpio;
@@ -90,7 +90,7 @@ static int dwapb_gpio_get_function(struct udevice *dev, unsigned int offset)
 		return GPIOF_INPUT;
 }
 
-static int dwapb_gpio_get_value(struct udevice *dev, unsigned int pin)
+static int dwapb_gpio_get_value(struct udevice *dev, unsigned pin)
 {
 	struct gpio_dwapb_plat *plat = dev_get_plat(dev);
 	u32 value;

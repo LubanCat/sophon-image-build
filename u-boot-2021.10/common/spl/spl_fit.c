@@ -335,15 +335,14 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 		}
 		length = size;
 	} else if (IS_ENABLED(CONFIG_SPL_LZMA) && image_comp == IH_COMP_LZMA) {
-		__maybe_unused size_t lzma_len = 0x4000000;
-		if (lzma_buff_to_buff_decompress((void *)load_ptr, &lzma_len, src, length)) {
+		__maybe_unused SizeT lzma_len = 0x4000000;
+		if (lzmaBuffToBuffDecompress((void *)load_ptr, &lzma_len, src, length)) {
 			printf("error [%s : %d] load_ptr=0x%p, lzma_len=0x%lx, src=0x%p, length=0x%lx\n",
 				__func__, __LINE__, load_ptr, lzma_len, src, length);
 		}
 		length = lzma_len;
 	} else if (IS_ENABLED(CONFIG_SPL_LZ4) && image_comp == IH_COMP_LZ4) {
 		size_t lz4_len = 0x4000000;
-
 		if (ulz4fn(src, length, (void *)load_ptr, &lz4_len)) {
 			printf("error [%s : %d] load_ptr=0x%p, lz4_len=0x%lx, src=0x%p, length=0x%lx\n",
 				__func__, __LINE__, load_ptr, lz4_len, src, length);
@@ -365,7 +364,7 @@ static int spl_load_fit_image(struct spl_load_info *info, ulong sector,
 	}
 
 	// lmb_reserve(&images->lmb, images->os.load, (load_end -
-	//						images->os.load));
+	// 					    images->os.load));
 	return 0;
 }
 
@@ -381,15 +380,14 @@ static bool os_takes_devicetree(uint8_t os)
 	}
 }
 
+
 static int spl_image_setup_libfdt(struct spl_image_info image_info, const struct spl_fit_info *ctx)
 {
 	bootm_headers_t images;
 	void *blob = (void *)image_info.load_addr;
 	int of_size = image_info.size;
-
 	debug("error ctx->fit=0x%p, of_size=0x%x, image_info->size=0x%x\n", blob, of_size, image_info.size);
 	struct lmb *lmb;
-
 	images.initrd_start = 0;
 	images.initrd_end = 0;
 
@@ -617,7 +615,6 @@ static int spl_fit_image_get_os(const void *fit, int noffset, uint8_t *os)
 		return fit_image_get_os(fit, noffset, os);
 
 	const char *name = fdt_getprop(fit, noffset, FIT_OS_PROP, NULL);
-
 	if (!name)
 		return -ENOENT;
 

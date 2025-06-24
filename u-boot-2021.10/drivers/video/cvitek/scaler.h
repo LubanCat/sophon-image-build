@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _CVI_SCL_H_
 #define _CVI_SCL_H_
 
@@ -386,6 +384,7 @@ enum sclr_vo_sel {
 	SCLR_VO_SEL_BT656,
 	SCLR_VO_SEL_BT1120,
 	SCLR_VO_SEL_BT1120R,
+	SCLR_VO_SEL_I80_HW = 9,
 	SCLR_VO_SEL_MAX,
 };
 
@@ -393,6 +392,7 @@ enum sclr_vo_intf {
 	SCLR_VO_INTF_DISABLE,
 	SCLR_VO_INTF_SW,
 	SCLR_VO_INTF_I80,
+	SCLR_VO_INTF_I80_HW,
 	SCLR_VO_INTF_BT601,
 	SCLR_VO_INTF_BT656,
 	SCLR_VO_INTF_BT1120,
@@ -486,5 +486,15 @@ union sclr_intr sclr_intr_status(void);
 
 int set_disp_ctrl_gpios(struct disp_ctrl_gpios *ctrl_gpios);
 int get_disp_ctrl_gpios(struct disp_ctrl_gpios *ctrl_gpios);
+
+void sclr_disp_mux_sel(enum sclr_vo_sel sel);
+void sclr_top_vo_mux_sel(int vo_sel, int vo_mux);
+void i80_set_cmd0(u32 cmd);
+void i80_set_cmd1(u32 cmd);
+void i80_set_cmd2(u32 cmd);
+void i80_set_cmd3(u32 cmd);
+void i80_set_cmd_cnt(u32 cmdcnt);
+void i80_trig(void);
+void sclr_disp_set_mcu_en(u8 mode);
 
 #endif  //_CVI_SCL_H_

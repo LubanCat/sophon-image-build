@@ -282,8 +282,7 @@ static void rx_descs_init(struct dw_eth_dev *priv)
 	 * flushed into RAM.
 	 * Otherwise there's a chance to get some of them flushed in RAM when
 	 * GMAC is already pushing data to RAM via DMA. This way incoming from
-	 * GMAC data will be corrupted.
-	 */
+	 * GMAC data will be corrupted. */
 	flush_dcache_range((ulong)rxbuffs, (ulong)rxbuffs + RX_TOTAL_BUFSIZE);
 
 	for (idx = 0; idx < CONFIG_RX_DESCR_NUM; idx++) {

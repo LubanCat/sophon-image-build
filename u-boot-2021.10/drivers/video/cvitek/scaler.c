@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-
 #include <common.h>
 #include <linux/delay.h>
 #include "vip_common.h"
@@ -867,7 +865,7 @@ void sclr_bt_get(union sclr_bt_enc *enc, union sclr_bt_sync_code *sync)
 
 void sclr_disp_mux_sel(enum sclr_vo_sel sel)
 {
-	_reg_write_mask(reg_base + REG_SCL_TOP_VO_MUX, 0x07, sel);
+	_reg_write_mask(reg_base + REG_SCL_TOP_VO_MUX, 0xF, sel);
 }
 
 void sclr_disp_set_intf(enum sclr_vo_intf intf)
@@ -895,6 +893,9 @@ void sclr_disp_set_intf(enum sclr_vo_intf intf)
 		sclr_disp_mux_sel(SCLR_VO_SEL_I80);
 		dphy_dsi_lane_en(true, data_en, false);
 		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_IF_CTRL, BIT(0), 1);
+	} else if (intf == SCLR_VO_INTF_I80_HW) {
+		dphy_dsi_lane_en(true, data_en, false);
+		_reg_write(reg_base + REG_SCL_DISP_MCU_IF_CTRL, 0x4);
 	} else if (intf == SCLR_VO_INTF_SW) {
 		sclr_disp_mux_sel(SCLR_VO_SEL_SW);
 	} else if (intf == SCLR_VO_INTF_MIPI) {
@@ -1426,3 +1427,85 @@ int get_disp_ctrl_gpios(struct disp_ctrl_gpios *ctrl_gpios)
 	return 0;
 }
 
+void sclr_top_vo_mux_sel(int vo_sel, int vo_mux)
+{
+	if (vo_sel == 0) {
+		_reg_write_mask(reg_base + REG_SCL_TOP_VO_MUX7, BIT(20), BIT(20));
+	} else if (vo_sel == 1) {
+		_reg_write_mask(reg_base + REG_SCL_TOP_VO_MUX7, BIT(21), BIT(21));
+	}
+	u32 value = 0;
+	u32 reg_addr = REG_SCL_TOP_VO_MUX0 + (vo_sel / 4) * 4;
+	u32 offset = (vo_sel % 4) * 8;
+
+	value = _reg_read(reg_base + reg_addr);
+	value |= (vo_mux << offset);
+	_reg_write(reg_base + reg_addr, value);
+}
+
+void i80_set_cmd0(u32 cmd)
+{
+	_reg_write(reg_base + REG_SCL_DISP_MCU_HW_CMD0, cmd);
+}
+
+void i80_set_cmd1(u32 cmd)
+{
+	cmd = (_reg_read(reg_base + REG_SCL_DISP_MCU_HW_CMD0) | cmd << 16);
+	_reg_write(reg_base + REG_SCL_DISP_MCU_HW_CMD0, cmd);
+}
+
+void i80_set_cmd2(u32 cmd)
+{
+	_reg_write(reg_base + REG_SCL_DISP_MCU_HW_CMD1, cmd);
+}
+
+void i80_set_cmd3(u32 cmd)
+{
+	cmd = (_reg_read(reg_base + REG_SCL_DISP_MCU_HW_CMD1) | cmd << 16);
+	_reg_write(reg_base + REG_SCL_DISP_MCU_HW_CMD1, cmd);
+}
+
+void i80_set_cmd_cnt(u32 cmdcnt)
+{
+	if (cmdcnt == 1) {
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(4), 0);
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(5), 0);
+	}
+	if (cmdcnt == 2) {
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(4), BIT(4));
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(5), 0);
+	}
+	if (cmdcnt == 3) {
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(4), 0);
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(5), BIT(5));
+	}
+	if (cmdcnt == 4) {
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(4), BIT(4));
+		_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(5), BIT(5));
+	}
+}
+
+void i80_trig(void)
+{
+	int cnt = 0;
+
+	_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(0), 0);
+	_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(0), 1);
+
+	do {
+		udelay(1);
+		if (_reg_read(reg_base + REG_SCL_DISP_MCU_HW_CMD) & BIT(3)) {
+			break;
+		}
+	} while (++cnt < 10);
+
+	if (cnt == 10)
+		printf("[I80] %s: hw  mcu cmd not ready.\n", __func__);
+
+	_reg_write_mask(reg_base + REG_SCL_DISP_MCU_HW_CMD, BIT(3), BIT(3));
+}
+
+void sclr_disp_set_mcu_en(u8 mode)
+{
+	_reg_write(reg_base + REG_SCL_DISP_MCU_HW_AUTO, mode ? 0x9 : 0x19);
+}

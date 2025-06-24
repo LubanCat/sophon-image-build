@@ -579,7 +579,7 @@ int initr_mem(void)
 	char memsz[32];
 
 	pram = env_get_ulong("pram", 10, CONFIG_PRAM);
-	sprintf(memsz, "%ldk", (long)((gd->ram_size / 1024) - pram));
+	sprintf(memsz, "%ldk", (long int)((gd->ram_size / 1024) - pram));
 	env_set("mem", memsz);
 
 	return 0;

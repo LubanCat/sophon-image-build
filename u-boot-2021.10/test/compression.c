@@ -219,7 +219,7 @@ static int uncompress_using_lzma(struct unit_test_state *uts,
 	int ret;
 	SizeT inout_size = out_max;
 
-	ret = lzma_buff_to_buff_decompress(out, &inout_size, in, in_size);
+	ret = lzmaBuffToBuffDecompress(out, &inout_size, in, in_size);
 	if (out_size)
 		*out_size = inout_size;
 

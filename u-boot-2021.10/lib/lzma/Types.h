@@ -208,9 +208,9 @@ typedef struct
 
 typedef struct
 {
-  void *(*alloc)(void *p, size_t size);
-  void (*free)(void *p, void *address); /* address can be 0 */
-} i_sz_alloc;
+  void *(*Alloc)(void *p, size_t size);
+  void (*Free)(void *p, void *address); /* address can be 0 */
+} ISzAlloc;
 
 #define IAlloc_Alloc(p, size) (p)->Alloc((p), size)
 #define IAlloc_Free(p, a) (p)->Free((p), a)

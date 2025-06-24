@@ -81,4 +81,5 @@ SECTIONS
 		. = ALIGN(8);
 		__bss_end = .;
 	} > .spl_mem
+	__bss_size = __bss_end - __bss_start;
 }

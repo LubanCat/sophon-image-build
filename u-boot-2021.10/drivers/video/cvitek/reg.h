@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _CVI_REG_H_
 #define _CVI_REG_H_
 

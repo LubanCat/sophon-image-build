@@ -152,7 +152,6 @@ static void nand_release_device(struct mtd_info *mtd)
 uint8_t nand_read_byte(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd_to_nand(mtd);
-
 	return readb(chip->IO_ADDR_R);
 }
 
@@ -166,7 +165,6 @@ uint8_t nand_read_byte(struct mtd_info *mtd)
 static uint8_t nand_read_byte16(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd_to_nand(mtd);
-
 	return (uint8_t) cpu_to_le16(readw(chip->IO_ADDR_R));
 }
 
@@ -179,7 +177,6 @@ static uint8_t nand_read_byte16(struct mtd_info *mtd)
 static u16 nand_read_word(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd_to_nand(mtd);
-
 	return readw(chip->IO_ADDR_R);
 }
 
@@ -269,7 +266,7 @@ static void ioread8_rep(void *addr, uint8_t *buf, int len)
 static void ioread16_rep(void *addr, void *buf, int len)
 {
 	int i;
-	u16 *p = (u16 *) buf;
+ 	u16 *p = (u16 *) buf;
 
 	for (i = 0; i < len; i++)
 		p[i] = readw(addr);
@@ -278,10 +275,10 @@ static void ioread16_rep(void *addr, void *buf, int len)
 static void iowrite16_rep(void *addr, void *buf, int len)
 {
 	int i;
-	u16 *p = (u16 *) buf;
+        u16 *p = (u16 *) buf;
 
-	for (i = 0; i < len; i++)
-		writew(p[i], addr);
+        for (i = 0; i < len; i++)
+                writew(p[i], addr);
 }
 
 /**
@@ -374,9 +371,13 @@ static int nand_block_bad(struct mtd_info *mtd, loff_t ofs)
 			else
 				bad &= 0xFF;
 		} else {
-			chip->cmdfunc(mtd, NAND_CMD_READOOB, chip->badblockpos,
-					page);
-			bad = chip->read_byte(mtd);
+			res = chip->ecc.read_oob(mtd, chip, page);
+			if (res < 0) {
+				printf("[%s] read oob area fail !\n", __FUNCTION__);
+				return res;
+			}
+
+			bad = chip->oob_poi[chip->badblockpos];
 		}
 
 		if (likely(chip->badblockbits == 8))
@@ -449,7 +450,7 @@ static int nand_default_block_markbad(struct mtd_info *mtd, loff_t ofs)
  *  (3) update the BBT
  * Note that we retain the first error encountered in (2) or (3), finish the
  * procedures, and dump the error in the end.
- */
+*/
 static int nand_block_markbad_lowlevel(struct mtd_info *mtd, loff_t ofs)
 {
 	struct nand_chip *chip = mtd_to_nand(mtd);
@@ -848,7 +849,6 @@ static int
 nand_get_device(struct mtd_info *mtd, int new_state)
 {
 	struct nand_chip *chip = mtd_to_nand(mtd);
-
 	chip->state = new_state;
 	return 0;
 }
@@ -867,7 +867,6 @@ static void panic_nand_wait(struct mtd_info *mtd, struct nand_chip *chip,
 			    unsigned long timeo)
 {
 	int i;
-
 	for (i = 0; i < timeo; i++) {
 		if (chip->dev_ready) {
 			if (chip->dev_ready(mtd))
@@ -913,11 +912,11 @@ static int nand_wait(struct mtd_info *mtd, struct nand_chip *chip)
 	if (ret)
 		return ret;
 
-	u32 timer = (CONFIG_SYS_HZ * timeo) / 1000;
-	u32 time_start;
+ 	u32 timer = (CONFIG_SYS_HZ * timeo) / 1000;
+ 	u32 time_start;
 
-	time_start = get_timer(0);
-	while (get_timer(time_start) < timer) {
+ 	time_start = get_timer(0);
+ 	while (get_timer(time_start) < timer) {
 		if (chip->dev_ready) {
 			if (chip->dev_ready(mtd))
 				break;
@@ -2625,7 +2624,7 @@ static int nand_do_read_oob(struct mtd_info *mtd, loff_t from,
 	uint8_t *buf = ops->oobbuf;
 	int ret = 0;
 
-	pr_debug("%s: from = 0x%08llx, len = %i\n",
+	pr_debug("%s: from = 0x%08Lx, len = %i\n",
 			__func__, (unsigned long long)from, readlen);
 
 	stats = mtd->ecc_stats;
@@ -3238,7 +3237,6 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 
 		if (unlikely(oob)) {
 			size_t len = min(oobwritelen, oobmaxlen);
-
 			oob = nand_fill_oob(mtd, oob, len, ops);
 			oobwritelen -= len;
 		} else {
@@ -3888,9 +3886,9 @@ struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	chip->bbt_erase_shift = chip->phys_erase_shift =
 		ffs(mtd->erasesize) - 1;
 	if (chip->chipsize & 0xffffffff)
-		chip->chip_shift = ffs((unsigned int)chip->chipsize) - 1;
+		chip->chip_shift = ffs((unsigned)chip->chipsize) - 1;
 	else {
-		chip->chip_shift = ffs((unsigned int)(chip->chipsize >> 32));
+		chip->chip_shift = ffs((unsigned)(chip->chipsize >> 32));
 		chip->chip_shift += 32 - 1;
 	}
 
@@ -4074,7 +4072,9 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips,
 		chip->select_chip(mtd, -1);
 	}
 
+#ifndef CONFIG_SPL_BUILD
 	check_and_update_fip_bin();
+#endif
 
 #ifdef DEBUG
 	if (i > 1)

@@ -910,9 +910,9 @@ struct nand_chip {
 	int (*block_markbad)(struct mtd_info *mtd, loff_t ofs);
 	void (*cmd_ctrl)(struct mtd_info *mtd, int dat, unsigned int ctrl);
 	int (*dev_ready)(struct mtd_info *mtd);
-	void (*cmdfunc)(struct mtd_info *mtd, unsigned int command, int column,
+	void (*cmdfunc)(struct mtd_info *mtd, unsigned command, int column,
 			int page_addr);
-	int (*waitfunc)(struct mtd_info *mtd, struct nand_chip *this);
+	int(*waitfunc)(struct mtd_info *mtd, struct nand_chip *this);
 	int (*erase)(struct mtd_info *mtd, int page);
 	int (*scan_bbt)(struct mtd_info *mtd);
 	int (*write_page)(struct mtd_info *mtd, struct nand_chip *chip,
@@ -1112,7 +1112,7 @@ struct nand_flash_dev {
  * struct nand_manufacturers - NAND Flash Manufacturer ID Structure
  * @name:	Manufacturer name
  * @id:		manufacturer ID code of device.
- */
+*/
 struct nand_manufacturers {
 	int id;
 	char *name;
@@ -1131,8 +1131,8 @@ int nand_do_read(struct mtd_info *mtd, loff_t from, size_t len,
 			size_t *retlen, uint8_t *buf);
 
 /*
- * Constants for oob configuration
- */
+* Constants for oob configuration
+*/
 #define NAND_SMALL_BADBLOCK_POS		5
 #define NAND_LARGE_BADBLOCK_POS		0
 

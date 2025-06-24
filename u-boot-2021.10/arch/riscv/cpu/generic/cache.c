@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-
 #include <linux/types.h>
 #include <cpu_func.h>
 
@@ -53,13 +51,16 @@ void flush_dcache_range(unsigned long start, unsigned long end)
 #if CV181X_UBOOT_USE_DCACHE_API || ATHENA2_UBOOT_USE_DCACHE_API
 void dcache_enable(void)
 {
-	asm volatile("csrs mhcr, %0;" ::"rI"(0x2));
+	asm volatile(
+		"csrs mhcr, %0;" ::"rI"(0x2)
+	);
 }
 
 void dcache_disable(void)
 {
 	flush_dcache_range(0x80000000, 0x80000000 + CONFIG_SYS_BOOTMAPSZ);
-	asm volatile("csrc mhcr, %0;" ::"rI"(0x2));
+	asm volatile(
+		"csrc mhcr, %0;" ::"rI"(0x2)
+	);
 }
 #endif
-

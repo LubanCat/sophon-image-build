@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2020. All rights reserved.
+ *
  */
 
 #include <common.h>
@@ -49,6 +49,7 @@ unsigned int _MAKECOLOR(unsigned char r, unsigned char g, unsigned char b, enum 
 	return (b1 | (g1 << b_len) | (r1 << (b_len + g_len)));
 }
 
+#if 1
 /* 90 rotation */
 void i80_package_frame(unsigned char *in, unsigned char *out, unsigned int stride, unsigned char byte_cnt,
 		       unsigned short w, unsigned short h)
@@ -84,6 +85,68 @@ void i80_package_frame(unsigned char *in, unsigned char *out, unsigned int strid
 	b_out[h - 1][w * byte_cnt * 2 + 1] = i80_ctrl[I80_CTRL_EOF];
 	b_out[h - 1][w * byte_cnt * 2 + 2] = I80_OP_DONE;
 }
+#else
+static void _i80_package_eol(unsigned char buffer[3])
+{
+	buffer[0] = 0xff;
+	buffer[1] = i80_ctrl[I80_CTRL_EOF];
+	buffer[2] = I80_OP_GO;
+}
+
+static void _i80_package_eof(unsigned char buffer[3])
+{
+	buffer[0] = 0x00;
+	buffer[1] = i80_ctrl[I80_CTRL_EOF];
+	buffer[2] = I80_OP_DONE;
+}
+
+static void _i80_package_rgb(unsigned char r, unsigned char g, unsigned char b,
+			     unsigned char *buffer, unsigned char byte_cnt)
+{
+	unsigned int pixel;
+
+	pixel = _MAKECOLOR(r, g, b, VO_I80_FORMAT_RGB565);
+
+	for (unsigned char i = 0, offset = 0; i < byte_cnt; ++i) {
+		*(buffer + offset++) = pixel >> ((byte_cnt - i - 1) << 3);
+		*(buffer + offset++) = i80_ctrl[I80_CTRL_DATA];
+		*(buffer + offset++) = I80_OP_GO;
+	}
+}
+
+static void _get_frame_rgb(unsigned char **buf, unsigned int stride, unsigned short x, unsigned short y,
+			   unsigned char *r, unsigned char *g, unsigned char *b)
+{
+	unsigned int offset = 3 * x + stride * y;
+	//bgr
+	*b = *(buf[0] + offset);
+	*g = *(buf[0] + offset + 1);
+	*r = *(buf[0] + offset + 2);
+}
+
+void i80_package_frame(unsigned char *in, unsigned char *out, unsigned int stride, unsigned char byte_cnt,
+		       unsigned short w, unsigned short h)
+{
+	unsigned int out_offset = 0;
+	unsigned short line_data = (1 + w * byte_cnt) * 3;
+	unsigned short padding = ALIGN(line_data, 32) - line_data;
+	unsigned char r, g, b;
+
+	for (int y = (h - 1); y >= 0; --y) {
+		for (int x = 0; x < w; ++x) {
+			_get_frame_rgb(&in, stride, x, y, &r, &g, &b);
+			_i80_package_rgb(r, g, b, out + out_offset, byte_cnt);
+			out_offset += byte_cnt * 3;
+		}
+		_i80_package_eol(out + out_offset);
+		out_offset += 3;
+		memset(out + out_offset, 0, padding);
+		out_offset += padding;
+	}
+	// replace last eol with eof
+	_i80_package_eof(out + out_offset - 3 - padding);
+}
+#endif
 
 static void _fill_disp_timing(struct sclr_disp_timing *timing, const struct sync_info_s *sync_info)
 {

@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
 /*
  * Copyright (c) 2013-2014, ARM Limited and Contributors. All rights reserved.
  *
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef __MMIO_H__

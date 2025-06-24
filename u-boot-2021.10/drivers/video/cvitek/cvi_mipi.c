@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) Cvitek Co., Ltd. 2019-2020. All rights reserved.
+ *
  */
 
 #include <common.h>
@@ -152,33 +152,33 @@ int mipi_tx_set_combo_dev_cfg(const struct combo_dev_cfg_s *dev_cfg)
 				ctrl_gpios.disp_power_ct_gpio.flags & GPIOD_ACTIVE_LOW ? 0 : 1);
 	if (ret < 0) {
 		printf("dm_gpio_set_value(disp_power_ct_gpio, deassert) failed: %d", ret);
-		//return ret;
+		return ret;
 	}
 	ret = dm_gpio_set_value(&ctrl_gpios.disp_pwm_gpio,
 				ctrl_gpios.disp_pwm_gpio.flags & GPIOD_ACTIVE_LOW ? 0 : 1);
 	if (ret < 0) {
 		printf("dm_gpio_set_value(disp_pwm_gpio, deassert) failed: %d", ret);
-		//return ret;
+		return ret;
 	}
 	ret = dm_gpio_set_value(&ctrl_gpios.disp_reset_gpio,
 				ctrl_gpios.disp_reset_gpio.flags & GPIOD_ACTIVE_LOW ? 0 : 1);
 	if (ret < 0) {
 		printf("dm_gpio_set_value(disp_reset_gpio, deassert) failed: %d", ret);
-		//return ret;
+		return ret;
 	}
 	mdelay(10);
 	ret = dm_gpio_set_value(&ctrl_gpios.disp_reset_gpio,
 				ctrl_gpios.disp_reset_gpio.flags & GPIOD_ACTIVE_LOW ? 1 : 0);
 	if (ret < 0) {
 		printf("dm_gpio_set_value(disp_reset_gpio, deassert) failed: %d", ret);
-		//return ret;
+		return ret;
 	}
 	mdelay(10);
 	ret = dm_gpio_set_value(&ctrl_gpios.disp_reset_gpio,
 				ctrl_gpios.disp_reset_gpio.flags & GPIOD_ACTIVE_LOW ? 0 : 1);
 	if (ret < 0) {
 		printf("dm_gpio_set_value(disp_reset_gpio, deassert) failed: %d", ret);
-		//return ret;
+		return ret;
 	}
 	mdelay(100);
 
@@ -194,6 +194,14 @@ int mipi_tx_set_cmd(struct cmd_info_s *cmd_info)
 		printf("cmd is NULL, but cmd_size(%d) isn't zero!\n", cmd_info->cmd_size);
 		return -EINVAL;
 	}
+
+#if 0
+	if (cmd_info->cmd_size > 2)
+		pr_info("%s: %#x %#x %#x %#x\n", __func__, cmd_info->cmd[0], cmd_info->cmd[1]
+			, cmd_info->cmd[2], cmd_info->cmd[3]);
+	else
+		pr_info("%s: %#x %#x\n", __func__, cmd_info->cmd[0], cmd_info->cmd[1]);
+#endif
 
 	return sclr_dsi_dcs_write_buffer(cmd_info->data_type, cmd_info->cmd, cmd_info->cmd_size, cmd_mode & 0x01);
 }

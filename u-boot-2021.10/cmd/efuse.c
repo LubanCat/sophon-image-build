@@ -99,7 +99,7 @@ static void cvi_efuse_wait_for_ready(void)
 		;
 }
 
-static void cvi_efuse_power_on(u32 on)
+static void cvi_efuse_power_on(uint32_t on)
 {
 	if (on)
 		mmio_setbits_32(EFUSE_MODE, EFUSE_BIT_CMD);
@@ -112,9 +112,9 @@ static void cvi_efuse_refresh(void)
 	mmio_write_32(EFUSE_MODE, EFUSE_CMD_REFRESH);
 }
 
-static void cvi_efuse_prog_bit(u32 word_addr, u32 bit_addr, u32 high_row)
+static void cvi_efuse_prog_bit(uint32_t word_addr, uint32_t bit_addr, uint32_t high_row)
 {
-	u32 phy_addr;
+	uint32_t phy_addr;
 
 	// word_addr: virtual addr, take "lower 6-bits" from 7-bits (0-127)
 	// bit_addr: virtual addr, 5-bits (0-31)
@@ -129,7 +129,7 @@ static void cvi_efuse_prog_bit(u32 word_addr, u32 bit_addr, u32 high_row)
 	mmio_write_32(EFUSE_MODE, EFUSE_BIT_PRG | EFUSE_BIT_CMD);
 }
 
-static u32 cvi_efuse_read_from_phy(u32 phy_word_addr, enum EFUSE_READ_TYPE type)
+static uint32_t cvi_efuse_read_from_phy(uint32_t phy_word_addr, enum EFUSE_READ_TYPE type)
 {
 	// power on efuse macro
 	cvi_efuse_power_on(1);
@@ -138,13 +138,13 @@ static u32 cvi_efuse_read_from_phy(u32 phy_word_addr, enum EFUSE_READ_TYPE type)
 
 	mmio_write_32(EFUSE_ADR, phy_word_addr);
 
-	if (type == EFUSE_AREAD) { // array read
+	if (type == EFUSE_AREAD) // array read
 		mmio_write_32(EFUSE_MODE, EFUSE_BIT_AREAD | EFUSE_BIT_CMD);
-	} else if (type == EFUSE_MREAD) { // margin read
+	else if (type == EFUSE_MREAD) // margin read
 		mmio_write_32(EFUSE_MODE, EFUSE_BIT_MREAD | EFUSE_BIT_CMD);
-	} else {
+	else {
 		ERROR("EFUSE: Unsupported read type!");
-		return (u32)-1;
+		return (uint32_t)-1;
 	}
 
 	cvi_efuse_wait_for_ready();
@@ -152,10 +152,10 @@ static u32 cvi_efuse_read_from_phy(u32 phy_word_addr, enum EFUSE_READ_TYPE type)
 	return mmio_read_32(EFUSE_RD_DATA);
 }
 
-static int cvi_efuse_write_word(u32 vir_word_addr, u32 val)
+static int cvi_efuse_write_word(uint32_t vir_word_addr, uint32_t val)
 {
-	u32 i, j, row_val, zero_bit;
-	u32 new_value;
+	uint32_t i, j, row_val, zero_bit;
+	uint32_t new_value;
 	int err_cnt = 0;
 
 	for (j = 0; j < 2; j++) {
@@ -198,9 +198,9 @@ static void cvi_efuse_init(void)
 	// need to turn it off manually
 }
 
-void cvi_efuse_dump(u32 vir_word_addr)
+void cvi_efuse_dump(uint32_t vir_word_addr)
 {
-	u32 j, val;
+	uint32_t j, val;
 
 	for (j = 0; j < 2; j++) {
 		// check by margin read
@@ -211,7 +211,7 @@ void cvi_efuse_dump(u32 vir_word_addr)
 	}
 }
 
-s64 cvi_efuse_read_from_shadow(u32 addr)
+int64_t cvi_efuse_read_from_shadow(uint32_t addr)
 {
 	if (addr >= EFUSE_SIZE)
 		return -EFAULT;
@@ -222,7 +222,7 @@ s64 cvi_efuse_read_from_shadow(u32 addr)
 	return mmio_read_32(EFUSE_SHADOW_REG + addr);
 }
 
-int cvi_efuse_write(u32 addr, u32 value)
+int cvi_efuse_write(uint32_t addr, uint32_t value)
 {
 	int ret;
 
@@ -288,7 +288,8 @@ static struct _CVI_EFUSE_USER_S {
 #define CVI_EFUSE_BOOT_LOADER_ENCRYPTION		6
 #define CVI_EFUSE_LDR_KEY_SELECTION_SHIFT		23
 
-CVI_S32 CVI_EFUSE_get_size(enum CVI_EFUSE_AREA_E area, CVI_U32 *size)
+
+CVI_S32 CVI_EFUSE_GetSize(enum CVI_EFUSE_AREA_E area, CVI_U32 *size)
 {
 	if (area >= ARRAY_SIZE(cvi_efuse_area) || cvi_efuse_area[area].size == 0) {
 		_cc_error("area (%d) is not found\n", area);
@@ -301,9 +302,9 @@ CVI_S32 CVI_EFUSE_get_size(enum CVI_EFUSE_AREA_E area, CVI_U32 *size)
 	return 0;
 }
 
-CVI_S32 _CVI_EFUSE_read(CVI_U32 addr, void *buf, CVI_U32 buf_size)
+CVI_S32 _CVI_EFUSE_Read(CVI_U32 addr, void *buf, CVI_U32 buf_size)
 {
-	s64 ret = -1;
+	int64_t ret = -1;
 	int i;
 
 	VERBOSE("%s(): 0x%x(%u) to %p\n", __func__, addr, buf_size, buf);
@@ -320,13 +321,13 @@ CVI_S32 _CVI_EFUSE_read(CVI_U32 addr, void *buf, CVI_U32 buf_size)
 		if (ret < 0)
 			return ret;
 
-		*(u32 *)(buf + i) = (ret >= 0) ? ret : 0;
+		*(uint32_t *)(buf + i) = (ret >= 0) ? ret : 0;
 	}
 
 	return 0;
 }
 
-static CVI_S32 _CVI_EFUSE_write(CVI_U32 addr, const void *buf, CVI_U32 buf_size)
+static CVI_S32 _CVI_EFUSE_Write(CVI_U32 addr, const void *buf, CVI_U32 buf_size)
 {
 	_cc_trace("addr=0x%02x\n", addr);
 
@@ -353,7 +354,7 @@ static CVI_S32 _CVI_EFUSE_write(CVI_U32 addr, const void *buf, CVI_U32 buf_size)
 	return 0;
 }
 
-CVI_S32 CVI_EFUSE_read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size)
+CVI_S32 CVI_EFUSE_Read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size)
 {
 	CVI_U32 user_size = cvi_efuse_area[CVI_EFUSE_AREA_USER].size;
 	CVI_U8 user[user_size], *p;
@@ -374,13 +375,13 @@ CVI_S32 CVI_EFUSE_read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size
 		buf_size = cvi_efuse_area[area].size;
 
 	if (area != CVI_EFUSE_AREA_USER)
-		return _CVI_EFUSE_read(cvi_efuse_area[area].addr, buf, buf_size);
+		return _CVI_EFUSE_Read(cvi_efuse_area[area].addr, buf, buf_size);
 
 	memset(user, 0, user_size);
 
 	p = user;
 	for (i = 0; i < ARRAY_SIZE(cvi_efuse_user); i++) {
-		ret = _CVI_EFUSE_read(cvi_efuse_user[i].addr, p, cvi_efuse_user[i].size);
+		ret = _CVI_EFUSE_Read(cvi_efuse_user[i].addr, p, cvi_efuse_user[i].size);
 		if (ret < 0)
 			return ret;
 		p += cvi_efuse_user[i].size;
@@ -391,7 +392,7 @@ CVI_S32 CVI_EFUSE_read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size
 	return CVI_SUCCESS;
 }
 
-CVI_S32 CVI_EFUSE_write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 buf_size)
+CVI_S32 CVI_EFUSE_Write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 buf_size)
 {
 	CVI_U32 user_size = cvi_efuse_area[CVI_EFUSE_AREA_USER].size;
 	CVI_U8 user[user_size], *p;
@@ -409,14 +410,14 @@ CVI_S32 CVI_EFUSE_write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 b
 		buf_size = cvi_efuse_area[area].size;
 
 	if (area != CVI_EFUSE_AREA_USER)
-		return _CVI_EFUSE_write(cvi_efuse_area[area].addr, buf, buf_size);
+		return _CVI_EFUSE_Write(cvi_efuse_area[area].addr, buf, buf_size);
 
 	memset(user, 0, user_size);
 	memcpy(user, buf, buf_size);
 
 	p = user;
 	for (i = 0; i < ARRAY_SIZE(cvi_efuse_user); i++) {
-		ret = _CVI_EFUSE_write(cvi_efuse_user[i].addr, p, cvi_efuse_user[i].size);
+		ret = _CVI_EFUSE_Write(cvi_efuse_user[i].addr, p, cvi_efuse_user[i].size);
 		if (ret < 0)
 			return ret;
 		p += cvi_efuse_user[i].size;
@@ -425,7 +426,7 @@ CVI_S32 CVI_EFUSE_write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 b
 	return CVI_SUCCESS;
 }
 
-CVI_S32 CVI_EFUSE_enable_secure_boot(u32 sel)
+CVI_S32 CVI_EFUSE_EnableSecureBoot(uint32_t sel)
 {
 	CVI_U32 value = 0;
 
@@ -437,15 +438,15 @@ CVI_S32 CVI_EFUSE_enable_secure_boot(u32 sel)
 		value |= 0x4 << CVI_EFUSE_LDR_KEY_SELECTION_SHIFT;
 	}
 
-	return _CVI_EFUSE_write(CVI_EFUSE_SECURE_CONF_ADDR, &value, sizeof(value));
+	return _CVI_EFUSE_Write(CVI_EFUSE_SECURE_CONF_ADDR, &value, sizeof(value));
 }
 
-CVI_S32 CVI_EFUSE_is_secure_boot_enabled(void)
+CVI_S32 CVI_EFUSE_IsSecureBootEnabled(void)
 {
 	CVI_U32 value = 0;
 	CVI_S32 ret = 0;
 
-	ret = _CVI_EFUSE_read(CVI_EFUSE_SECURE_CONF_ADDR, &value, sizeof(value));
+	ret = _CVI_EFUSE_Read(CVI_EFUSE_SECURE_CONF_ADDR, &value, sizeof(value));
 	_cc_trace("ret=%d value=%u\n", ret, value);
 	if (ret < 0)
 		return ret;
@@ -495,7 +496,7 @@ CVI_S32 CVI_EFUSE_is_secure_boot_enabled(void)
 	return 0;
 }
 
-CVI_S32 CVI_EFUSE_lock(enum CVI_EFUSE_LOCK_E lock)
+CVI_S32 CVI_EFUSE_Lock(enum CVI_EFUSE_LOCK_E lock)
 {
 	CVI_U32 value = 0;
 	CVI_U32 ret = 0;
@@ -506,19 +507,19 @@ CVI_S32 CVI_EFUSE_lock(enum CVI_EFUSE_LOCK_E lock)
 	}
 
 	value = 0x3 << cvi_efuse_lock[lock].wlock_shift;
-	ret = _CVI_EFUSE_write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
+	ret = _CVI_EFUSE_Write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
 	if (ret < 0)
 		return ret;
 
 	if (cvi_efuse_lock[lock].rlock_shift >= 0) {
 		value = 0x3 << cvi_efuse_lock[lock].rlock_shift;
-		ret = _CVI_EFUSE_write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
+		ret = _CVI_EFUSE_Write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
 	}
 
 	return ret;
 }
 
-CVI_S32 CVI_EFUSE_is_locked(enum CVI_EFUSE_LOCK_E lock)
+CVI_S32 CVI_EFUSE_IsLocked(enum CVI_EFUSE_LOCK_E lock)
 {
 	CVI_S32 ret = 0;
 	CVI_U32 value = 0;
@@ -528,7 +529,7 @@ CVI_S32 CVI_EFUSE_is_locked(enum CVI_EFUSE_LOCK_E lock)
 		return CVI_ERR_EFUSE_INVALID_AREA;
 	}
 
-	ret = _CVI_EFUSE_read(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
+	ret = _CVI_EFUSE_Read(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
 	_cc_trace("ret=%d value=%u\n", ret, value);
 	if (ret < 0)
 		return ret;
@@ -537,7 +538,7 @@ CVI_S32 CVI_EFUSE_is_locked(enum CVI_EFUSE_LOCK_E lock)
 	return !!value;
 }
 
-CVI_S32 CVI_EFUSE_lock_write(enum CVI_EFUSE_LOCK_E lock)
+CVI_S32 CVI_EFUSE_LockWrite(enum CVI_EFUSE_LOCK_E lock)
 {
 	CVI_U32 value = 0;
 	CVI_S32 ret = 0;
@@ -548,11 +549,11 @@ CVI_S32 CVI_EFUSE_lock_write(enum CVI_EFUSE_LOCK_E lock)
 	}
 
 	value = 0x3 << cvi_efuse_lock[lock].wlock_shift;
-	ret = _CVI_EFUSE_write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
+	ret = _CVI_EFUSE_Write(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
 	return ret;
 }
 
-CVI_S32 CVI_EFUSE_is_write_locked(enum CVI_EFUSE_LOCK_E lock)
+CVI_S32 CVI_EFUSE_IsWriteLocked(enum CVI_EFUSE_LOCK_E lock)
 {
 	CVI_S32 ret = 0;
 	CVI_U32 value = 0;
@@ -562,7 +563,7 @@ CVI_S32 CVI_EFUSE_is_write_locked(enum CVI_EFUSE_LOCK_E lock)
 		return CVI_ERR_EFUSE_INVALID_AREA;
 	}
 
-	ret = _CVI_EFUSE_read(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
+	ret = _CVI_EFUSE_Read(CVI_EFUSE_LOCK_ADDR, &value, sizeof(value));
 	_cc_trace("ret=%d value=%u\n", ret, value);
 	if (ret < 0)
 		return ret;
@@ -619,25 +620,25 @@ static int do_efuser(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv
 	_cc_trace("idx=%d %s\n", idx, efuse_index[idx]);
 
 	if (idx < CVI_EFUSE_AREA_LAST) {
-		if (CVI_EFUSE_get_size(idx, &size) < 0)
+		if (CVI_EFUSE_GetSize(idx, &size) < 0)
 			return CMD_RET_FAILURE;
 
 		_cc_trace("size=%d\n", size);
 
-		if (CVI_EFUSE_read(idx, buf, size) < 0)
+		if (CVI_EFUSE_Read(idx, buf, size) < 0)
 			return CMD_RET_FAILURE;
 
 		print_buffer(0, buf, 1, size, 0);
 		return 0;
 	} else if (idx < CVI_EFUSE_LOCK_LAST) {
-		ret = CVI_EFUSE_is_locked(idx);
+		ret = CVI_EFUSE_IsLocked(idx);
 		printf("%s is %s locked\n", efuse_index[idx], ret ? "" : "not");
 		return 0;
 	} else if (idx == CVI_EFUSE_SECUREBOOT) {
-		ret = CVI_EFUSE_is_secure_boot_enabled();
+		ret = CVI_EFUSE_IsSecureBootEnabled();
 		return 0;
 	} else if (idx < CVI_EFUSE_LOCK_WRITE_LAST) {
-		ret = CVI_EFUSE_is_write_locked(idx);
+		ret = CVI_EFUSE_IsWriteLocked(idx);
 		printf("%s is %s write_locked\n", efuse_index[idx], ret ? "" : "not");
 		return 0;
 	}
@@ -675,12 +676,12 @@ static int do_efusew(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv
 
 		print_buffer(0, buf, 1, size, 0);
 
-		if (CVI_EFUSE_get_size(idx, &size) < 0)
+		if (CVI_EFUSE_GetSize(idx, &size) < 0)
 			return CMD_RET_FAILURE;
 
 		_cc_trace("size=%d\n", size);
 
-		ret = CVI_EFUSE_write(idx, buf, size);
+		ret = CVI_EFUSE_Write(idx, buf, size);
 		if (ret < 0) {
 			printf("Failed to write %s\n", efuse_index[idx]);
 			return CMD_RET_FAILURE;
@@ -689,7 +690,7 @@ static int do_efusew(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv
 		return 0;
 
 	} else if (idx < CVI_EFUSE_LOCK_LAST) {
-		if (CVI_EFUSE_lock(idx) < 0) {
+		if (CVI_EFUSE_Lock(idx) < 0) {
 			printf("Failed to lock %s\n", efuse_index[idx]);
 			return CMD_RET_FAILURE;
 		}
@@ -700,13 +701,13 @@ static int do_efusew(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv
 		if (argc != 3)
 			return CMD_RET_USAGE;
 
-		u32 sel = simple_strtoul(argv[2], NULL, 0);
+		uint32_t sel = simple_strtoul(argv[2], NULL, 0);
 
-		ret = CVI_EFUSE_enable_secure_boot(sel);
+		ret = CVI_EFUSE_EnableSecureBoot(sel);
 		printf("Enabled Secure Boot is %s\n", ret >= 0 ? "success" : "failed");
 		return 0;
 	} else if (idx < CVI_EFUSE_LOCK_WRITE_LAST) {
-		if (CVI_EFUSE_lock_write(idx) < 0) {
+		if (CVI_EFUSE_LockWrite(idx) < 0) {
 			printf("Failed to lock write %s\n", efuse_index[idx]);
 			return CMD_RET_FAILURE;
 		}
@@ -720,7 +721,7 @@ static int do_efusew(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv
 
 static int do_efusew_word(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 {
-	u32 addr, value;
+	uint32_t addr, value;
 	int ret = -1;
 
 	if (argc != 3)
@@ -744,10 +745,10 @@ static int do_efusew_word(struct cmd_tbl *cmdtp, int flag, int argc, char *const
 static int do_efuser_dump(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 {
 	int i;
-	u32 buf[EFUSE_SIZE / sizeof(u32)];
+	uint32_t buf[EFUSE_SIZE / sizeof(uint32_t)];
 
 	for (i = 0; i < ARRAY_SIZE(buf); i++)
-		buf[i] = cvi_efuse_read_from_shadow(i * sizeof(u32));
+		buf[i] = cvi_efuse_read_from_shadow(i * sizeof(uint32_t));
 
 	print_buffer(0, buf, 1, sizeof(buf), 16);
 

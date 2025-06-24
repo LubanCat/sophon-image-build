@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef _CVI_EFUSE_H
 #define _CVI_EFUSE_H 1
 
@@ -47,14 +45,14 @@ enum CVI_EFUSE_OTHERS_E {
 	CVI_EFUSE_OTHERS
 };
 
-CVI_S32 CVI_EFUSE_get_size(enum CVI_EFUSE_AREA_E area, CVI_U32 *size);
-CVI_S32 CVI_EFUSE_read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size);
-CVI_S32 CVI_EFUSE_write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 buf_size);
-CVI_S32 CVI_EFUSE_enable_secure_boot(uint32_t sel);
-CVI_S32 CVI_EFUSE_is_secure_boot_enabled(void);
-CVI_S32 CVI_EFUSE_lock(enum CVI_EFUSE_LOCK_E lock);
-CVI_S32 CVI_EFUSE_is_locked(enum CVI_EFUSE_LOCK_E lock);
-CVI_S32 CVI_EFUSE_lock_write(enum CVI_EFUSE_LOCK_E lock);
-CVI_S32 CVI_EFUSE_is_write_locked(enum CVI_EFUSE_LOCK_E lock);
+CVI_S32 CVI_EFUSE_GetSize(enum CVI_EFUSE_AREA_E area, CVI_U32 *size);
+CVI_S32 CVI_EFUSE_Read(enum CVI_EFUSE_AREA_E area, CVI_U8 *buf, CVI_U32 buf_size);
+CVI_S32 CVI_EFUSE_Write(enum CVI_EFUSE_AREA_E area, const CVI_U8 *buf, CVI_U32 buf_size);
+CVI_S32 CVI_EFUSE_EnableSecureBoot(uint32_t sel);
+CVI_S32 CVI_EFUSE_IsSecureBootEnabled(void);
+CVI_S32 CVI_EFUSE_Lock(enum CVI_EFUSE_LOCK_E lock);
+CVI_S32 CVI_EFUSE_IsLocked(enum CVI_EFUSE_LOCK_E lock);
+CVI_S32 CVI_EFUSE_LockWrite(enum CVI_EFUSE_LOCK_E lock);
+CVI_S32 CVI_EFUSE_IsWriteLocked(enum CVI_EFUSE_LOCK_E lock);
 
 #endif /* _CVI_EFUSE_H */

@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2023 bitmain
- */
 #define LOG_CATEGORY UCLASS_AUDIO_CODEC
 
 #include <common.h>
