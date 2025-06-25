@@ -55,7 +55,7 @@ REQUIRES = cvi_common cvi_sample cvi_vdec cvi_misc
 MW_LIBS = $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --libs --define-variable=mw_dir=$(MW_PATH) $(REQUIRES))
 
 LIBS += $(MW_LIBS) -latomic
-LIBS += -lsys -lvenc -lvdec -lvi -lvpss -lvo -lrgn -lgdc -lisp -lisp_algo -lawb -lae -laf -lsample -lcvi_bin -lcvi_bin_isp -lsns_full -lini
+LIBS += -lsys -lvenc -lvdec -lvi -lvpss -lvo -lrgn -lgdc -lisp -lisp_algo -lawb -lae -laf -lsample -lcvi_bin -lcvi_bin_isp -lsns_full -lini -lsbc
 LIBS += -lcvi_ispd2
 LIBS += -lraw_dump
 LIBS += -lcvi_dnvqe -lcvi_ssp2 -lteaisp

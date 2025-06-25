@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "cvi_streamer.hpp"
-// #include "isp_tool_daemon_comm.hpp"
+#include "isp_tool_daemon_comm.hpp"
 
 extern "C" {
 #include "cvi_ispd2.h"
@@ -76,7 +76,7 @@ int main(void)
 	openlog("ISP Tool Daemon", 0, LOG_USER);
 
 	shared_ptr<CVIStreamer> cvi_streamer =
-		std::make_shared<CVIStreamer>();
+		make_shared<CVIStreamer>();
 
 	//sample_common_platform.c will sigaction _SAMPLE_PLAT_SYS_HandleSig
 	//we substitute signalHander for _SAMPLE_PLAT_SYS_HandleSig

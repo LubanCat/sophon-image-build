@@ -32,6 +32,7 @@ file += $(MW_LIB)/librgn.so
 file += $(MW_LIB)/libraw_replay.so
 file += $(MW_LIB)/libraw_dump.so
 file += $(MW_LIB)/3rd/libini.so
+file += $(MW_LIB)/3rd/libsbc.so
 file += $(MW_LIB)/libcviruntime.so
 file += $(MW_LIB)/libcvikernel.so
 
