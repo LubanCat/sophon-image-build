@@ -16,9 +16,10 @@ fi
 output_dir=$1
 echo ${output_dir}
 set -eu
-git_id=$(git rev-parse HEAD | head -c 6)
+git_id=$(git rev-parse HEAD | head -c 7)
 image=${CHIP}-${ARCH}-$(LC_ALL=C date +%F)-${FILE_SYSTEM}-${STORAGE_TYPE}.img
 THISDIR=$(dirname $(realpath $0))
+
 mkdir -pv ${output_dir}/tmp/
 mkdir -pv ${output_dir}/root/
 mkdir -pv ${output_dir}/input/
@@ -26,26 +27,17 @@ mkdir -pv ${output_dir}/input/rawimages/
 cp -fv ${output_dir}/fip.bin ${output_dir}/input/
 cp -fv ${output_dir}/rawimages/boot.sd ${output_dir}/input/rawimages/
 cp -fv ${output_dir}/rawimages/rootfs.sd ${output_dir}/input/
-touch ${output_dir}/input/usb.dev
-touch ${output_dir}/input/usb.rndis0
-touch ${output_dir}/input/wifi.sta
-touch ${output_dir}/input/gt9xx
-touch ${output_dir}/input/fb
-echo ${image} > ${output_dir}/input/ver
+echo ${git_id} > ${output_dir}/input/version
+
 cp -fv ${THISDIR}/genimage_rootless.cfg ${output_dir}/genimage.cfg
 sed -i -e "s/duo.img/${image}/g" ${output_dir}/genimage.cfg
 cd ${output_dir}/
 ${THISDIR}/genimage
+
+echo "###################################################"
 echo ""
+echo "Gen image successful: ${output_dir}/images/${image}"
+echo "Please use win32diskimager or dd command write it into sdcard"
 echo ""
-echo ""
-echo ""
-echo "--------------->8------------------"
-echo "# please use win32diskimager or dd command write it into sdcard"
-echo ""
-echo ""
-realpath ${output_dir}/images/${image}
-echo ""
-echo ""
-echo "--------------->8------------------"
+echo "###################################################"
 exit $?

@@ -80,13 +80,13 @@
 		};
 	};
 
-	cooling:cooling {
+	cv181x_cooling:cv181x_cooling {
 		clocks = <&clk CV181X_CLK_A53>, <&clk CV181X_CLK_TPU>;
 		clock-names = "clk_cpu", "clk_tpu_axi";
 		dev-freqs = <800000000 500000000>,
 			<400000000 375000000>,
 			<400000000 300000000>;
-		compatible = "sophgo,cooling";
+		compatible = "cvitek,cv181x-cooling";
 		#cooling-cells = <2>;
 	};
 
@@ -132,6 +132,11 @@
 		interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
 	};
 #endif
+
+	trng: dw_trng@0x02070000 {
+		reg = <0x0 0x02070000 0x0 0x1000>;
+		compatible = "snps,dw-trng";
+	};
 
 	spinand:cv-spinf@4060000 {
 		interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>;

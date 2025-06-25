@@ -4,8 +4,6 @@
 #include "soph_asic_emmc.dtsi"
 #include "soph_default_memmap.dtsi"
 
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/input/linux-event-codes.h>
 
 / {
