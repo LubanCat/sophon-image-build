@@ -1,6 +1,6 @@
 # LubanCat-sg200x sdk
 
-# download source
+# 下载
 
 ```
 git clone --depth=1 -b sg200x https://github.com/LubanCat/sophon-image-build.git
@@ -10,7 +10,7 @@ cd sophon-image-build
 git clone https://github.com/sophgo/host-tools --depth=1
 ```
 
-# build
+# 构建
 
 ```
 source build/cvisetup.sh
@@ -32,7 +32,7 @@ build_all
 ```
 
 
-# update
+# 更新
 
 |                  |   URL                                  | Branch         |    Commit      |
 |:----------------:|:---------------------------------------|:---------------|:---------------|
@@ -51,7 +51,7 @@ build_all
 | flatbuffers      | https://github.com/sophgo/flatbuffers.git     | master         | 6da1cf7  |
 | fsbl             | https://github.com/sophgo/fsbl     | sg200x-dev  | 69853ff |
 | opensbi          | https://github.com/sophgo/opensbi  | sg200x-dev  | 3b045ae |
-| u-boot-2021.10   | https://github.com/sophgo/u-boot-2021.10   | sg200x-dev | 4a21b6b |
+| u-boot-2021.10   | https://github.com/sophgo/u-boot-2021.10   | sg200x-dev | 6438b5d |
 | oss              | https://github.com/sophgo/oss.git          | master        | 53c237e   |
 
 
