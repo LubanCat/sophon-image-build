@@ -19,6 +19,9 @@
 
 #include "cvi_sys.h"
 
+#undef THERMAL_GENL_FAMILY_NAME
+#define THERMAL_GENL_FAMILY_NAME  "thermal"
+
 /* Generic macros for dealing with netlink sockets. Might be duplicated
  * elsewhere. It is recommended that commercial grade applications use
  * libnl or libnetlink and use the interfaces provided by the library
