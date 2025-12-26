@@ -423,7 +423,7 @@ static inline void *thead_dma_alloc(struct device *dev, size_t size,
 	*dma_addr = virt_to_phys(vaddr);
 	return vaddr;
 #else
-	return dma_alloc_writecombine(dev, size, dma_addr, gfp);
+	return dma_alloc_attrs(dev, size, dma_addr, gfp, DMA_ATTR_WRITE_COMBINE);
 #endif
 }
 
@@ -433,7 +433,7 @@ static inline void teahd_dma_free(struct device *dev, size_t size,
 #ifdef __riscv
 	kfree(cpu_addr);
 #else
-	dma_free_writecombine(dev, size, cpu_addr, dma_addr);
+	dma_free_attrs(dev, size, cpu_addr, dma_addr, DMA_ATTR_WRITE_COMBINE);
 #endif
 }
 
