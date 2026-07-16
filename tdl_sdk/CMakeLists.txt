@@ -130,7 +130,7 @@ execute_process(
 )
 
 if(NOT GIT_ERROR)
-    if(REMOTE_URL MATCHES "github.com" OR REMOTE_URL MATCHES "gitlab")
+    if(REMOTE_URL MATCHES "github.com" OR REMOTE_URL MATCHES "gitlab" OR REMOTE_URL MATCHES "gitee")
       set(IS_LOCAL FALSE)
     else()
       set(IS_LOCAL TRUE)

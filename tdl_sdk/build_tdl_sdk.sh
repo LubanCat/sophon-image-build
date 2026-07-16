@@ -140,3 +140,9 @@ ninja -j8 || exit 1
 ninja install || exit 1
 popd
 # build end
+
+# copy lib
+mkdir -p "$SYSTEM_OUT_DIR"/lib/
+mkdir -p "$SYSTEM_OUT_DIR"/usr/bin/ai
+cp -arf "$TDL_SDK_INSTALL_PATH"/lib/*.so* "$SYSTEM_OUT_DIR"/lib/
+cp -arf "$TDL_SDK_INSTALL_PATH"/bin/* "$SYSTEM_OUT_DIR"/usr/bin/ai/
