@@ -37,7 +37,7 @@ if [ ! -e "/boot/boot_init" ] ; then
         #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
         if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
             mkfs.ext4 "/dev/${ROOT_DEV}p7"
-            echo "/dev/${ROOT_DEV}p7  /mnt/data  auto  defaults  0 2" >> /etc/fstab
+            echo "/dev/${ROOT_DEV}p7  /data  auto  defaults  0 2" >> /etc/fstab
             mkdir -p /data
             mount /dev/${ROOT_DEV}p7 /data
         fi
