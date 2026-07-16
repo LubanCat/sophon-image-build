@@ -1,13 +1,4 @@
 #!/bin/bash -e
-### BEGIN INIT INFO
-# Provides:          rockchip
-# Required-Start:
-# Required-Stop:
-# Default-Start:
-# Default-Stop:
-# Short-Description:
-# Description:       Setup rockchip platform environment
-### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -37,7 +28,7 @@ if [ ! -e "/boot/boot_init" ] ; then
         #/*******************emmc启动usr data分区先进行格式化再设置自动挂载*******************/
         if ! grep -q "${ROOT_DEV}p7" /etc/fstab ; then
             mkfs.ext4 "/dev/${ROOT_DEV}p7"
-            echo "/dev/${ROOT_DEV}p7  /uerdata  auto  defaults  0 2" >> /etc/fstab
+            echo "/dev/${ROOT_DEV}p7  /userdata  auto  defaults  0 2" >> /etc/fstab
             mkdir -p /userdata
             mount /dev/${ROOT_DEV}p7 /userdata
         fi
