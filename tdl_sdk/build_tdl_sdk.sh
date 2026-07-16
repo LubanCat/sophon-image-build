@@ -142,7 +142,7 @@ popd
 # build end
 
 # copy lib
-if [ -f "${SYSTEM_OUT_DIR}" ]; then
+if [ -d "${SYSTEM_OUT_DIR}" ]; then
   mkdir -p "$SYSTEM_OUT_DIR"/lib/
   mkdir -p "$SYSTEM_OUT_DIR"/usr/bin/ai
   cp -arf "$TDL_SDK_INSTALL_PATH"/lib/*.so* "$SYSTEM_OUT_DIR"/lib/
