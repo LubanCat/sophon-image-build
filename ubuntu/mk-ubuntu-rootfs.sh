@@ -62,8 +62,8 @@ if [ $ARCH == "riscv64" ]; then
 
     sudo cp -rpf overlay-sophgo-riscv64/mnt/* $TARGET_ROOTFS_DIR/mnt/
 
-    #sudo cp -rfd overlay-sophgo-riscv64/usr/lib/* $TARGET_ROOTFS_DIR/usr/lib/
-    sudo cp -rfd overlay-sophgo-riscv64/usr/lib/firmware $TARGET_ROOTFS_DIR/usr/lib/  
+    sudo cp -rfd overlay-sophgo-riscv64/usr/lib/libatomic.so* $TARGET_ROOTFS_DIR/usr/lib/
+    sudo cp -rfd overlay-sophgo-riscv64/usr/lib/firmware $TARGET_ROOTFS_DIR/usr/lib/
 
     sudo cp -rfd overlay-sophgo-riscv64/lib64 $TARGET_ROOTFS_DIR/
 
@@ -101,7 +101,7 @@ elif [ $ARCH == "arm64" ]; then
 
     sudo cp -rpf overlay-sophgo-arm64/mnt/* $TARGET_ROOTFS_DIR/mnt/
 
-    #sudo cp -rfd overlay-sophgo-arm64/usr/lib/* $TARGET_ROOTFS_DIR/usr/lib/  //error
+    sudo cp -rfd overlay-sophgo-arm64/usr/lib/libatomic.so* $TARGET_ROOTFS_DIR/usr/lib/
     sudo cp -rfd overlay-sophgo-arm64/usr/lib/firmware $TARGET_ROOTFS_DIR/usr/lib/  
 
     sudo cp -rfd overlay-sophgo-arm64/lib64 $TARGET_ROOTFS_DIR/
